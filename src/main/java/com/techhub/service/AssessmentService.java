@@ -62,8 +62,8 @@ public class AssessmentService {
         List<Assessment> recommendedAssessments = new ArrayList<>();
 
         for (Assessment assessment : allAssessments) {
-            List<com.smartcareer.entity.Question> questions = questionRepository.findByAssessmentId(assessment.getId());
-            for (com.smartcareer.entity.Question question : questions) {
+            List<com.techhub.entity.Question> questions = questionRepository.findByAssessmentId(assessment.getId());
+            for (com.techhub.entity.Question question : questions) {
                 String questionSkillTag = question.getSkillTag();
                 if (questionSkillTag != null && !questionSkillTag.trim().isEmpty()) {
                     for (String userSkill : skillList) {
