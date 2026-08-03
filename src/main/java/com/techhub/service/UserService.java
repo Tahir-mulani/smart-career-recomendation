@@ -87,6 +87,12 @@ public class UserService {
         if (phoneNumber != null) {
             user.setPhoneNumber(phoneNumber);
         }
+        if (skills != null) {
+            user.setSkills(skills);
+        }
+        if (interests != null) {
+            user.setInterests(interests);
+        }
         return userRepository.save(user);
     }
 

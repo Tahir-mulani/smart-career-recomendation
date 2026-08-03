@@ -38,7 +38,7 @@ public class WebController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/login";
+        return "home";
     }
 
     @GetMapping("/login")
@@ -91,12 +91,115 @@ public class WebController {
         List<Assessment> assessments = assessmentService.findAll();
         List<Career> careers = careerService.findAll();
         List<User> users = userService.findAll();
+        List<Question> questions = questionService.findAll();
         
         model.addAttribute("assessments", assessments);
         model.addAttribute("careers", careers);
         model.addAttribute("users", users);
+        model.addAttribute("questions", questions);
         
-        return "admin-dashboard";
+        return "admin/dashboard";
+    }
+
+    @GetMapping("/admin/users")
+    public String adminUsers(HttpSession session, Model model) {
+        User admin = (User) session.getAttribute("admin");
+        if (admin == null) {
+            return "redirect:/admin/login";
+        }
+        model.addAttribute("admin", admin);
+        
+        List<User> users = userService.findAll();
+        model.addAttribute("users", users);
+        
+        return "admin/users";
+    }
+
+    @GetMapping("/admin/users/{id}")
+    public String adminViewUser(@PathVariable Long id, HttpSession session, Model model) {
+        User admin = (User) session.getAttribute("admin");
+        if (admin == null) {
+            return "redirect:/admin/login";
+        }
+        model.addAttribute("admin", admin);
+        
+        User user = userService.findById(id);
+        model.addAttribute("user", user);
+        
+        return "admin/user-view";
+    }
+
+    @PostMapping("/api/admin/users/{id}/delete")
+    public String adminDeleteUser(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
+        try {
+            User admin = (User) session.getAttribute("admin");
+            if (admin == null || !"ADMIN".equals(admin.getRole())) {
+                throw new RuntimeException("Access denied");
+            }
+            
+            userService.deleteById(id);
+            
+            redirectAttributes.addFlashAttribute("success", "User deleted successfully!");
+            return "redirect:/admin/users";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/users";
+        }
+    }
+
+    @PostMapping("/api/admin/update-profile")
+    public String adminUpdateProfile(@RequestParam Long userId,
+                                     @RequestParam String name,
+                                     @RequestParam String phoneNumber,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            User admin = (User) session.getAttribute("admin");
+            if (admin == null || !admin.getId().equals(userId)) {
+                throw new RuntimeException("Unauthorized access");
+            }
+            
+            User updated = userService.updateProfile(userId, name, phoneNumber, null, null);
+            session.setAttribute("admin", updated);
+            
+            redirectAttributes.addFlashAttribute("success", "Profile updated successfully!");
+            return "redirect:/admin/profile";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/profile";
+        }
+    }
+
+    @PostMapping("/api/admin/change-password")
+    public String adminChangePassword(@RequestParam String currentPassword,
+                                       @RequestParam String newPassword,
+                                       @RequestParam String confirmPassword,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes) {
+        try {
+            User admin = (User) session.getAttribute("admin");
+            if (admin == null) {
+                throw new RuntimeException("Unauthorized access");
+            }
+            
+            if (!newPassword.equals(confirmPassword)) {
+                throw new RuntimeException("New passwords do not match");
+            }
+            
+            if (!currentPassword.equals(admin.getPassword())) {
+                throw new RuntimeException("Current password is incorrect");
+            }
+            
+            admin.setPassword(newPassword);
+            userService.updateProfile(admin.getId(), admin.getName(), admin.getPhoneNumber(), admin.getSkills(), admin.getInterests());
+            session.setAttribute("admin", admin);
+            
+            redirectAttributes.addFlashAttribute("success", "Password changed successfully!");
+            return "redirect:/admin/profile";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/profile";
+        }
     }
 
     @GetMapping("/admin/assessments")
@@ -108,9 +211,12 @@ public class WebController {
         model.addAttribute("admin", admin);
         
         List<Assessment> assessments = assessmentService.findAll();
-        model.addAttribute("assessments", assessments);
+        List<Question> questions = questionService.findAll();
         
-        return "admin-assessments";
+        model.addAttribute("assessments", assessments);
+        model.addAttribute("questions", questions);
+        
+        return "admin/assessments";
     }
 
     @GetMapping("/admin/careers")
@@ -122,9 +228,12 @@ public class WebController {
         model.addAttribute("admin", admin);
         
         List<Career> careers = careerService.findAll();
-        model.addAttribute("careers", careers);
+        List<Recommendation> recommendations = recommendationService.findAll();
         
-        return "admin-careers";
+        model.addAttribute("careers", careers);
+        model.addAttribute("recommendations", recommendations);
+        
+        return "admin/careers";
     }
 
     @GetMapping("/admin/questions")
@@ -141,13 +250,152 @@ public class WebController {
         model.addAttribute("questions", questions);
         model.addAttribute("assessments", assessments);
         
-        return "admin-questions";
+        return "admin/questions";
+    }
+
+    @GetMapping("/admin/recommendations")
+    public String adminRecommendations(HttpSession session, Model model) {
+        User admin = (User) session.getAttribute("admin");
+        if (admin == null) {
+            return "redirect:/admin/login";
+        }
+        model.addAttribute("admin", admin);
+        
+        List<Recommendation> recommendations = recommendationService.findAll();
+        model.addAttribute("recommendations", recommendations);
+        
+        return "admin/recommendations";
+    }
+
+    @GetMapping("/admin/analytics")
+    public String adminAnalytics(HttpSession session, Model model) {
+        User admin = (User) session.getAttribute("admin");
+        if (admin == null) {
+            return "redirect:/admin/login";
+        }
+        model.addAttribute("admin", admin);
+        
+        List<User> users = userService.findAll();
+        List<Recommendation> recommendations = recommendationService.findAll();
+        List<Result> results = resultService.findAll();
+        
+        model.addAttribute("users", users);
+        model.addAttribute("recommendations", recommendations);
+        model.addAttribute("results", results);
+        
+        return "admin/analytics";
+    }
+
+    @GetMapping("/admin/profile")
+    public String adminProfile(HttpSession session, Model model) {
+        User admin = (User) session.getAttribute("admin");
+        if (admin == null) {
+            return "redirect:/admin/login";
+        }
+        model.addAttribute("admin", admin);
+        
+        return "admin/profile";
     }
 
     @GetMapping("/admin/logout")
     public String adminLogout(HttpSession session) {
         session.invalidate();
         return "redirect:/admin/login";
+    }
+
+    @PostMapping("/api/admin/create-assessment")
+    public String createAssessment(@RequestParam String testName,
+                                   @RequestParam Integer duration,
+                                   @RequestParam Integer totalMarks,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            User admin = (User) session.getAttribute("admin");
+            if (admin == null || !"ADMIN".equals(admin.getRole())) {
+                throw new RuntimeException("Access denied");
+            }
+            
+            com.techhub.dto.AssessmentRequest request = new com.techhub.dto.AssessmentRequest();
+            request.setTestName(testName);
+            request.setDuration(duration);
+            request.setTotalMarks(totalMarks);
+            
+            assessmentService.save(request);
+            
+            redirectAttributes.addFlashAttribute("success", "Assessment created successfully!");
+            return "redirect:/admin/assessments";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/assessments";
+        }
+    }
+
+    @PostMapping("/api/admin/create-career")
+    public String createCareer(@RequestParam String careerName,
+                               @RequestParam String description,
+                               @RequestParam String requiredSkills,
+                               @RequestParam String qualification,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            User admin = (User) session.getAttribute("admin");
+            if (admin == null || !"ADMIN".equals(admin.getRole())) {
+                throw new RuntimeException("Access denied");
+            }
+            
+            com.techhub.dto.CareerRequest request = new com.techhub.dto.CareerRequest();
+            request.setCareerName(careerName);
+            request.setDescription(description);
+            request.setRequiredSkills(requiredSkills);
+            request.setQualification(qualification);
+            
+            careerService.save(request);
+            
+            redirectAttributes.addFlashAttribute("success", "Career created successfully!");
+            return "redirect:/admin/careers";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/careers";
+        }
+    }
+
+    @PostMapping("/api/admin/create-question")
+    public String createQuestion(@RequestParam String questionText,
+                                 @RequestParam String optionA,
+                                 @RequestParam String optionB,
+                                 @RequestParam String optionC,
+                                 @RequestParam String optionD,
+                                 @RequestParam String correctAnswer,
+                                 @RequestParam String difficultyLevel,
+                                 @RequestParam String skillTag,
+                                 @RequestParam Long assessmentId,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            User admin = (User) session.getAttribute("admin");
+            if (admin == null || !"ADMIN".equals(admin.getRole())) {
+                throw new RuntimeException("Access denied");
+            }
+            
+            com.techhub.dto.QuestionRequest request = new com.techhub.dto.QuestionRequest();
+            request.setQuestionText(questionText);
+            request.setOptionA(optionA);
+            request.setOptionB(optionB);
+            request.setOptionC(optionC);
+            request.setOptionD(optionD);
+            request.setCorrectAnswer(correctAnswer);
+            request.setDifficultyLevel(difficultyLevel);
+            request.setSkillTag(skillTag);
+            request.setAssessmentId(assessmentId);
+            
+            questionService.save(request);
+            
+            redirectAttributes.addFlashAttribute("success", "Question created successfully!");
+            return "redirect:/admin/questions";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/questions";
+        }
     }
 
     @PostMapping("/api/register")
