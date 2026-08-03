@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 
 import com.techhub.exception.BusinessValidationException;
 import com.techhub.service.UserService;
-
 @Component
 public class RoleChecker {
 
