@@ -17,25 +17,25 @@ import java.util.Optional;
 public class QuestionRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Question> questionRowMapper;
 
     public QuestionRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.questionRowMapper = (rs, rowNum) -> {
+            Question question = new Question();
+            question.setId(rs.getLong("id"));
+            question.setQuestionText(rs.getString("question_text"));
+            question.setOptionA(rs.getString("option_a"));
+            question.setOptionB(rs.getString("option_b"));
+            question.setOptionC(rs.getString("option_c"));
+            question.setOptionD(rs.getString("option_d"));
+            question.setCorrectAnswer(rs.getString("correct_answer"));
+            question.setDifficultyLevel(rs.getString("difficulty_level"));
+            question.setSkillTag(rs.getString("skill_tag"));
+            question.setAssessmentId(rs.getLong("assessment_id"));
+            return question;
+        };
     }
-
-    private final RowMapper<Question> questionRowMapper = (rs, rowNum) -> {
-        Question question = new Question();
-        question.setId(rs.getLong("id"));
-        question.setQuestionText(rs.getString("question_text"));
-        question.setOptionA(rs.getString("option_a"));
-        question.setOptionB(rs.getString("option_b"));
-        question.setOptionC(rs.getString("option_c"));
-        question.setOptionD(rs.getString("option_d"));
-        question.setCorrectAnswer(rs.getString("correct_answer"));
-        question.setDifficultyLevel(rs.getString("difficulty_level"));
-        question.setSkillTag(rs.getString("skill_tag"));
-        question.setAssessmentId(rs.getLong("assessment_id"));
-        return question;
-    };
 
     public Question save(Question question) {
         if (question.getId() == null) {

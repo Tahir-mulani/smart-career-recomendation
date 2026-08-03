@@ -17,19 +17,19 @@ import java.util.Optional;
 public class AssessmentRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Assessment> assessmentRowMapper;
 
     public AssessmentRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.assessmentRowMapper = (rs, rowNum) -> {
+            Assessment assessment = new Assessment();
+            assessment.setId(rs.getLong("id"));
+            assessment.setTestName(rs.getString("test_name"));
+            assessment.setDuration(rs.getInt("duration"));
+            assessment.setTotalMarks(rs.getInt("total_marks"));
+            return assessment;
+        };
     }
-
-    private final RowMapper<Assessment> assessmentRowMapper = (rs, rowNum) -> {
-        Assessment assessment = new Assessment();
-        assessment.setId(rs.getLong("id"));
-        assessment.setTestName(rs.getString("test_name"));
-        assessment.setDuration(rs.getInt("duration"));
-        assessment.setTotalMarks(rs.getInt("total_marks"));
-        return assessment;
-    };
 
     public Assessment save(Assessment assessment) {
         if (assessment.getId() == null) {

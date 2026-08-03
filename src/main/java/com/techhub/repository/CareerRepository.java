@@ -16,20 +16,20 @@ import java.util.Optional;
 public class CareerRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Career> careerRowMapper;
 
     public CareerRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.careerRowMapper = (rs, rowNum) -> {
+            Career career = new Career();
+            career.setId(rs.getLong("id"));
+            career.setCareerName(rs.getString("career_name"));
+            career.setDescription(rs.getString("description"));
+            career.setRequiredSkills(rs.getString("required_skills"));
+            career.setQualification(rs.getString("qualification"));
+            return career;
+        };
     }
-
-    private final RowMapper<Career> careerRowMapper = (rs, rowNum) -> {
-        Career career = new Career();
-        career.setId(rs.getLong("id"));
-        career.setCareerName(rs.getString("career_name"));
-        career.setDescription(rs.getString("description"));
-        career.setRequiredSkills(rs.getString("required_skills"));
-        career.setQualification(rs.getString("qualification"));
-        return career;
-    };
 
     public Career save(Career career) {
         if (career.getId() == null) {

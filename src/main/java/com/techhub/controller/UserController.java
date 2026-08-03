@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.techhub.dto.LoginRequest;
 import com.techhub.dto.UserRegistrationRequest;
-import com.techhub.entity.RoleChecker;
 import com.techhub.entity.User;
 import com.techhub.service.UserService;
+import com.techhub.util.RoleChecker;
 
 import java.util.List;
 

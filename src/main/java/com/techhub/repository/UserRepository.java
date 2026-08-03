@@ -17,26 +17,26 @@ import java.util.Optional;
 public class UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<User> userRowMapper;
 
     public UserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.userRowMapper = (rs, rowNum) -> {
+            User user = new User();
+            user.setId(rs.getLong("id"));
+            user.setName(rs.getString("name"));
+            user.setEmail(rs.getString("email"));
+            user.setPassword(rs.getString("password"));
+            user.setPhoneNumber(rs.getString("phone_number"));
+            user.setRole(rs.getString("role"));
+            user.setSkills(rs.getString("skills"));
+            user.setInterests(rs.getString("interests"));
+            if (rs.getDate("registration_date") != null) {
+                user.setRegistrationDate(rs.getDate("registration_date").toLocalDate());
+            }
+            return user;
+        };
     }
-
-    private final RowMapper<User> userRowMapper = (rs, rowNum) -> {
-        User user = new User();
-        user.setId(rs.getLong("id"));
-        user.setName(rs.getString("name"));
-        user.setEmail(rs.getString("email"));
-        user.setPassword(rs.getString("password"));
-        user.setPhoneNumber(rs.getString("phone_number"));
-        user.setRole(rs.getString("role"));
-        user.setSkills(rs.getString("skills"));
-        user.setInterests(rs.getString("interests"));
-        if (rs.getDate("registration_date") != null) {
-            user.setRegistrationDate(rs.getDate("registration_date").toLocalDate());
-        }
-        return user;
-    };
 
     public User save(User user) {
         if (user.getId() == null) {
