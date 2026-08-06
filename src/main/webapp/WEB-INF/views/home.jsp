@@ -4,12 +4,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Career Recommendation - Find Your Perfect Career
-	Path</title>
+<title>Smart Career Recommendation - Find Your Perfect Career Path</title>
 <link rel="stylesheet" href="/resources/css/style.css">
-<link
-	href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-	rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* Modern UI Color Palette */
 :root {
@@ -30,9 +27,10 @@
 	font-family: 'Poppins', sans-serif;
 }
 
+/* Updated Body Background to Dark Theme */
 body {
-	background-color: #f8fafc;
-	color: var(--text-dark);
+	background-color: var(--bg-dark-blue);
+	color: var(--text-light);
 	line-height: 1.6;
 	overflow-x: hidden;
 }
@@ -45,8 +43,9 @@ body {
 
 /* Header */
 header {
-	background: var(--bg-dark-blue);
-	padding: 20px 0;
+	background: rgba(10, 20, 31, 0.95);
+	backdrop-filter: blur(10px);
+	padding: 12px 0; /* Reduced padding for slimmer navbar */
 	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 	position: sticky;
 	top: 0;
@@ -60,7 +59,7 @@ header {
 }
 
 .logo {
-	font-size: 1.8rem;
+	font-size: 1.6rem; /* Slightly reduced font size */
 	font-weight: 700;
 	color: var(--primary-cyan);
 }
@@ -108,7 +107,7 @@ nav a:hover {
 
 .hero p {
 	font-size: 1.1rem;
-	color: var(--text-muted);
+	color: rgba(255, 255, 255, 0.8);
 	margin-bottom: 40px;
 	max-width: 700px;
 	animation: fadeInUp 1s ease 0.2s backwards;
@@ -154,17 +153,17 @@ nav a:hover {
 	box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
 }
 
-/* Features Section */
+/* --- Features Section (Why Choose Us) --- */
 .features {
 	padding: 100px 20px;
-	background: #ffffff;
+	background: var(--bg-dark-blue);
 }
 
 .features h2 {
 	text-align: center;
 	font-size: 2.5rem;
-	color: var(--bg-dark-blue);
-	margin-bottom: 50px;
+	color: var(--primary-cyan);
+	margin-bottom: 60px;
 }
 
 .features-grid {
@@ -176,36 +175,44 @@ nav a:hover {
 }
 
 .feature-card {
-	background: #ffffff;
+	background: rgba(255, 255, 255, 0.03);
 	padding: 40px;
 	border-radius: 16px;
 	text-align: center;
-	transition: transform 0.3s, box-shadow 0.3s;
-	border: 1px solid rgba(0, 0, 0, 0.05);
-	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+	transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	backdrop-filter: blur(10px);
 }
 
 .feature-card:hover {
 	transform: translateY(-10px);
-	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-	border-color: rgba(34, 211, 238, 0.3);
+	box-shadow: 0 15px 35px rgba(34, 211, 238, 0.1);
+	border-color: var(--primary-cyan);
 }
 
 .feature-icon {
-	font-size: 3rem;
-	margin-bottom: 20px;
-	display: inline-block;
+	font-size: 2.5rem;
+	margin: 0 auto 25px;
+	background: rgba(34, 211, 238, 0.1);
+	width: 80px;
+	height: 80px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+	border: 1px solid rgba(34, 211, 238, 0.3);
+	box-shadow: 0 0 20px rgba(34, 211, 238, 0.1);
 }
 
 .feature-card h3 {
-	color: var(--bg-dark-blue);
+	color: var(--text-light);
 	margin-bottom: 15px;
 	font-size: 1.4rem;
 	font-weight: 600;
 }
 
 .feature-card p {
-	color: #64748b;
+	color: var(--text-muted);
 	line-height: 1.6;
 	font-size: 0.95rem;
 }
@@ -213,14 +220,13 @@ nav a:hover {
 /* How It Works Section */
 .how-it-works {
 	padding: 100px 20px;
-	background: var(--bg-dark-blue);
-	color: var(--text-light);
+	background: var(--bg-gradient);
 }
 
 .how-it-works h2 {
 	text-align: center;
 	font-size: 2.5rem;
-	color: var(--primary-cyan);
+	color: var(--text-light);
 	margin-bottom: 60px;
 }
 
@@ -282,20 +288,21 @@ nav a:hover {
 /* CTA Section */
 .cta-section {
 	padding: 100px 20px;
-	background: #f8fafc;
-	color: var(--bg-dark-blue);
+	background: var(--bg-dark-blue);
 	text-align: center;
+	border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .cta-section h2 {
 	font-size: 2.5rem;
+	color: var(--text-light);
 	margin-bottom: 20px;
 }
 
 .cta-section p {
 	font-size: 1.1rem;
 	margin-bottom: 40px;
-	color: #64748b;
+	color: var(--text-muted);
 	max-width: 700px;
 	margin-left: auto;
 	margin-right: auto;
@@ -303,7 +310,7 @@ nav a:hover {
 
 /* Footer */
 footer {
-	background: var(--bg-dark-blue);
+	background: rgba(10, 20, 31, 0.95);
 	color: var(--text-muted);
 	text-align: center;
 	padding: 30px 20px;
@@ -311,44 +318,19 @@ footer {
 	font-size: 0.9rem;
 }
 
-@
-keyframes fadeInUp {from { opacity:0;
-	transform: translateY(30px);
+@keyframes fadeInUp {
+	from { opacity: 0; transform: translateY(30px); }
+	to { opacity: 1; transform: translateY(0); }
 }
 
-to {
-	opacity: 1;
-	transform: translateY(0);
-}
-
-}
 @media ( max-width : 768px) {
-	.header-content {
-		flex-direction: column;
-		gap: 15px;
-	}
-	.hero h1 {
-		font-size: 2.2rem;
-	}
-	.hero p {
-		font-size: 1rem;
-	}
-	.hero-buttons {
-		flex-direction: column;
-		align-items: center;
-		width: 100%;
-	}
-	.hero-buttons .btn {
-		width: 100%;
-		max-width: 300px;
-		text-align: center;
-	}
-	.features-grid {
-		grid-template-columns: 1fr;
-	}
-	.steps {
-		flex-direction: column;
-	}
+	.header-content { flex-direction: column; gap: 15px; }
+	.hero h1 { font-size: 2.2rem; }
+	.hero p { font-size: 1rem; }
+	.hero-buttons { flex-direction: column; align-items: center; width: 100%; }
+	.hero-buttons .btn { width: 100%; max-width: 300px; text-align: center; }
+	.features-grid { grid-template-columns: 1fr; }
+	.steps { flex-direction: column; }
 }
 </style>
 </head>
@@ -461,7 +443,7 @@ to {
 				path with Smart Career.</p>
 			<!-- Adjusted the inline styles here to match the cyan theme -->
 			<a href="/register" class="btn"
-				style="background: var(--primary-cyan); color: #000; padding: 15px 40px; font-size: 18px; border: none;">Start
+				style="background: var(--primary-cyan); color: #000; padding: 15px 40px; font-size: 18px; border: none; font-weight: 600;">Start
 				Your Journey</a>
 		</div>
 	</section>
