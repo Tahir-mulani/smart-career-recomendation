@@ -6,11 +6,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Career Recommendation - Find Your Perfect Career Path</title>
     <link rel="stylesheet" href="/resources/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Landing Page Specific Styles */
+        /* Modern UI Color Palette */
+        :root {
+            --primary-cyan: #22d3ee;
+            --primary-hover: #06b6d4;
+            --bg-dark-blue: #0a141f;
+            --bg-gradient: linear-gradient(135deg, #0f1c29 0%, #1a364b 50%, #1e455c 100%);
+            --text-light: #f8fafc;
+            --text-dark: #0f172a;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-dark-blue);
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-cyan);
+        }
+
+        .logo span {
+            color: var(--text-light);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary-cyan);
+        }
+
+        /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--bg-gradient);
+            color: var(--text-light);
             padding: 100px 20px;
             text-align: center;
             min-height: 80vh;
@@ -21,17 +97,17 @@
         }
 
         .hero h1 {
-            font-size: 48px;
-            font-weight: bold;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
             margin-bottom: 20px;
             animation: fadeInUp 1s ease;
         }
 
         .hero p {
-            font-size: 20px;
+            font-size: 1.1rem;
+            color: var(--text-muted);
             margin-bottom: 40px;
             max-width: 700px;
-            opacity: 0.95;
             animation: fadeInUp 1s ease 0.2s backwards;
         }
 
@@ -43,32 +119,48 @@
             animation: fadeInUp 1s ease 0.4s backwards;
         }
 
-        .hero-buttons .btn {
-            padding: 15px 40px;
-            font-size: 18px;
-            background: white;
-            color: #667eea;
+        .btn {
+            padding: 14px 35px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: 0.3s;
+            display: inline-block;
+            border: 2px solid var(--primary-cyan);
+            color: var(--primary-cyan);
+            background: transparent;
         }
 
-        .hero-buttons .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .hero-buttons .btn:hover {
+        .btn:hover {
+            background: var(--primary-cyan);
+            color: #000;
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 25px rgba(34, 211, 238, 0.2);
         }
 
+        .btn-primary {
+            background: var(--primary-cyan);
+            color: #000;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--text-light);
+            color: var(--bg-dark-blue);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Features Section */
         .features {
-            padding: 80px 20px;
-            background: white;
+            padding: 100px 20px;
+            background: #ffffff;
         }
 
         .features h2 {
             text-align: center;
-            font-size: 36px;
-            color: #333;
+            font-size: 2.5rem;
+            color: var(--bg-dark-blue);
             margin-bottom: 50px;
         }
 
@@ -81,44 +173,52 @@
         }
 
         .feature-card {
-            background: #f8f9fa;
+            background: #ffffff;
             padding: 40px;
-            border-radius: 10px;
+            border-radius: 16px;
             text-align: center;
             transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         }
 
         .feature-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            border-color: rgba(34, 211, 238, 0.3);
         }
 
         .feature-icon {
-            font-size: 48px;
+            font-size: 3rem;
             margin-bottom: 20px;
+            display: inline-block;
         }
 
         .feature-card h3 {
-            color: #333;
+            color: var(--bg-dark-blue);
             margin-bottom: 15px;
-            font-size: 24px;
+            font-size: 1.4rem;
+            font-weight: 600;
         }
 
         .feature-card p {
-            color: #666;
+            color: #64748b;
             line-height: 1.6;
+            font-size: 0.95rem;
         }
 
+        /* How It Works Section */
         .how-it-works {
-            padding: 80px 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 100px 20px;
+            background: var(--bg-dark-blue);
+            color: var(--text-light);
         }
 
         .how-it-works h2 {
             text-align: center;
-            font-size: 36px;
-            color: #333;
-            margin-bottom: 50px;
+            font-size: 2.5rem;
+            color: var(--primary-cyan);
+            margin-bottom: 60px;
         }
 
         .steps {
@@ -132,90 +232,95 @@
 
         .step {
             flex: 1;
-            min-width: 250px;
+            min-width: 220px;
             text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 40px 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: 0.3s;
+        }
+
+        .step:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-cyan);
+            box-shadow: 0 15px 35px rgba(34, 211, 238, 0.1);
         }
 
         .step-number {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            width: 65px;
+            height: 65px;
+            background: transparent;
+            border: 2px solid var(--primary-cyan);
+            color: var(--primary-cyan);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 1.5rem;
             font-weight: bold;
             margin: 0 auto 20px;
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
         }
 
         .step h3 {
-            color: #333;
+            color: var(--text-light);
             margin-bottom: 15px;
-            font-size: 20px;
+            font-size: 1.2rem;
+            font-weight: 500;
         }
 
         .step p {
-            color: #666;
+            color: var(--text-muted);
             line-height: 1.6;
+            font-size: 0.9rem;
         }
 
+        /* CTA Section */
         .cta-section {
-            padding: 80px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 100px 20px;
+            background: #f8fafc;
+            color: var(--bg-dark-blue);
             text-align: center;
         }
 
         .cta-section h2 {
-            font-size: 36px;
+            font-size: 2.5rem;
             margin-bottom: 20px;
         }
 
         .cta-section p {
-            font-size: 18px;
-            margin-bottom: 30px;
-            opacity: 0.95;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            color: #64748b;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-dark-blue);
+            color: var(--text-muted);
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 32px;
-            }
-
-            .hero p {
-                font-size: 16px;
-            }
-
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .hero-buttons .btn {
-                width: 100%;
-                max-width: 300px;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .steps {
-                flex-direction: column;
-            }
+            .header-content { flex-direction: column; gap: 15px; }
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1rem; }
+            .hero-buttons { flex-direction: column; align-items: center; width: 100%; }
+            .hero-buttons .btn { width: 100%; max-width: 300px; text-align: center; }
+            .features-grid { grid-template-columns: 1fr; }
+            .steps { flex-direction: column; }
         }
     </style>
 </head>
@@ -312,13 +417,14 @@
         <div class="container">
             <h2>Ready to Find Your Dream Career?</h2>
             <p>Join thousands of users who have discovered their ideal career path with Smart Career.</p>
-            <a href="/register" class="btn" style="background: white; color: #667eea; padding: 15px 40px; font-size: 18px;">Start Your Journey</a>
+            <!-- Adjusted the inline styles here to match the cyan theme -->
+            <a href="/register" class="btn" style="background: var(--primary-cyan); color: #000; padding: 15px 40px; font-size: 18px; border: none;">Start Your Journey</a>
         </div>
     </section>
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 Smart Career Recommendation System. All rights reserved.</p>
+            <p>&copy; 2026 Smart Career Recommendation System. All rights reserved.</p>
         </div>
     </footer>
 </body>
