@@ -244,7 +244,7 @@ footer {
 	<header>
 		<div class="header-content">
 			<div class="logo">
-				Smart<span class="main-span">Career</span> <span class="admin-span">Admin</span>
+				<a href="/" class="logo">Smart<span>Career</span></a> <span class="admin-span">Admin</span>
 			</div>
 			<nav>
 				<ul>
