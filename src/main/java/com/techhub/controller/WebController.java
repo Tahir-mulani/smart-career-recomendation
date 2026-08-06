@@ -30,8 +30,8 @@ public class WebController {
     @Autowired
     private ResultService resultService;
 
-    @Autowired
-    private RecommendationService recommendationService;
+//    @Autowired
+//    private RecommendationService recommendationService;
 
     @Autowired
     private AssessmentSubmissionService assessmentSubmissionService;
@@ -228,10 +228,10 @@ public class WebController {
         model.addAttribute("admin", admin);
         
         List<Career> careers = careerService.findAll();
-        List<Recommendation> recommendations = recommendationService.findAll();
+       // List<Recommendation> recommendations = recommendationService.findAll();
         
         model.addAttribute("careers", careers);
-        model.addAttribute("recommendations", recommendations);
+       // model.addAttribute("recommendations", recommendations);
         
         return "admin/careers";
     }
@@ -261,8 +261,8 @@ public class WebController {
         }
         model.addAttribute("admin", admin);
         
-        List<Recommendation> recommendations = recommendationService.findAll();
-        model.addAttribute("recommendations", recommendations);
+        //List<Recommendation> recommendations = recommendationService.findAll();
+       // model.addAttribute("recommendations", recommendations);
         
         return "admin/recommendations";
     }
@@ -276,18 +276,12 @@ public class WebController {
         model.addAttribute("admin", admin);
         
         List<User> users = userService.findAll();
-        List<Recommendation> recommendations = recommendationService.findAll();
+       // List<Recommendation> recommendations = recommendationService.findAll();
         List<Result> results = resultService.findAll();
-        List<Assessment> assessments = assessmentService.findAll();
-        List<Question> questions = questionService.findAll();
-        List<Career> careers = careerService.findAll();
         
         model.addAttribute("users", users);
-        model.addAttribute("recommendations", recommendations);
+        //model.addAttribute("recommendations", recommendations);
         model.addAttribute("results", results);
-        model.addAttribute("assessments", assessments);
-        model.addAttribute("questions", questions);
-        model.addAttribute("careers", careers);
         
         return "admin/analytics";
     }
@@ -457,8 +451,8 @@ public class WebController {
         List<Result> results = resultService.findByUserId(user.getId());
         model.addAttribute("results", results);
         
-        List<Recommendation> recommendations = recommendationService.findByUserId(user.getId());
-        model.addAttribute("recommendations", recommendations);
+      //  List<Recommendation> recommendations = recommendationService.findByUserId(user.getId());
+       // model.addAttribute("recommendations", recommendations);
         
         return "dashboard";
     }
@@ -471,8 +465,8 @@ public class WebController {
         }
         model.addAttribute("user", user);
         
-        List<Recommendation> recommendations = recommendationService.findByUserId(user.getId());
-        model.addAttribute("recommendations", recommendations);
+      //  List<Recommendation> recommendations = recommendationService.findByUserId(user.getId());
+      //  model.addAttribute("recommendations", recommendations);
         
         return "recommendations";
     }
@@ -557,7 +551,7 @@ public class WebController {
             
             // Generate recommendations after assessment
             try {
-                recommendationService.generateForUser(userId);
+                //recommendationService.generateForUser(userId);
             } catch (Exception e) {
                 // Don't fail if recommendation generation fails
             }
@@ -578,7 +572,7 @@ public class WebController {
                 return "redirect:/login";
             }
             
-            recommendationService.generateForUser(user.getId());
+            //recommendationService.generateForUser(user.getId());
             redirectAttributes.addFlashAttribute("success", "Recommendations generated successfully!");
             return "redirect:/recommendations";
         } catch (Exception e) {
