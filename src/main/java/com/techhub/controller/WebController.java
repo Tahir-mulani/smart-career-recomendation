@@ -278,10 +278,16 @@ public class WebController {
         List<User> users = userService.findAll();
         List<Recommendation> recommendations = recommendationService.findAll();
         List<Result> results = resultService.findAll();
+        List<Assessment> assessments = assessmentService.findAll();
+        List<Question> questions = questionService.findAll();
+        List<Career> careers = careerService.findAll();
         
         model.addAttribute("users", users);
         model.addAttribute("recommendations", recommendations);
         model.addAttribute("results", results);
+        model.addAttribute("assessments", assessments);
+        model.addAttribute("questions", questions);
+        model.addAttribute("careers", careers);
         
         return "admin/analytics";
     }

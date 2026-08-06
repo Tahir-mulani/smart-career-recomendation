@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recommendation Management - Admin Dashboard</title>
+    <title>Recommendation Management - Smart Career Recommendation</title>
     <link rel="stylesheet" href="/resources/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -60,14 +60,14 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <% if (request.getAttribute("success") != null) { %>
-                <div class="admin-alert admin-alert-success">
-                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
-                </div>
-            <% } %>
             <% if (request.getAttribute("error") != null) { %>
                 <div class="admin-alert admin-alert-error">
                     <i class="fas fa-exclamation-circle"></i> <%= request.getAttribute("error") %>
+                </div>
+            <% } %>
+            <% if (request.getAttribute("success") != null) { %>
+                <div class="admin-alert admin-alert-success">
+                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
                 </div>
             <% } %>
 
@@ -82,24 +82,24 @@
                 </div>
                 <div class="admin-stat-card">
                     <div class="admin-stat-card-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3><%= ((List<Recommendation>) request.getAttribute("recommendations")).stream().filter(r -> r.getMatchScore() >= 80).count() %></h3>
+                    <p>High Matches</p>
+                </div>
+                <div class="admin-stat-card">
+                    <div class="admin-stat-card-icon orange">
                         <i class="fas fa-users"></i>
                     </div>
                     <h3><%= ((List<Recommendation>) request.getAttribute("recommendations")).stream().map(r -> r.getUserId()).distinct().count() %></h3>
                     <p>Users with Recommendations</p>
                 </div>
                 <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon orange">
+                    <div class="admin-stat-card-icon red">
                         <i class="fas fa-briefcase"></i>
                     </div>
                     <h3><%= ((List<Recommendation>) request.getAttribute("recommendations")).stream().map(r -> r.getCareerId()).distinct().count() %></h3>
                     <p>Careers Recommended</p>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon red">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3><%= ((List<Recommendation>) request.getAttribute("recommendations")).stream().mapToDouble(r -> r.getMatchScore()).average().orElse(0) %>%</h3>
-                    <p>Average Match Score</p>
                 </div>
             </div>
 
@@ -110,17 +110,24 @@
                     <div class="admin-table-actions">
                         <div class="admin-search-box">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="Search recommendations..." onkeyup="searchRecommendations()">
+                            <input type="text" placeholder="Search recommendations...">
                         </div>
+                        <select class="admin-filter-select">
+                            <option value="">All Match Levels</option>
+                            <option value="high">High Match (80%+)</option>
+                            <option value="medium">Medium Match (60-79%)</option>
+                            <option value="low">Low Match (<60%)</option>
+                        </select>
                     </div>
                 </div>
-                <table class="admin-table" id="recommendationsTable">
+                <table class="admin-table">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>User ID</th>
                             <th>Career ID</th>
                             <th>Match Score</th>
+                            <th>Match Level</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -133,19 +140,26 @@
                                     <td><%= recommendation.getId() %></td>
                                     <td><%= recommendation.getUserId() %></td>
                                     <td><%= recommendation.getCareerId() %></td>
+                                    <td><%= String.format("%.2f", recommendation.getMatchScore()) %>%</td>
                                     <td>
-                                        <div class="match-score"><%= String.format("%.1f", recommendation.getMatchScore()) %>%</div>
+                                        <% if (recommendation.getMatchScore() >= 80) { %>
+                                            <span class="admin-badge active">High Match</span>
+                                        <% } else if (recommendation.getMatchScore() >= 60) { %>
+                                            <span class="admin-badge" style="background: #ffc107; color: #000;">Medium Match</span>
+                                        <% } else { %>
+                                            <span class="admin-badge" style="background: #dc3545;">Low Match</span>
+                                        <% } %>
                                     </td>
                                     <td><span class="admin-badge active">Active</span></td>
                                     <td>
-                                        <button class="admin-action-btn view" onclick="viewRecommendation(<%= recommendation.getId() %>)"><i class="fas fa-eye"></i></button>
-                                        <button class="admin-action-btn delete" onclick="deleteRecommendation(<%= recommendation.getId() %>)"><i class="fas fa-trash"></i></button>
+                                        <button class="admin-action-btn view" title="View Details"><i class="fas fa-eye"></i></button>
+                                        <button class="admin-action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
                                     </td>
                                 </tr>
                             <% } %>
                         <% } else { %>
                             <tr>
-                                <td colspan="6" style="text-align: center;">No recommendations found</td>
+                                <td colspan="7" style="text-align: center;">No recommendations found.</td>
                             </tr>
                         <% } %>
                     </tbody>
@@ -157,38 +171,6 @@
     <script>
         function toggleSidebar() {
             document.querySelector('.admin-sidebar').classList.toggle('open');
-        }
-
-        function searchRecommendations() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById('recommendationsTable');
-            const tr = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < tr.length; i++) {
-                const td = tr[i].getElementsByTagName('td');
-                let found = false;
-                for (let j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        const txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                tr[i].style.display = found ? '' : 'none';
-            }
-        }
-
-        function viewRecommendation(id) {
-            window.location.href = '/admin/recommendations/' + id;
-        }
-
-        function deleteRecommendation(id) {
-            if (confirm('Are you sure you want to delete this recommendation?')) {
-                window.location.href = '/admin/recommendations/' + id + '/delete';
-            }
         }
     </script>
 </body>

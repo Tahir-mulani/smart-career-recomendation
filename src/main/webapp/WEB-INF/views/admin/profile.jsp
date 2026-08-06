@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Profile - Admin Dashboard</title>
+    <title>Admin Profile - Smart Career Recommendation</title>
     <link rel="stylesheet" href="/resources/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -59,38 +59,30 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <% if (request.getAttribute("success") != null) { %>
-                <div class="admin-alert admin-alert-success">
-                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
-                </div>
-            <% } %>
             <% if (request.getAttribute("error") != null) { %>
                 <div class="admin-alert admin-alert-error">
                     <i class="fas fa-exclamation-circle"></i> <%= request.getAttribute("error") %>
                 </div>
             <% } %>
+            <% if (request.getAttribute("success") != null) { %>
+                <div class="admin-alert admin-alert-success">
+                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
+                </div>
+            <% } %>
 
+            <!-- Profile Information -->
             <div class="admin-form">
-                <h3><i class="fas fa-user-edit"></i> Update Profile</h3>
+                <h3><i class="fas fa-user"></i> Profile Information</h3>
                 <form action="/api/admin/update-profile" method="post">
+                    <input type="hidden" name="userId" value="<%= ((User) request.getAttribute("admin")).getId() %>">
                     <div class="admin-form-row">
                         <div class="admin-form-group">
                             <label for="name">Full Name</label>
                             <input type="text" id="name" name="name" value="<%= ((User) request.getAttribute("admin")).getName() %>" required>
                         </div>
                         <div class="admin-form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" value="<%= ((User) request.getAttribute("admin")).getEmail() %>" readonly style="background: #f5f5f5;">
-                        </div>
-                    </div>
-                    <div class="admin-form-row">
-                        <div class="admin-form-group">
                             <label for="phoneNumber">Phone Number</label>
-                            <input type="tel" id="phoneNumber" name="phoneNumber" value="<%= ((User) request.getAttribute("admin")).getPhoneNumber() != null ? ((User) request.getAttribute("admin")).getPhoneNumber() : "" %>">
-                        </div>
-                        <div class="admin-form-group">
-                            <label for="role">Role</label>
-                            <input type="text" id="role" name="role" value="<%= ((User) request.getAttribute("admin")).getRole() %>" readonly style="background: #f5f5f5;">
+                            <input type="text" id="phoneNumber" name="phoneNumber" value="<%= ((User) request.getAttribute("admin")).getPhoneNumber() != null ? ((User) request.getAttribute("admin")).getPhoneNumber() : "" %>">
                         </div>
                     </div>
                     <div class="admin-form-actions">
@@ -101,14 +93,13 @@
                 </form>
             </div>
 
+            <!-- Change Password -->
             <div class="admin-form">
-                <h3><i class="fas fa-key"></i> Change Password</h3>
+                <h3><i class="fas fa-lock"></i> Change Password</h3>
                 <form action="/api/admin/change-password" method="post">
-                    <div class="admin-form-row">
-                        <div class="admin-form-group">
-                            <label for="currentPassword">Current Password</label>
-                            <input type="password" id="currentPassword" name="currentPassword" required>
-                        </div>
+                    <div class="admin-form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword" required>
                     </div>
                     <div class="admin-form-row">
                         <div class="admin-form-group">
@@ -128,31 +119,30 @@
                 </form>
             </div>
 
+            <!-- Account Information -->
             <div class="admin-table-container">
                 <div class="admin-table-header">
                     <h3><i class="fas fa-info-circle"></i> Account Information</h3>
                 </div>
                 <table class="admin-table">
-                    <tr>
-                        <th>Field</th>
-                        <th>Value</th>
-                    </tr>
-                    <tr>
-                        <td>User ID</td>
-                        <td><%= ((User) request.getAttribute("admin")).getId() %></td>
-                    </tr>
-                    <tr>
-                        <td>Registration Date</td>
-                        <td><%= ((User) request.getAttribute("admin")).getRegistrationDate() != null ? ((User) request.getAttribute("admin")).getRegistrationDate().toString() : "N/A" %></td>
-                    </tr>
-                    <tr>
-                        <td>Account Status</td>
-                        <td><span class="admin-badge active">Active</span></td>
-                    </tr>
-                    <tr>
-                        <td>Last Login</td>
-                        <td><%= java.time.LocalDateTime.now().toString() %></td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <th>Email</th>
+                            <td><%= ((User) request.getAttribute("admin")).getEmail() %></td>
+                        </tr>
+                        <tr>
+                            <th>Role</th>
+                            <td><span class="admin-badge admin">Administrator</span></td>
+                        </tr>
+                        <tr>
+                            <th>Account Status</th>
+                            <td><span class="admin-badge active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <th>Member Since</th>
+                            <td><%= ((User) request.getAttribute("admin")).getRegistrationDate() != null ? ((User) request.getAttribute("admin")).getRegistrationDate().toString() : "N/A" %></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>

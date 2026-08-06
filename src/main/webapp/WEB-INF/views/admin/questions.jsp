@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Question Management - Admin Dashboard</title>
+    <title>Manage Questions - Smart Career Recommendation</title>
     <link rel="stylesheet" href="/resources/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -60,77 +60,43 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <% if (request.getAttribute("success") != null) { %>
-                <div class="admin-alert admin-alert-success">
-                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
-                </div>
-            <% } %>
             <% if (request.getAttribute("error") != null) { %>
                 <div class="admin-alert admin-alert-error">
                     <i class="fas fa-exclamation-circle"></i> <%= request.getAttribute("error") %>
                 </div>
             <% } %>
+            <% if (request.getAttribute("success") != null) { %>
+                <div class="admin-alert admin-alert-success">
+                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
+                </div>
+            <% } %>
 
-            <!-- Stats Cards -->
-            <div class="admin-stats-grid">
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon blue">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <h3><%= ((List<Question>) request.getAttribute("questions")).size() %></h3>
-                    <p>Total Questions</p>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon green">
-                        <i class="fas fa-clipboard-list"></i>
-                    </div>
-                    <h3><%= ((List<Assessment>) request.getAttribute("assessments")).size() %></h3>
-                    <p>Assessments</p>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon orange">
-                        <i class="fas fa-layer-group"></i>
-                    </div>
-                    <h3><%= ((List<Question>) request.getAttribute("questions")).stream().map(q -> q.getSkillTag()).distinct().count() %></h3>
-                    <p>Skill Categories</p>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon red">
-                        <i class="fas fa-signal"></i>
-                    </div>
-                    <h3><%= ((List<Question>) request.getAttribute("questions")).stream().filter(q -> "Hard".equals(q.getDifficultyLevel())).count() %></h3>
-                    <p>Hard Questions</p>
-                </div>
-            </div>
-
-            <!-- Create Question Form -->
+            <!-- Add Question Form -->
             <div class="admin-form">
-                <h3><i class="fas fa-plus-circle"></i> Create New Question</h3>
+                <h3><i class="fas fa-plus-circle"></i> Add New Question</h3>
                 <form action="/api/admin/create-question" method="post">
-                    <div class="admin-form-row">
-                        <div class="admin-form-group">
-                            <label for="questionText">Question Text</label>
-                            <textarea id="questionText" name="questionText" required placeholder="Enter question text"></textarea>
-                        </div>
+                    <div class="admin-form-group">
+                        <label for="questionText">Question Text</label>
+                        <textarea id="questionText" name="questionText" rows="3" placeholder="Enter the question text" required></textarea>
                     </div>
                     <div class="admin-form-row">
                         <div class="admin-form-group">
                             <label for="optionA">Option A</label>
-                            <input type="text" id="optionA" name="optionA" required placeholder="Enter option A">
+                            <input type="text" id="optionA" name="optionA" placeholder="First option" required>
                         </div>
                         <div class="admin-form-group">
                             <label for="optionB">Option B</label>
-                            <input type="text" id="optionB" name="optionB" required placeholder="Enter option B">
+                            <input type="text" id="optionB" name="optionB" placeholder="Second option" required>
                         </div>
                     </div>
                     <div class="admin-form-row">
                         <div class="admin-form-group">
                             <label for="optionC">Option C</label>
-                            <input type="text" id="optionC" name="optionC" required placeholder="Enter option C">
+                            <input type="text" id="optionC" name="optionC" placeholder="Third option" required>
                         </div>
                         <div class="admin-form-group">
                             <label for="optionD">Option D</label>
-                            <input type="text" id="optionD" name="optionD" required placeholder="Enter option D">
+                            <input type="text" id="optionD" name="optionD" placeholder="Fourth option" required>
                         </div>
                     </div>
                     <div class="admin-form-row">
@@ -157,14 +123,14 @@
                     <div class="admin-form-row">
                         <div class="admin-form-group">
                             <label for="skillTag">Skill Tag</label>
-                            <input type="text" id="skillTag" name="skillTag" required placeholder="e.g., Java, Python, SQL">
+                            <input type="text" id="skillTag" name="skillTag" placeholder="e.g., Java, Python" required>
                         </div>
                         <div class="admin-form-group">
                             <label for="assessmentId">Assessment</label>
                             <select id="assessmentId" name="assessmentId" required>
                                 <option value="">Select assessment</option>
                                 <% List<Assessment> assessments = (List<Assessment>) request.getAttribute("assessments"); %>
-                                <% if (assessments != null) { %>
+                                <% if (assessments != null && !assessments.isEmpty()) { %>
                                     <% for (Assessment assessment : assessments) { %>
                                         <option value="<%= assessment.getId() %>"><%= assessment.getTestName() %></option>
                                     <% } %>
@@ -174,7 +140,7 @@
                     </div>
                     <div class="admin-form-actions">
                         <button type="submit" class="admin-btn admin-btn-primary">
-                            <i class="fas fa-plus"></i> Create Question
+                            <i class="fas fa-plus"></i> Add Question
                         </button>
                         <button type="reset" class="admin-btn admin-btn-secondary">
                             <i class="fas fa-undo"></i> Reset
@@ -186,29 +152,23 @@
             <!-- Questions Table -->
             <div class="admin-table-container">
                 <div class="admin-table-header">
-                    <h3><i class="fas fa-question-circle"></i> All Questions</h3>
+                    <h3><i class="fas fa-question-circle"></i> Existing Questions</h3>
                     <div class="admin-table-actions">
                         <div class="admin-search-box">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="Search questions..." onkeyup="searchQuestions()">
+                            <input type="text" placeholder="Search questions...">
                         </div>
-                        <select class="admin-form-group" style="width: auto; padding: 10px; border: 2px solid #e8e8e8; border-radius: 8px;" onchange="filterByDifficulty(this.value)">
-                            <option value="all">All Difficulties</option>
-                            <option value="Easy">Easy</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Hard">Hard</option>
-                        </select>
                     </div>
                 </div>
-                <table class="admin-table" id="questionsTable">
+                <table class="admin-table">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Question</th>
-                            <th>Correct Answer</th>
-                            <th>Difficulty</th>
                             <th>Skill Tag</th>
+                            <th>Difficulty</th>
                             <th>Assessment</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -216,23 +176,31 @@
                         <% List<Question> questions = (List<Question>) request.getAttribute("questions"); %>
                         <% if (questions != null && !questions.isEmpty()) { %>
                             <% for (Question question : questions) { %>
-                                <tr data-difficulty="<%= question.getDifficultyLevel() %>">
+                                <tr>
                                     <td><%= question.getId() %></td>
-                                    <td><%= question.getQuestionText().length() > 50 ? question.getQuestionText().substring(0, 50) + "..." : question.getQuestionText() %></td>
-                                    <td><span class="admin-badge admin-badge-success"><%= question.getCorrectAnswer() %></span></td>
-                                    <td><span class="admin-badge <%= "Hard".equals(question.getDifficultyLevel()) ? "admin-badge-danger" : "Easy".equals(question.getDifficultyLevel()) ? "admin-badge-success" : "admin-badge-warning" %>"><%= question.getDifficultyLevel() %></span></td>
+                                    <td><%= question.getQuestionText().substring(0, Math.min(50, question.getQuestionText().length())) %>...</td>
                                     <td><%= question.getSkillTag() %></td>
-                                    <td><%= question.getAssessmentId() %></td>
                                     <td>
-                                        <button class="admin-action-btn view" onclick="viewQuestion(<%= question.getId() %>)"><i class="fas fa-eye"></i></button>
-                                        <button class="admin-action-btn edit" onclick="editQuestion(<%= question.getId() %>)"><i class="fas fa-edit"></i></button>
-                                        <button class="admin-action-btn delete" onclick="deleteQuestion(<%= question.getId() %>)"><i class="fas fa-trash"></i></button>
+                                        <% if ("Easy".equals(question.getDifficultyLevel())) { %>
+                                            <span class="admin-badge" style="background: #28a745;">Easy</span>
+                                        <% } else if ("Medium".equals(question.getDifficultyLevel())) { %>
+                                            <span class="admin-badge" style="background: #ffc107; color: #000;">Medium</span>
+                                        <% } else { %>
+                                            <span class="admin-badge" style="background: #dc3545;">Hard</span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= question.getAssessmentId() %></td>
+                                    <td><span class="admin-badge active">Active</span></td>
+                                    <td>
+                                        <button class="admin-action-btn view" title="View"><i class="fas fa-eye"></i></button>
+                                        <button class="admin-action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="admin-action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
                                     </td>
                                 </tr>
                             <% } %>
                         <% } else { %>
                             <tr>
-                                <td colspan="7" style="text-align: center;">No questions found</td>
+                                <td colspan="7" style="text-align: center;">No questions added yet.</td>
                             </tr>
                         <% } %>
                     </tbody>
@@ -244,56 +212,6 @@
     <script>
         function toggleSidebar() {
             document.querySelector('.admin-sidebar').classList.toggle('open');
-        }
-
-        function searchQuestions() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById('questionsTable');
-            const tr = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < tr.length; i++) {
-                const td = tr[i].getElementsByTagName('td');
-                let found = false;
-                for (let j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        const txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                tr[i].style.display = found ? '' : 'none';
-            }
-        }
-
-        function filterByDifficulty(difficulty) {
-            const table = document.getElementById('questionsTable');
-            const tr = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < tr.length; i++) {
-                const rowDifficulty = tr[i].getAttribute('data-difficulty');
-                if (difficulty === 'all' || rowDifficulty === difficulty) {
-                    tr[i].style.display = '';
-                } else {
-                    tr[i].style.display = 'none';
-                }
-            }
-        }
-
-        function viewQuestion(id) {
-            window.location.href = '/admin/questions/' + id;
-        }
-
-        function editQuestion(id) {
-            window.location.href = '/admin/questions/' + id + '/edit';
-        }
-
-        function deleteQuestion(id) {
-            if (confirm('Are you sure you want to delete this question?')) {
-                window.location.href = '/admin/questions/' + id + '/delete';
-            }
         }
     </script>
 </body>

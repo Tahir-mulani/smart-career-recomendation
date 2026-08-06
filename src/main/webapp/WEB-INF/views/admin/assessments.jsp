@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assessment Management - Admin Dashboard</title>
+    <title>Manage Assessments - Smart Career Recommendation</title>
     <link rel="stylesheet" href="/resources/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -60,70 +60,40 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <% if (request.getAttribute("success") != null) { %>
-                <div class="admin-alert admin-alert-success">
-                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
-                </div>
-            <% } %>
             <% if (request.getAttribute("error") != null) { %>
                 <div class="admin-alert admin-alert-error">
                     <i class="fas fa-exclamation-circle"></i> <%= request.getAttribute("error") %>
                 </div>
             <% } %>
+            <% if (request.getAttribute("success") != null) { %>
+                <div class="admin-alert admin-alert-success">
+                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
+                </div>
+            <% } %>
 
-            <!-- Stats Cards -->
-            <div class="admin-stats-grid">
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon blue">
-                        <i class="fas fa-clipboard-list"></i>
-                    </div>
-                    <h3><%= ((List<Assessment>) request.getAttribute("assessments")).size() %></h3>
-                    <p>Total Assessments</p>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon green">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3><%= ((List<Assessment>) request.getAttribute("assessments")).size() %></h3>
-                    <p>Active Assessments</p>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon orange">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <h3><%= ((List<Question>) request.getAttribute("questions")).size() %></h3>
-                    <p>Total Questions</p>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon red">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <h3><%= ((List<Assessment>) request.getAttribute("assessments")).stream().mapToInt(Assessment::getTotalMarks).sum() %></h3>
-                    <p>Total Marks</p>
-                </div>
-            </div>
-
-            <!-- Create Assessment Form -->
+            <!-- Add Assessment Form -->
             <div class="admin-form">
-                <h3><i class="fas fa-plus-circle"></i> Create New Assessment</h3>
+                <h3><i class="fas fa-plus-circle"></i> Add New Assessment</h3>
                 <form action="/api/admin/create-assessment" method="post">
                     <div class="admin-form-row">
                         <div class="admin-form-group">
                             <label for="testName">Test Name</label>
-                            <input type="text" id="testName" name="testName" required placeholder="Enter test name">
+                            <input type="text" id="testName" name="testName" placeholder="e.g., Java Programming Assessment" required>
                         </div>
                         <div class="admin-form-group">
                             <label for="duration">Duration (minutes)</label>
-                            <input type="number" id="duration" name="duration" required placeholder="Enter duration" min="1">
+                            <input type="number" id="duration" name="duration" min="1" placeholder="e.g., 30" required>
                         </div>
+                    </div>
+                    <div class="admin-form-row">
                         <div class="admin-form-group">
                             <label for="totalMarks">Total Marks</label>
-                            <input type="number" id="totalMarks" name="totalMarks" required placeholder="Enter total marks" min="1">
+                            <input type="number" id="totalMarks" name="totalMarks" min="1" placeholder="e.g., 100" required>
                         </div>
                     </div>
                     <div class="admin-form-actions">
                         <button type="submit" class="admin-btn admin-btn-primary">
-                            <i class="fas fa-plus"></i> Create Assessment
+                            <i class="fas fa-plus"></i> Add Assessment
                         </button>
                         <button type="reset" class="admin-btn admin-btn-secondary">
                             <i class="fas fa-undo"></i> Reset
@@ -135,15 +105,15 @@
             <!-- Assessments Table -->
             <div class="admin-table-container">
                 <div class="admin-table-header">
-                    <h3><i class="fas fa-clipboard-list"></i> All Assessments</h3>
+                    <h3><i class="fas fa-clipboard-list"></i> Existing Assessments</h3>
                     <div class="admin-table-actions">
                         <div class="admin-search-box">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="Search assessments..." onkeyup="searchAssessments()">
+                            <input type="text" placeholder="Search assessments...">
                         </div>
                     </div>
                 </div>
-                <table class="admin-table" id="assessmentsTable">
+                <table class="admin-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -167,15 +137,15 @@
                                     <td>0</td>
                                     <td><span class="admin-badge active">Active</span></td>
                                     <td>
-                                        <button class="admin-action-btn view" onclick="viewAssessment(<%= assessment.getId() %>)"><i class="fas fa-eye"></i></button>
-                                        <button class="admin-action-btn edit" onclick="editAssessment(<%= assessment.getId() %>)"><i class="fas fa-edit"></i></button>
-                                        <button class="admin-action-btn delete" onclick="deleteAssessment(<%= assessment.getId() %>)"><i class="fas fa-trash"></i></button>
+                                        <button class="admin-action-btn view" title="View"><i class="fas fa-eye"></i></button>
+                                        <button class="admin-action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="admin-action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
                                     </td>
                                 </tr>
                             <% } %>
                         <% } else { %>
                             <tr>
-                                <td colspan="7" style="text-align: center;">No assessments found</td>
+                                <td colspan="7" style="text-align: center;">No assessments created yet.</td>
                             </tr>
                         <% } %>
                     </tbody>
@@ -187,42 +157,6 @@
     <script>
         function toggleSidebar() {
             document.querySelector('.admin-sidebar').classList.toggle('open');
-        }
-
-        function searchAssessments() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById('assessmentsTable');
-            const tr = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < tr.length; i++) {
-                const td = tr[i].getElementsByTagName('td');
-                let found = false;
-                for (let j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        const txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                tr[i].style.display = found ? '' : 'none';
-            }
-        }
-
-        function viewAssessment(id) {
-            window.location.href = '/admin/assessments/' + id;
-        }
-
-        function editAssessment(id) {
-            window.location.href = '/admin/assessments/' + id + '/edit';
-        }
-
-        function deleteAssessment(id) {
-            if (confirm('Are you sure you want to delete this assessment? All associated questions will also be deleted.')) {
-                window.location.href = '/admin/assessments/' + id + '/delete';
-            }
         }
     </script>
 </body>

@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Career Management - Admin Dashboard</title>
+    <title>Manage Careers - Smart Career Recommendation</title>
     <link rel="stylesheet" href="/resources/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -60,78 +60,42 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <% if (request.getAttribute("success") != null) { %>
-                <div class="admin-alert admin-alert-success">
-                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
-                </div>
-            <% } %>
             <% if (request.getAttribute("error") != null) { %>
                 <div class="admin-alert admin-alert-error">
                     <i class="fas fa-exclamation-circle"></i> <%= request.getAttribute("error") %>
                 </div>
             <% } %>
+            <% if (request.getAttribute("success") != null) { %>
+                <div class="admin-alert admin-alert-success">
+                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
+                </div>
+            <% } %>
 
-            <!-- Stats Cards -->
-            <div class="admin-stats-grid">
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon blue">
-                        <i class="fas fa-briefcase"></i>
-                    </div>
-                    <h3><%= ((List<Career>) request.getAttribute("careers")).size() %></h3>
-                    <p>Total Careers</p>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon green">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <h3><%= ((List<Recommendation>) request.getAttribute("recommendations")).size() %></h3>
-                    <p>Total Recommendations</p>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon orange">
-                        <i class="fas fa-layer-group"></i>
-                    </div>
-                    <h3><%= ((List<Career>) request.getAttribute("careers")).stream().mapToInt(c -> c.getRequiredSkills() != null ? c.getRequiredSkills().split(",").length : 0).sum() %></h3>
-                    <p>Total Skills</p>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon red">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <h3><%= ((List<Career>) request.getAttribute("careers")).stream().map(c -> c.getQualification()).distinct().count() %></h3>
-                    <p>Qualifications</p>
-                </div>
-            </div>
-
-            <!-- Create Career Form -->
+            <!-- Add Career Form -->
             <div class="admin-form">
-                <h3><i class="fas fa-plus-circle"></i> Create New Career</h3>
+                <h3><i class="fas fa-plus-circle"></i> Add New Career</h3>
                 <form action="/api/admin/create-career" method="post">
                     <div class="admin-form-row">
                         <div class="admin-form-group">
                             <label for="careerName">Career Name</label>
-                            <input type="text" id="careerName" name="careerName" required placeholder="Enter career name">
+                            <input type="text" id="careerName" name="careerName" placeholder="e.g., Software Developer" required>
                         </div>
                         <div class="admin-form-group">
                             <label for="qualification">Qualification</label>
-                            <input type="text" id="qualification" name="qualification" required placeholder="e.g., Bachelor's in Computer Science">
+                            <input type="text" id="qualification" name="qualification" placeholder="e.g., Bachelor's in Computer Science" required>
                         </div>
                     </div>
-                    <div class="admin-form-row">
-                        <div class="admin-form-group">
-                            <label for="requiredSkills">Required Skills</label>
-                            <input type="text" id="requiredSkills" name="requiredSkills" required placeholder="e.g., Java, Python, SQL (comma-separated)">
-                        </div>
+                    <div class="admin-form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="3" placeholder="Brief description of the career role" required></textarea>
                     </div>
-                    <div class="admin-form-row">
-                        <div class="admin-form-group">
-                            <label for="description">Description</label>
-                            <textarea id="description" name="description" required placeholder="Enter career description"></textarea>
-                        </div>
+                    <div class="admin-form-group">
+                        <label for="requiredSkills">Required Skills (comma-separated)</label>
+                        <input type="text" id="requiredSkills" name="requiredSkills" placeholder="e.g., Java, Python, SQL" required>
                     </div>
                     <div class="admin-form-actions">
                         <button type="submit" class="admin-btn admin-btn-primary">
-                            <i class="fas fa-plus"></i> Create Career
+                            <i class="fas fa-plus"></i> Add Career
                         </button>
                         <button type="reset" class="admin-btn admin-btn-secondary">
                             <i class="fas fa-undo"></i> Reset
@@ -143,15 +107,15 @@
             <!-- Careers Table -->
             <div class="admin-table-container">
                 <div class="admin-table-header">
-                    <h3><i class="fas fa-briefcase"></i> All Careers</h3>
+                    <h3><i class="fas fa-briefcase"></i> Existing Careers</h3>
                     <div class="admin-table-actions">
                         <div class="admin-search-box">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="Search careers..." onkeyup="searchCareers()">
+                            <input type="text" placeholder="Search careers...">
                         </div>
                     </div>
                 </div>
-                <table class="admin-table" id="careersTable">
+                <table class="admin-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -173,15 +137,15 @@
                                     <td><%= career.getQualification() %></td>
                                     <td><span class="admin-badge active">Active</span></td>
                                     <td>
-                                        <button class="admin-action-btn view" onclick="viewCareer(<%= career.getId() %>)"><i class="fas fa-eye"></i></button>
-                                        <button class="admin-action-btn edit" onclick="editCareer(<%= career.getId() %>)"><i class="fas fa-edit"></i></button>
-                                        <button class="admin-action-btn delete" onclick="deleteCareer(<%= career.getId() %>)"><i class="fas fa-trash"></i></button>
+                                        <button class="admin-action-btn view" title="View"><i class="fas fa-eye"></i></button>
+                                        <button class="admin-action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="admin-action-btn delete" title="Delete"><i class="fas fa-trash"></i></button>
                                     </td>
                                 </tr>
                             <% } %>
                         <% } else { %>
                             <tr>
-                                <td colspan="6" style="text-align: center;">No careers found</td>
+                                <td colspan="6" style="text-align: center;">No careers added yet.</td>
                             </tr>
                         <% } %>
                     </tbody>
@@ -193,42 +157,6 @@
     <script>
         function toggleSidebar() {
             document.querySelector('.admin-sidebar').classList.toggle('open');
-        }
-
-        function searchCareers() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById('careersTable');
-            const tr = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < tr.length; i++) {
-                const td = tr[i].getElementsByTagName('td');
-                let found = false;
-                for (let j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        const txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                tr[i].style.display = found ? '' : 'none';
-            }
-        }
-
-        function viewCareer(id) {
-            window.location.href = '/admin/careers/' + id;
-        }
-
-        function editCareer(id) {
-            window.location.href = '/admin/careers/' + id + '/edit';
-        }
-
-        function deleteCareer(id) {
-            if (confirm('Are you sure you want to delete this career?')) {
-                window.location.href = '/admin/careers/' + id + '/delete';
-            }
         }
     </script>
 </body>

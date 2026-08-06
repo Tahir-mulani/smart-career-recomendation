@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics - Admin Dashboard</title>
+    <title>Analytics - Smart Career Recommendation</title>
     <link rel="stylesheet" href="/resources/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -43,7 +43,7 @@
                 <button class="admin-menu-toggle" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1>Reports & Analytics</h1>
+                <h1>Analytics & Reports</h1>
             </div>
             <div class="admin-header-right">
                 <div class="admin-user-info">
@@ -69,101 +69,114 @@
                     </div>
                     <h3><%= ((List<User>) request.getAttribute("users")).size() %></h3>
                     <p>Total Users</p>
-                    <span class="stat-change positive"><i class="fas fa-arrow-up"></i> +12% this month</span>
                 </div>
                 <div class="admin-stat-card">
                     <div class="admin-stat-card-icon green">
-                        <i class="fas fa-clipboard-check"></i>
+                        <i class="fas fa-clipboard-list"></i>
                     </div>
-                    <h3><%= ((List<Result>) request.getAttribute("results")).size() %></h3>
-                    <p>Assessments Completed</p>
-                    <span class="stat-change positive"><i class="fas fa-arrow-up"></i> +8% this month</span>
+                    <h3><%= ((List<Assessment>) request.getAttribute("assessments")).size() %></h3>
+                    <p>Total Assessments</p>
                 </div>
                 <div class="admin-stat-card">
                     <div class="admin-stat-card-icon orange">
-                        <i class="fas fa-star"></i>
+                        <i class="fas fa-question-circle"></i>
                     </div>
-                    <h3><%= ((List<Recommendation>) request.getAttribute("recommendations")).size() %></h3>
-                    <p>Recommendations Generated</p>
-                    <span class="stat-change positive"><i class="fas fa-arrow-up"></i> +15% this month</span>
+                    <h3><%= ((List<Question>) request.getAttribute("questions")).size() %></h3>
+                    <p>Total Questions</p>
                 </div>
                 <div class="admin-stat-card">
                     <div class="admin-stat-card-icon red">
-                        <i class="fas fa-chart-line"></i>
+                        <i class="fas fa-briefcase"></i>
                     </div>
-                    <h3>78%</h3>
-                    <p>Average Score</p>
-                    <span class="stat-change positive"><i class="fas fa-arrow-up"></i> +5% this month</span>
+                    <h3><%= ((List<Career>) request.getAttribute("careers")).size() %></h3>
+                    <p>Total Careers</p>
                 </div>
             </div>
 
             <!-- Charts Section -->
-            <div class="admin-charts-section">
+            <div class="admin-charts-grid">
+                <!-- User Growth Chart -->
                 <div class="admin-chart-card">
-                    <h3><i class="fas fa-chart-line"></i> User Growth Over Time</h3>
-                    <div class="admin-chart-container">
+                    <div class="admin-chart-header">
+                        <h3><i class="fas fa-chart-line"></i> User Growth</h3>
+                    </div>
+                    <div class="admin-chart-body">
                         <canvas id="userGrowthChart"></canvas>
                     </div>
                 </div>
+
+                <!-- Assessment Performance Chart -->
                 <div class="admin-chart-card">
-                    <h3><i class="fas fa-chart-bar"></i> Assessment Performance by Month</h3>
-                    <div class="admin-chart-container">
+                    <div class="admin-chart-header">
+                        <h3><i class="fas fa-chart-bar"></i> Assessment Performance</h3>
+                    </div>
+                    <div class="admin-chart-body">
                         <canvas id="assessmentPerformanceChart"></canvas>
                     </div>
                 </div>
-            </div>
 
-            <div class="admin-charts-section">
+                <!-- Career Recommendations Chart -->
                 <div class="admin-chart-card">
-                    <h3><i class="fas fa-chart-pie"></i> Popular Career Recommendations</h3>
-                    <div class="admin-chart-container">
+                    <div class="admin-chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> Popular Career Recommendations</h3>
+                    </div>
+                    <div class="admin-chart-body">
                         <canvas id="careerRecommendationsChart"></canvas>
                     </div>
                 </div>
+
+                <!-- User Activity Chart -->
                 <div class="admin-chart-card">
-                    <h3><i class="fas fa-chart-area"></i> Monthly Activity</h3>
-                    <div class="admin-chart-container">
+                    <div class="admin-chart-header">
+                        <h3><i class="fas fa-chart-area"></i> Monthly Activity</h3>
+                    </div>
+                    <div class="admin-chart-body">
                         <canvas id="monthlyActivityChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="admin-charts-section">
-                <div class="admin-chart-card" style="grid-column: 1 / -1;">
-                    <h3><i class="fas fa-chart-bar"></i> User Statistics by Skill Category</h3>
-                    <div class="admin-chart-container">
-                        <canvas id="skillStatsChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- System Health -->
+            <!-- System Statistics -->
             <div class="admin-table-container">
                 <div class="admin-table-header">
-                    <h3><i class="fas fa-heartbeat"></i> System Health</h3>
+                    <h3><i class="fas fa-server"></i> System Statistics</h3>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                    <div class="card">
-                        <h4>Database Status</h4>
-                        <p><span class="admin-badge active">Healthy</span></p>
-                        <small>Last backup: 2 hours ago</small>
-                    </div>
-                    <div class="card">
-                        <h4>Server Status</h4>
-                        <p><span class="admin-badge active">Running</span></p>
-                        <small>Uptime: 99.9%</small>
-                    </div>
-                    <div class="card">
-                        <h4>Active Sessions</h4>
-                        <p>24</p>
-                        <small>Peak: 45</small>
-                    </div>
-                    <div class="card">
-                        <h4>Memory Usage</h4>
-                        <p>2.4 GB / 8 GB</p>
-                        <small>30% utilized</small>
-                    </div>
-                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Database Records</td>
+                            <td><%= ((List<User>) request.getAttribute("users")).size() + ((List<Assessment>) request.getAttribute("assessments")).size() + ((List<Question>) request.getAttribute("questions")).size() + ((List<Career>) request.getAttribute("careers")).size() %></td>
+                            <td><span class="admin-badge active">Healthy</span></td>
+                        </tr>
+                        <tr>
+                            <td>Active Sessions</td>
+                            <td>1</td>
+                            <td><span class="admin-badge active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Registered Users</td>
+                            <td><%= ((List<User>) request.getAttribute("users")).size() %></td>
+                            <td><span class="admin-badge active">Growing</span></td>
+                        </tr>
+                        <tr>
+                            <td>Assessments Completed</td>
+                            <td><%= ((List<com.techhub.entity.Result>) request.getAttribute("results")).size() %></td>
+                            <td><span class="admin-badge active">Tracking</span></td>
+                        </tr>
+                        <tr>
+                            <td>System Health</td>
+                            <td>98%</td>
+                            <td><span class="admin-badge active">Excellent</span></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </main>
@@ -178,27 +191,21 @@
         new Chart(userGrowthCtx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                 datasets: [{
                     label: 'New Users',
-                    data: [12, 19, 25, 32, 45, 52, 68, 85],
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    data: [5, 12, 19, 25, 32, 40],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
                     fill: true,
                     tension: 0.4
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
                     }
                 }
             }
@@ -209,23 +216,24 @@
         new Chart(assessmentPerfCtx, {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: ['Java', 'Python', 'SQL', 'React', 'JavaScript'],
                 datasets: [{
-                    label: 'Completed Assessments',
-                    data: [45, 52, 68, 75, 82, 95],
-                    backgroundColor: '#667eea'
-                }, {
                     label: 'Average Score',
-                    data: [72, 75, 78, 80, 82, 85],
-                    backgroundColor: '#764ba2'
+                    data: [75, 82, 68, 79, 71],
+                    backgroundColor: [
+                        '#3498db',
+                        '#2ecc71',
+                        '#f39c12',
+                        '#e74c3c',
+                        '#9b59b6'
+                    ]
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        display: false
                     }
                 }
             }
@@ -236,15 +244,19 @@
         new Chart(careerRecCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Software Developer', 'Data Scientist', 'Product Manager', 'UX Designer', 'DevOps Engineer'],
+                labels: ['Software Developer', 'Data Analyst', 'Web Developer', 'DevOps Engineer'],
                 datasets: [{
-                    data: [35, 25, 20, 12, 8],
-                    backgroundColor: ['#667eea', '#764ba2', '#28a745', '#ffc107', '#dc3545']
+                    data: [35, 25, 20, 20],
+                    backgroundColor: [
+                        '#3498db',
+                        '#2ecc71',
+                        '#f39c12',
+                        '#e74c3c'
+                    ]
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         position: 'bottom'
@@ -260,57 +272,19 @@
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                 datasets: [{
-                    label: 'Logins',
-                    data: [120, 150, 180, 210, 245, 280],
-                    borderColor: '#28a745',
-                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }, {
                     label: 'Assessments Taken',
-                    data: [45, 52, 68, 75, 82, 95],
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    data: [15, 28, 35, 42, 55, 68],
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
                     fill: true,
                     tension: 0.4
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-
-        // Skill Stats Chart
-        const skillStatsCtx = document.getElementById('skillStatsChart').getContext('2d');
-        new Chart(skillStatsCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Java', 'Python', 'JavaScript', 'SQL', 'React', 'Node.js', 'AWS', 'DevOps'],
-                datasets: [{
-                    label: 'Users with Skill',
-                    data: [85, 72, 68, 55, 48, 42, 35, 28],
-                    backgroundColor: [
-                        '#667eea', '#764ba2', '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#fd7e14', '#6c757d'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
                     }
                 }
             }

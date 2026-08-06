@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management - Admin Dashboard</title>
+    <title>User Management - Smart Career Recommendation</title>
     <link rel="stylesheet" href="/resources/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -60,14 +60,14 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <% if (request.getAttribute("success") != null) { %>
-                <div class="admin-alert admin-alert-success">
-                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
-                </div>
-            <% } %>
             <% if (request.getAttribute("error") != null) { %>
                 <div class="admin-alert admin-alert-error">
                     <i class="fas fa-exclamation-circle"></i> <%= request.getAttribute("error") %>
+                </div>
+            <% } %>
+            <% if (request.getAttribute("success") != null) { %>
+                <div class="admin-alert admin-alert-success">
+                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
                 </div>
             <% } %>
 
@@ -84,22 +84,22 @@
                     <div class="admin-stat-card-icon green">
                         <i class="fas fa-user-check"></i>
                     </div>
+                    <h3><%= ((List<User>) request.getAttribute("users")).stream().filter(u -> "USER".equals(u.getRole())).count() %></h3>
+                    <p>Regular Users</p>
+                </div>
+                <div class="admin-stat-card">
+                    <div class="admin-stat-card-icon orange">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
                     <h3><%= ((List<User>) request.getAttribute("users")).stream().filter(u -> "ADMIN".equals(u.getRole())).count() %></h3>
                     <p>Admin Users</p>
                 </div>
                 <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon orange">
+                    <div class="admin-stat-card-icon red">
                         <i class="fas fa-user-clock"></i>
                     </div>
-                    <h3><%= ((List<User>) request.getAttribute("users")).stream().filter(u -> u.getRegistrationDate() != null && u.getRegistrationDate().isAfter(java.time.LocalDate.now().minusDays(7))).count() %></h3>
-                    <p>New This Week</p>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-card-icon red">
-                        <i class="fas fa-user-times"></i>
-                    </div>
-                    <h3>0</h3>
-                    <p>Inactive Users</p>
+                    <h3><%= ((List<User>) request.getAttribute("users")).stream().filter(u -> u.getRegistrationDate() != null && u.getRegistrationDate().toString().startsWith("2024")).count() %></h3>
+                    <p>New This Year</p>
                 </div>
             </div>
 
@@ -110,16 +110,16 @@
                     <div class="admin-table-actions">
                         <div class="admin-search-box">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="Search users..." onkeyup="searchUsers()">
+                            <input type="text" placeholder="Search users...">
                         </div>
-                        <select class="admin-form-group" style="width: auto; padding: 10px; border: 2px solid #e8e8e8; border-radius: 8px;" onchange="filterUsers(this.value)">
-                            <option value="all">All Roles</option>
+                        <select class="admin-filter-select">
+                            <option value="">All Roles</option>
                             <option value="USER">Users</option>
                             <option value="ADMIN">Admins</option>
                         </select>
                     </div>
                 </div>
-                <table class="admin-table" id="usersTable">
+                <table class="admin-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -136,26 +136,30 @@
                         <% List<User> users = (List<User>) request.getAttribute("users"); %>
                         <% if (users != null && !users.isEmpty()) { %>
                             <% for (User user : users) { %>
-                                <tr data-role="<%= user.getRole() %>">
+                                <tr>
                                     <td><%= user.getId() %></td>
                                     <td><%= user.getName() %></td>
                                     <td><%= user.getEmail() %></td>
                                     <td><%= user.getPhoneNumber() != null ? user.getPhoneNumber() : "N/A" %></td>
-                                    <td><span class="admin-badge <%= "ADMIN".equals(user.getRole()) ? "admin" : "user" %>"><%= user.getRole() %></span></td>
+                                    <td>
+                                        <span class="admin-badge <%= "ADMIN".equals(user.getRole()) ? "admin" : "user" %>">
+                                            <%= user.getRole() %>
+                                        </span>
+                                    </td>
                                     <td><%= user.getRegistrationDate() != null ? user.getRegistrationDate().toString() : "N/A" %></td>
                                     <td><span class="admin-badge active">Active</span></td>
                                     <td>
-                                        <button class="admin-action-btn view" onclick="viewUser(<%= user.getId() %>)"><i class="fas fa-eye"></i></button>
-                                        <button class="admin-action-btn edit" onclick="editUser(<%= user.getId() %>)"><i class="fas fa-edit"></i></button>
+                                        <button class="admin-action-btn view" title="View" onclick="viewUser(<%= user.getId() %>)"><i class="fas fa-eye"></i></button>
+                                        <button class="admin-action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
                                         <% if (!"ADMIN".equals(user.getRole())) { %>
-                                            <button class="admin-action-btn delete" onclick="deleteUser(<%= user.getId() %>)"><i class="fas fa-trash"></i></button>
+                                            <button class="admin-action-btn delete" title="Delete" onclick="deleteUser(<%= user.getId() %>)"><i class="fas fa-trash"></i></button>
                                         <% } %>
                                     </td>
                                 </tr>
                             <% } %>
                         <% } else { %>
                             <tr>
-                                <td colspan="8" style="text-align: center;">No users found</td>
+                                <td colspan="8" style="text-align: center;">No users found.</td>
                             </tr>
                         <% } %>
                     </tbody>
@@ -169,53 +173,17 @@
             document.querySelector('.admin-sidebar').classList.toggle('open');
         }
 
-        function searchUsers() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById('usersTable');
-            const tr = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < tr.length; i++) {
-                const td = tr[i].getElementsByTagName('td');
-                let found = false;
-                for (let j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        const txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                tr[i].style.display = found ? '' : 'none';
-            }
-        }
-
-        function filterUsers(role) {
-            const table = document.getElementById('usersTable');
-            const tr = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < tr.length; i++) {
-                const rowRole = tr[i].getAttribute('data-role');
-                if (role === 'all' || rowRole === role) {
-                    tr[i].style.display = '';
-                } else {
-                    tr[i].style.display = 'none';
-                }
-            }
-        }
-
         function viewUser(userId) {
             window.location.href = '/admin/users/' + userId;
         }
 
-        function editUser(userId) {
-            window.location.href = '/admin/users/' + userId + '/edit';
-        }
-
         function deleteUser(userId) {
             if (confirm('Are you sure you want to delete this user?')) {
-                window.location.href = '/admin/users/' + userId + '/delete';
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/api/admin/users/' + userId + '/delete';
+                document.body.appendChild(form);
+                form.submit();
             }
         }
     </script>
