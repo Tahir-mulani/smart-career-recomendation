@@ -5,11 +5,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - Smart Career Recommendation</title>
+    <title>My Profile - Smart Career Recommendation</title>
     <link rel="stylesheet" href="/resources/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="admin-body">
+    <% User user = (User) request.getAttribute("user"); %>
     <!-- Sidebar -->
     <aside class="admin-sidebar">
         <div class="admin-sidebar-header">
@@ -25,7 +26,7 @@
             </ul>
         </nav>
         <div class="admin-sidebar-footer">
-            <p>&copy; 2024 Smart Career System</p>
+            <p>&copy; 2026 Smart Career System</p>
         </div>
     </aside>
 
@@ -37,14 +38,16 @@
                 <button class="admin-menu-toggle" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1>My Profile</h1>
+                <h1>User Profile</h1>
             </div>
             <div class="admin-header-right">
                 <div class="admin-user-info">
-                    <div class="admin-user-avatar"><%= ((User) request.getAttribute("user")).getName().charAt(0) %></div>
+                    <div class="admin-user-avatar">
+                        <%= (user != null && user.getName() != null && !user.getName().isEmpty()) ? Character.toUpperCase(user.getName().charAt(0)) : 'U' %>
+                    </div>
                     <div>
-                        <div class="admin-user-name"><%= ((User) request.getAttribute("user")).getName() %></div>
-                        <div class="admin-user-role">User</div>
+                        <div class="admin-user-name"><%= (user != null && user.getName() != null) ? user.getName() : "User" %></div>
+                        <div class="admin-user-role"><%= (user != null && user.getEmail() != null) ? user.getEmail() : "" %></div>
                     </div>
                 </div>
                 <a href="/logout" class="admin-logout-btn">
@@ -55,91 +58,83 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <% if (request.getAttribute("error") != null) { %>
-                <div class="admin-alert admin-alert-error">
-                    <i class="fas fa-exclamation-circle"></i> <%= request.getAttribute("error") %>
-                </div>
-            <% } %>
             <% if (request.getAttribute("success") != null) { %>
                 <div class="admin-alert admin-alert-success">
                     <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
                 </div>
             <% } %>
+            <% if (request.getAttribute("error") != null) { %>
+                <div class="admin-alert admin-alert-error">
+                    <i class="fas fa-exclamation-circle"></i> <%= request.getAttribute("error") %>
+                </div>
+            <% } %>
 
-            <!-- Profile Form -->
-            <div class="admin-form">
-                <h3><i class="fas fa-user-edit"></i> Update Profile</h3>
-                <form action="/api/update-profile" method="post">
-                    <input type="hidden" name="userId" value="<%= ((User) request.getAttribute("user")).getId() %>">
-                    
-                    <div class="admin-form-row">
-                        <div class="admin-form-group">
-                            <label for="name">Full Name</label>
-                            <input type="text" id="name" name="name" value="<%= ((User) request.getAttribute("user")).getName() %>" required>
+            <!-- Profile Summary Header Card -->
+            <div class="admin-card">
+                <div class="admin-card-body">
+                    <div class="admin-profile-info">
+                        <div class="admin-profile-avatar-large">
+                            <%= (user != null && user.getName() != null && !user.getName().isEmpty()) ? Character.toUpperCase(user.getName().charAt(0)) : 'U' %>
                         </div>
-                        <div class="admin-form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" value="<%= ((User) request.getAttribute("user")).getEmail() %>" readonly style="background: #f5f5f5;">
+                        <div class="admin-profile-details">
+                            <h4><%= (user != null && user.getName() != null) ? user.getName() : "User" %></h4>
+                            <p class="admin-profile-email"><i class="fas fa-envelope" style="margin-right: 5px;"></i> <%= (user != null && user.getEmail() != null) ? user.getEmail() : "" %></p>
+                            <span class="admin-badge user"><i class="fas fa-user-check"></i> Registered User</span>
                         </div>
                     </div>
-                    
-                    <div class="admin-form-row">
-                        <div class="admin-form-group">
-                            <label for="phoneNumber">Phone Number</label>
-                            <input type="tel" id="phoneNumber" name="phoneNumber" value="<%= ((User) request.getAttribute("user")).getPhoneNumber() != null ? ((User) request.getAttribute("user")).getPhoneNumber() : "" %>">
-                        </div>
-                        <div class="admin-form-group">
-                            <label for="role">Role</label>
-                            <input type="text" id="role" name="role" value="<%= ((User) request.getAttribute("user")).getRole() %>" readonly style="background: #f5f5f5;">
-                        </div>
-                    </div>
-                    
-                    <div class="admin-form-group">
-                        <label for="skills">Skills (comma-separated)</label>
-                        <input type="text" id="skills" name="skills" value="<%= ((User) request.getAttribute("user")).getSkills() != null ? ((User) request.getAttribute("user")).getSkills() : "" %>" placeholder="e.g., Java, Python, C#">
-                        <small style="color: #666;">Enter your skills separated by commas to get personalized assessments</small>
-                    </div>
-                    
-                    <div class="admin-form-group">
-                        <label for="interests">Interests (comma-separated)</label>
-                        <input type="text" id="interests" name="interests" value="<%= ((User) request.getAttribute("user")).getInterests() != null ? ((User) request.getAttribute("user")).getInterests() : "" %>" placeholder="e.g., AI, Machine Learning, Web Development">
-                        <small style="color: #666;">Enter your interests for better career recommendations</small>
-                    </div>
-                    
-                    <div class="admin-form-actions">
-                        <button type="submit" class="admin-btn admin-btn-primary">
-                            <i class="fas fa-save"></i> Update Profile
-                        </button>
-                        <a href="/dashboard" class="admin-btn admin-btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to Dashboard
-                        </a>
-                    </div>
-                </form>
+                </div>
             </div>
 
-            <!-- Account Information -->
-            <div class="admin-table-container">
-                <div class="admin-table-header">
-                    <h3><i class="fas fa-info-circle"></i> Account Information</h3>
+            <!-- Profile Edit Form -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h3><i class="fas fa-user-edit"></i> Edit Profile Information</h3>
                 </div>
-                <table class="admin-table">
-                    <tr>
-                        <th>Field</th>
-                        <th>Value</th>
-                    </tr>
-                    <tr>
-                        <td>User ID</td>
-                        <td><%= ((User) request.getAttribute("user")).getId() %></td>
-                    </tr>
-                    <tr>
-                        <td>Registration Date</td>
-                        <td><%= ((User) request.getAttribute("user")).getRegistrationDate() != null ? ((User) request.getAttribute("user")).getRegistrationDate().toString() : "N/A" %></td>
-                    </tr>
-                    <tr>
-                        <td>Account Status</td>
-                        <td><span class="admin-badge active">Active</span></td>
-                    </tr>
-                </table>
+                <div class="admin-card-body">
+                    <form action="/api/update-profile" method="post" class="admin-form">
+                        <input type="hidden" name="userId" value="<%= (user != null) ? user.getId() : "" %>">
+                        
+                        <div class="admin-form-row">
+                            <div class="admin-form-group">
+                                <label for="name"><i class="fas fa-user" style="color: #3b82f6; margin-right: 5px;"></i> Full Name</label>
+                                <input type="text" id="name" name="name" value="<%= (user != null && user.getName() != null) ? user.getName() : "" %>" required placeholder="Enter full name">
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="email"><i class="fas fa-envelope" style="color: #3b82f6; margin-right: 5px;"></i> Email (Read Only)</label>
+                                <input type="email" id="email" name="email" value="<%= (user != null && user.getEmail() != null) ? user.getEmail() : "" %>" readonly style="background: #f3f4f6; cursor: not-allowed;">
+                            </div>
+                        </div>
+
+                        <div class="admin-form-row">
+                            <div class="admin-form-group">
+                                <label for="phoneNumber"><i class="fas fa-phone" style="color: #3b82f6; margin-right: 5px;"></i> Phone Number</label>
+                                <input type="tel" id="phoneNumber" name="phoneNumber" value="<%= (user != null && user.getPhoneNumber() != null) ? user.getPhoneNumber() : "" %>" placeholder="Enter phone number">
+                            </div>
+
+                            <div class="admin-form-group">
+                                <label for="skills"><i class="fas fa-code" style="color: #3b82f6; margin-right: 5px;"></i> Skills (Comma-separated)</label>
+                                <input type="text" id="skills" name="skills" value="<%= (user != null && user.getSkills() != null) ? user.getSkills() : "" %>" placeholder="e.g., Java, Python, SQL, React">
+                                <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Enter your technical and soft skills to receive personalized career recommendations.</p>
+                            </div>
+                        </div>
+
+                        <div class="admin-form-group">
+                            <label for="interests"><i class="fas fa-heart" style="color: #3b82f6; margin-right: 5px;"></i> Interests (Comma-separated)</label>
+                            <input type="text" id="interests" name="interests" value="<%= (user != null && user.getInterests() != null) ? user.getInterests() : "" %>" placeholder="e.g., AI, Machine Learning, Web Development, Cloud Computing">
+                            <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Specify your domain interests for better assessment suggestions.</p>
+                        </div>
+
+                        <div style="display: flex; gap: 15px; margin-top: 25px;">
+                            <button type="submit" class="admin-btn admin-btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a href="/dashboard" class="admin-btn admin-btn-danger">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </main>

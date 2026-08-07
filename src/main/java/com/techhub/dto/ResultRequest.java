@@ -1,26 +1,13 @@
 package com.techhub.dto;
 
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-
 public class ResultRequest {
-
-    @NotNull(message = "User ID is required")
     private Long userId;
-
-    @NotNull(message = "Assessment ID is required")
     private Long assessmentId;
-
-    @NotNull(message = "Score is required")
-    @Min(value = 0, message = "Score cannot be negative")
     private Integer score;
-
-    @NotNull(message = "Percentage is required")
-    @DecimalMin(value = "0.0", message = "Percentage must be between 0 and 100")
-    @DecimalMax(value = "100.0", message = "Percentage must be between 0 and 100")
     private Double percentage;
+
+    public ResultRequest() {
+    }
 
     public Long getUserId() {
         return userId;

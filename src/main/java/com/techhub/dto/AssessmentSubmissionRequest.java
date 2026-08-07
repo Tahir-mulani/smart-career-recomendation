@@ -1,24 +1,23 @@
 package com.techhub.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 
 public class AssessmentSubmissionRequest {
-
-    @NotNull(message = "User ID is required")
     private Long userId;
-
-    @NotNull(message = "Test ID is required")
     private Long testId;
-
-    @NotEmpty(message = "Answers cannot be empty")
     private Map<Long, String> answers;
-
-    @NotNull(message = "Start time is required")
     private LocalDateTime startTime;
+
+    public AssessmentSubmissionRequest() {
+    }
+
+    public AssessmentSubmissionRequest(Long userId, Long testId, Map<Long, String> answers, LocalDateTime startTime) {
+        this.userId = userId;
+        this.testId = testId;
+        this.answers = answers;
+        this.startTime = startTime;
+    }
 
     public Long getUserId() {
         return userId;
