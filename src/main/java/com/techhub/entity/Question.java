@@ -11,6 +11,7 @@ public class Question {
     private String correctAnswer;
     private String difficultyLevel;
     private String skillTag;
+    private Long skillId;
     private Long assessmentId;
 
     public Question() {
@@ -86,6 +87,14 @@ public class Question {
 
     public void setSkillTag(String skillTag) {
         this.skillTag = skillTag;
+    }
+
+    public Long getSkillId() {
+        return skillId;
+    }
+
+    public void setSkillId(Long skillId) {
+        this.skillId = skillId;
     }
 
     public Long getAssessmentId() {

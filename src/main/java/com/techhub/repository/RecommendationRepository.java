@@ -20,12 +20,12 @@ public class RecommendationRepository {
     public RecommendationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.recommendationRowMapper = (rs, rowNum) -> {
-            Recommendation recommendation = new Recommendation();
-            recommendation.setId(rs.getLong("id"));
-            recommendation.setUserId(rs.getLong("user_id"));
-            recommendation.setCareerId(rs.getLong("career_id"));
-            recommendation.setMatchScore(rs.getDouble("match_score"));
-            return recommendation;
+            Recommendation rec = new Recommendation();
+            rec.setId(rs.getLong("id"));
+            rec.setUserId(rs.getLong("user_id"));
+            rec.setCareerId(rs.getLong("career_id"));
+            rec.setMatchScore(rs.getDouble("match_score"));
+            return rec;
         };
     }
 
@@ -44,8 +44,12 @@ public class RecommendationRepository {
             return recommendation;
         } else {
             String sql = "UPDATE recommendations SET user_id = ?, career_id = ?, match_score = ? WHERE id = ?";
-            jdbcTemplate.update(sql, recommendation.getUserId(), recommendation.getCareerId(), recommendation.getMatchScore(), recommendation.getId());
-            return findById(recommendation.getId()).orElseThrow();
+            jdbcTemplate.update(sql,
+                    recommendation.getUserId(),
+                    recommendation.getCareerId(),
+                    recommendation.getMatchScore(),
+                    recommendation.getId());
+            return recommendation;
         }
     }
 
@@ -55,13 +59,18 @@ public class RecommendationRepository {
     }
 
     public List<Recommendation> findByUserId(Long userId) {
-        String sql = "SELECT * FROM recommendations WHERE user_id = ?";
+        String sql = "SELECT * FROM recommendations WHERE user_id = ? ORDER BY match_score DESC";
         return jdbcTemplate.query(sql, recommendationRowMapper, userId);
     }
 
     public List<Recommendation> findAll() {
-        String sql = "SELECT * FROM recommendations";
+        String sql = "SELECT * FROM recommendations ORDER BY match_score DESC";
         return jdbcTemplate.query(sql, recommendationRowMapper);
+    }
+
+    public void deleteByUserId(Long userId) {
+        String sql = "DELETE FROM recommendations WHERE user_id = ?";
+        jdbcTemplate.update(sql, userId);
     }
 
     public void deleteById(Long id) {

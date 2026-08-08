@@ -536,37 +536,42 @@ body.admin-body {
 				}
 				%>
 
+				<%
+				List<Recommendation> recList = (List<Recommendation>) request.getAttribute("recommendations");
+				int totalRecs = recList != null ? recList.size() : 0;
+				long highMatchesCount = recList != null ? recList.stream().filter(r -> r.getMatchScore() != null && r.getMatchScore() >= 80).count() : 0;
+				long uniqueUsersCount = recList != null ? recList.stream().filter(r -> r.getUserId() != null).map(r -> r.getUserId()).distinct().count() : 0;
+				long uniqueCareersCount = recList != null ? recList.stream().filter(r -> r.getCareerId() != null).map(r -> r.getCareerId()).distinct().count() : 0;
+				%>
+
 				<!-- Stats Cards -->
 				<div class="admin-stats-grid">
 					<div class="admin-stat-card">
 						<div class="admin-stat-card-icon">
 							<i class="fas fa-star"></i>
 						</div>
-						<h3><%=((List<Recommendation>) request.getAttribute("recommendations")).size()%></h3>
+						<h3><%=totalRecs%></h3>
 						<p>Total Recommendations</p>
 					</div>
 					<div class="admin-stat-card">
 						<div class="admin-stat-card-icon">
 							<i class="fas fa-check-circle"></i>
 						</div>
-						<h3><%=((List<Recommendation>) request.getAttribute("recommendations")).stream().filter(r -> r.getMatchScore() >= 80)
-		.count()%></h3>
+						<h3><%=highMatchesCount%></h3>
 						<p>High Matches</p>
 					</div>
 					<div class="admin-stat-card">
 						<div class="admin-stat-card-icon">
 							<i class="fas fa-users"></i>
 						</div>
-						<h3><%=((List<Recommendation>) request.getAttribute("recommendations")).stream().map(r -> r.getUserId()).distinct()
-		.count()%></h3>
+						<h3><%=uniqueUsersCount%></h3>
 						<p>Users with Recommendations</p>
 					</div>
 					<div class="admin-stat-card">
 						<div class="admin-stat-card-icon">
 							<i class="fas fa-briefcase"></i>
 						</div>
-						<h3><%=((List<Recommendation>) request.getAttribute("recommendations")).stream().map(r -> r.getCareerId()).distinct()
-		.count()%></h3>
+						<h3><%=uniqueCareersCount%></h3>
 						<p>Careers Recommended</p>
 					</div>
 				</div>

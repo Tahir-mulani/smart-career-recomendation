@@ -536,6 +536,20 @@
                     </div>
                 </div>
 
+                <%
+                List<User> userList = (List<User>) request.getAttribute("users");
+                List<Assessment> asmList = (List<Assessment>) request.getAttribute("assessments");
+                List<Question> qList = (List<Question>) request.getAttribute("questions");
+                List<Career> carList = (List<Career>) request.getAttribute("careers");
+                List<com.techhub.entity.Result> resList = (List<com.techhub.entity.Result>) request.getAttribute("results");
+
+                int uCount = userList != null ? userList.size() : 0;
+                int aCount = asmList != null ? asmList.size() : 0;
+                int qCount = qList != null ? qList.size() : 0;
+                int cCount = carList != null ? carList.size() : 0;
+                int rCount = resList != null ? resList.size() : 0;
+                int totalRecords = uCount + aCount + qCount + cCount;
+                %>
                 <!-- System Statistics -->
                 <div class="admin-table-container">
                     <div class="admin-table-header">
@@ -552,7 +566,7 @@
                         <tbody>
                             <tr>
                                 <td>Total Database Records</td>
-                                <td><%= ((List<User>) request.getAttribute("users")).size() + ((List<Assessment>) request.getAttribute("assessments")).size() + ((List<Question>) request.getAttribute("questions")).size() + ((List<Career>) request.getAttribute("careers")).size() %></td>
+                                <td><%= totalRecords %></td>
                                 <td><span class="admin-badge active">Healthy</span></td>
                             </tr>
                             <tr>
@@ -562,12 +576,12 @@
                             </tr>
                             <tr>
                                 <td>Registered Users</td>
-                                <td><%= ((List<User>) request.getAttribute("users")).size() %></td>
+                                <td><%= uCount %></td>
                                 <td><span class="admin-badge active">Growing</span></td>
                             </tr>
                             <tr>
                                 <td>Assessments Completed</td>
-                                <td><%= ((List<com.techhub.entity.Result>) request.getAttribute("results")).size() %></td>
+                                <td><%= rCount %></td>
                                 <td><span class="admin-badge active">Tracking</span></td>
                             </tr>
                             <tr>

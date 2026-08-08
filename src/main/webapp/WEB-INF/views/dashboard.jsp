@@ -568,11 +568,13 @@ body.admin-body {
 						</div>
 					</div>
 					<div class="admin-form-actions">
-						<a href="/profile" class="admin-btn admin-btn-primary"> <i
+						<a href="/onboarding" class="admin-btn admin-btn-primary"> <i
+							class="fas fa-layer-group"></i> Skill Onboarding & Dynamic Assessment
+						</a> <a href="/profile" class="admin-btn admin-btn-secondary"> <i
 							class="fas fa-edit"></i> Update Profile
 						</a> <a href="/api/generate-recommendations"
 							class="admin-btn admin-btn-secondary"> <i class="fas fa-star"></i>
-							Get Recommendations
+							Refresh Recommendations
 						</a>
 					</div>
 				</div>

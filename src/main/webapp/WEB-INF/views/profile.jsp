@@ -571,31 +571,23 @@ body.admin-body {
 							</div>
 						</div>
 
-						<div class="admin-form-group">
-							<label for="skills">Skills (comma-separated)</label> <input
-								type="text" id="skills" name="skills"
-								value="<%=((User) request.getAttribute("user")).getSkills() != null
-		? ((User) request.getAttribute("user")).getSkills()
-		: ""%>"
-								placeholder="e.g., Java, Python, C#"> <small>Enter
-								your skills separated by commas to get personalized assessments</small>
-						</div>
-
-						<div class="admin-form-group">
-							<label for="interests">Interests (comma-separated)</label> <input
-								type="text" id="interests" name="interests"
-								value="<%=((User) request.getAttribute("user")).getInterests() != null
-		? ((User) request.getAttribute("user")).getInterests()
-		: ""%>"
-								placeholder="e.g., AI, Machine Learning, Web Development">
-							<small>Enter your interests for better career
-								recommendations</small>
+						<div class="admin-form-group" style="background: rgba(34, 211, 238, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(34, 211, 238, 0.2); margin-top: 15px;">
+							<label style="color: var(--primary-cyan); font-weight: 600; font-size: 1rem;"><i class="fas fa-layer-group"></i> Skill & Interest Management</label>
+							<p style="font-size: 0.9rem; color: var(--text-muted); margin: 8px 0 15px 0;">
+								Your skills and interests are categorized into <strong>Top 5 Primary Core Skills</strong> (tested in assessment) and <strong>Secondary Skills</strong>.
+							</p>
+							<a href="/onboarding" class="admin-btn admin-btn-primary" style="display: inline-flex; width: auto; align-items: center; gap: 8px;">
+								<i class="fas fa-edit"></i> Edit Skills & Start Dynamic Assessment
+							</a>
 						</div>
 
 						<div class="admin-form-actions">
 							<button type="submit" class="admin-btn admin-btn-primary">
-								<i class="fas fa-save"></i> Update Profile
+								<i class="fas fa-save"></i> Update Profile Info
 							</button>
+							<a href="/onboarding" class="admin-btn admin-btn-secondary" style="background: rgba(34, 211, 238, 0.1); color: var(--primary-cyan); border: 1px solid var(--primary-cyan);">
+								<i class="fas fa-layer-group"></i> Manage Skill Categories & Dynamic Test
+							</a>
 							<a href="/dashboard" class="admin-btn admin-btn-secondary"> <i
 								class="fas fa-arrow-left"></i> Back to Dashboard
 							</a>
