@@ -592,8 +592,8 @@ body.admin-body {
 						</h3>
 						<div class="admin-table-actions">
 							<div class="admin-search-box">
-								<i class="fas fa-search"></i> <input type="text"
-									placeholder="Search users...">
+								<i class="fas fa-search"></i> <input type="text" id="userSearchInput" onkeyup="filterUsersTable()"
+									placeholder="Search users by name, email...">
 							</div>
 							<select class="admin-filter-select">
 								<option value="">All Roles</option>
@@ -639,21 +639,14 @@ body.admin-body {
 		: "<span style='color: var(--text-muted)'>N/A</span>"%></td>
 								<td><span class="admin-badge active">Active</span></td>
 								<td>
-									<button class="admin-action-btn view" title="View"
+									<button class="admin-action-btn view" title="View Details"
 										onclick="viewUser(<%=user.getId()%>)">
 										<i class="fas fa-eye"></i>
 									</button>
-									<button class="admin-action-btn edit" title="Edit">
-										<i class="fas fa-edit"></i>
-									</button> <%
- if (!"ADMIN".equals(user.getRole())) {
- %>
-									<button class="admin-action-btn delete" title="Delete"
+									<button class="admin-action-btn delete" title="Delete User"
 										onclick="deleteUser(<%=user.getId()%>)">
 										<i class="fas fa-trash"></i>
-									</button> <%
- }
- %>
+									</button>
 								</td>
 							</tr>
 							<%
@@ -693,6 +686,24 @@ body.admin-body {
                 form.action = '/api/admin/users/' + userId + '/delete';
                 document.body.appendChild(form);
                 form.submit();
+            }
+        }
+
+        function filterUsersTable() {
+            const input = document.getElementById('userSearchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.querySelector('.admin-table');
+            if (!table) return;
+            const trs = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < trs.length; i++) {
+                const tr = trs[i];
+                const text = tr.textContent || tr.innerText;
+                if (text.toLowerCase().indexOf(filter) > -1) {
+                    tr.style.display = "";
+                } else {
+                    tr.style.display = "none";
+                }
             }
         }
     </script>

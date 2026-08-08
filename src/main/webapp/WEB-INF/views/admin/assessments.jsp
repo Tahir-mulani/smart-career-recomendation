@@ -641,19 +641,18 @@ body.admin-body {
 						</h3>
 						<div class="admin-table-actions">
 							<div class="admin-search-box">
-								<i class="fas fa-search"></i> <input type="text"
-									placeholder="Search assessments...">
+								<i class="fas fa-search"></i> <input type="text" id="assessmentSearchInput" onkeyup="filterAssessmentsTable()"
+									placeholder="Search assessments by name...">
 							</div>
 						</div>
 					</div>
-					<table class="admin-table">
+					<table class="admin-table" id="assessmentsTable">
 						<thead>
 							<tr>
 								<th>ID</th>
 								<th>Test Name</th>
 								<th>Duration</th>
 								<th>Total Marks</th>
-								<th>Questions</th>
 								<th>Status</th>
 								<th>Actions</th>
 							</tr>
@@ -673,16 +672,12 @@ body.admin-body {
 								<td><strong><%=assessment.getTestName()%></strong></td>
 								<td><%=assessment.getDuration()%> min</td>
 								<td><%=assessment.getTotalMarks()%></td>
-								<td>0</td>
 								<td><span class="admin-badge active">Active</span></td>
 								<td>
-									<button class="admin-action-btn view" title="View">
-										<i class="fas fa-eye"></i>
-									</button>
-									<button class="admin-action-btn edit" title="Edit">
+									<button class="admin-action-btn edit" title="Edit" onclick="openEditModal(<%=assessment.getId()%>, '<%=assessment.getTestName().replace("'", "\\'")%>', <%=assessment.getDuration()%>, <%=assessment.getTotalMarks()%>)">
 										<i class="fas fa-edit"></i>
 									</button>
-									<button class="admin-action-btn delete" title="Delete">
+									<button class="admin-action-btn delete" title="Delete" onclick="deleteAssessment(<%=assessment.getId()%>)">
 										<i class="fas fa-trash"></i>
 									</button>
 								</td>
@@ -694,7 +689,7 @@ body.admin-body {
 							} else {
 							%>
 							<tr>
-								<td colspan="7"
+								<td colspan="6"
 									style="text-align: center; padding: 40px; color: var(--text-muted);">No
 									assessments created yet.</td>
 							</tr>
@@ -708,9 +703,69 @@ body.admin-body {
 		</main>
 	</div>
 
+	<!-- Edit Modal -->
+	<div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 99; align-items: center; justify-content: center;">
+		<div style="background: var(--white); border-radius: 16px; padding: 35px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+			<h3 style="margin-top: 0; margin-bottom: 20px; color: var(--bg-dark-blue); font-size: 1.2rem;"><i class="fas fa-edit" style="color: var(--primary-cyan);"></i> Edit Assessment</h3>
+			<form id="editForm" method="post">
+				<div class="admin-form-group" style="margin-bottom: 15px;">
+					<label for="editTestName">Test Name</label>
+					<input type="text" id="editTestName" name="testName" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+				</div>
+				<div class="admin-form-group" style="margin-bottom: 15px;">
+					<label for="editDuration">Duration (minutes)</label>
+					<input type="number" id="editDuration" name="duration" min="1" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+				</div>
+				<div class="admin-form-group" style="margin-bottom: 20px;">
+					<label for="editTotalMarks">Total Marks</label>
+					<input type="number" id="editTotalMarks" name="totalMarks" min="1" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+				</div>
+				<div style="display: flex; gap: 10px; justify-content: flex-end;">
+					<button type="button" class="admin-btn admin-btn-secondary" onclick="closeEditModal()">Cancel</button>
+					<button type="submit" class="admin-btn admin-btn-primary">Save Changes</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
 	<script>
 		function toggleSidebar() {
 			document.getElementById('sidebar').classList.toggle('collapsed');
+		}
+
+		function filterAssessmentsTable() {
+			const input = document.getElementById('assessmentSearchInput');
+			const filter = input.value.toLowerCase();
+			const table = document.getElementById('assessmentsTable');
+			if (!table) return;
+			const trs = table.getElementsByTagName('tr');
+			for (let i = 1; i < trs.length; i++) {
+				const tr = trs[i];
+				const text = tr.textContent || tr.innerText;
+				tr.style.display = text.toLowerCase().indexOf(filter) > -1 ? "" : "none";
+			}
+		}
+
+		function openEditModal(id, name, duration, marks) {
+			document.getElementById('editForm').action = '/api/admin/assessments/' + id + '/update';
+			document.getElementById('editTestName').value = name;
+			document.getElementById('editDuration').value = duration;
+			document.getElementById('editTotalMarks').value = marks;
+			document.getElementById('editModal').style.display = 'flex';
+		}
+
+		function closeEditModal() {
+			document.getElementById('editModal').style.display = 'none';
+		}
+
+		function deleteAssessment(id) {
+			if (confirm('Are you sure you want to delete this assessment?')) {
+				const form = document.createElement('form');
+				form.method = 'POST';
+				form.action = '/api/admin/assessments/' + id + '/delete';
+				document.body.appendChild(form);
+				form.submit();
+			}
 		}
 	</script>
 </body>

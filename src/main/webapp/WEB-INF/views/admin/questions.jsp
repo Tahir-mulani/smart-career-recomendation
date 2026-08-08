@@ -663,28 +663,39 @@ body.admin-body {
 						</div>
 						<div class="admin-form-row">
 							<div class="admin-form-group">
-								<label for="skillTag">Skill Tag</label> <input type="text"
-									id="skillTag" name="skillTag" placeholder="e.g., Java, Python"
-									required>
+								<label for="skillId">Question Skill Category (Dynamic Bank)</label>
+								<select id="skillId" name="skillId" onchange="updateSkillTag(this)">
+									<option value="">Common Baseline Category (Aptitude, Logic, CS Fundamentals - skill_id = NULL)</option>
+									<%
+									List<Skill> skills = (List<Skill>) request.getAttribute("skills");
+									if (skills != null && !skills.isEmpty()) {
+										for (Skill s : skills) {
+									%>
+									<option value="<%=s.getId()%>" data-name="<%=s.getSkillName()%>"><%=s.getSkillName()%> (Technical Skill)</option>
+									<%
+										}
+									}
+									%>
+								</select>
 							</div>
 							<div class="admin-form-group">
-								<label for="assessmentId">Assessment</label> <select
-									id="assessmentId" name="assessmentId" required>
-									<option value="">Select assessment</option>
+								<label for="skillTag">Skill Tag / Category Name</label>
+								<input type="text" id="skillTag" name="skillTag" placeholder="e.g., Java, Aptitude, Logical Reasoning, CS Fundamentals" required>
+							</div>
+						</div>
+						<div class="admin-form-row">
+							<div class="admin-form-group">
+								<label for="assessmentId">Static Assessment Link (Optional)</label>
+								<select id="assessmentId" name="assessmentId">
+									<option value="">None / Dynamic Question Bank (Recommended)</option>
 									<%
 									List<Assessment> assessments = (List<Assessment>) request.getAttribute("assessments");
-									%>
-									<%
 									if (assessments != null && !assessments.isEmpty()) {
-									%>
-									<%
-									for (Assessment assessment : assessments) {
+										for (Assessment assessment : assessments) {
 									%>
 									<option value="<%=assessment.getId()%>"><%=assessment.getTestName()%></option>
 									<%
-									}
-									%>
-									<%
+										}
 									}
 									%>
 								</select>
@@ -709,8 +720,8 @@ body.admin-body {
 						</h3>
 						<div class="admin-table-actions">
 							<div class="admin-search-box">
-								<i class="fas fa-search"></i> <input type="text"
-									placeholder="Search questions...">
+								<i class="fas fa-search"></i> <input type="text" id="questionSearchInput" onkeyup="filterQuestionsTable()"
+									placeholder="Search questions by text or tag...">
 							</div>
 						</div>
 					</div>
@@ -795,6 +806,28 @@ body.admin-body {
 	<script>
 		function toggleSidebar() {
 			document.getElementById('sidebar').classList.toggle('collapsed');
+		}
+		function updateSkillTag(selectElement) {
+			const selectedOption = selectElement.options[selectElement.selectedIndex];
+			const name = selectedOption.getAttribute('data-name');
+			const tagInput = document.getElementById('skillTag');
+			if (name) {
+				tagInput.value = name;
+			}
+		}
+
+		function filterQuestionsTable() {
+			const input = document.getElementById('questionSearchInput');
+			const filter = input.value.toLowerCase();
+			const table = document.querySelector('.admin-table');
+			if (!table) return;
+			const trs = table.getElementsByTagName('tr');
+
+			for (let i = 1; i < trs.length; i++) {
+				const tr = trs[i];
+				const text = tr.textContent || tr.innerText;
+				tr.style.display = text.toLowerCase().indexOf(filter) > -1 ? "" : "none";
+			}
 		}
 	</script>
 </body>

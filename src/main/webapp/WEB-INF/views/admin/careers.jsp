@@ -641,6 +641,33 @@ body.admin-body {
 					</form>
 				</div>
 
+				<!-- Add Master Skill & Domain Interest (Admin Authority) -->
+				<div class="admin-form" style="margin-top: 25px;">
+					<h3>
+						<i class="fas fa-tools"></i> Add Master Skill or Domain Interest (Admin Authority)
+					</h3>
+					<div class="admin-form-row">
+						<form action="/api/admin/create-skill" method="post" style="flex: 1;">
+							<div class="admin-form-group">
+								<label for="skillName">New Master Skill Name</label>
+								<input type="text" id="skillName" name="skillName" placeholder="e.g., Flutter, Rust, Go" required>
+							</div>
+							<button type="submit" class="admin-btn admin-btn-primary" style="margin-top: 10px;">
+								<i class="fas fa-plus"></i> Add Master Skill
+							</button>
+						</form>
+						<form action="/api/admin/create-interest" method="post" style="flex: 1;">
+							<div class="admin-form-group">
+								<label for="interestName">New Domain Interest Name</label>
+								<input type="text" id="interestName" name="interestName" placeholder="e.g., Quantum Computing, Blockchain" required>
+							</div>
+							<button type="submit" class="admin-btn admin-btn-primary" style="margin-top: 10px;">
+								<i class="fas fa-plus"></i> Add Domain Interest
+							</button>
+						</form>
+					</div>
+				</div>
+
 				<!-- Careers Table -->
 				<div class="admin-table-container">
 					<div class="admin-table-header">
@@ -649,8 +676,8 @@ body.admin-body {
 						</h3>
 						<div class="admin-table-actions">
 							<div class="admin-search-box">
-								<i class="fas fa-search"></i> <input type="text"
-									placeholder="Search careers...">
+								<i class="fas fa-search"></i> <input type="text" id="careerSearchInput" onkeyup="filterCareersTable()"
+									placeholder="Search careers by name or skills...">
 							</div>
 						</div>
 					</div>
@@ -717,6 +744,20 @@ body.admin-body {
 	<script>
 		function toggleSidebar() {
 			document.getElementById('sidebar').classList.toggle('collapsed');
+		}
+
+		function filterCareersTable() {
+			const input = document.getElementById('careerSearchInput');
+			const filter = input.value.toLowerCase();
+			const table = document.querySelector('.admin-table');
+			if (!table) return;
+			const trs = table.getElementsByTagName('tr');
+
+			for (let i = 1; i < trs.length; i++) {
+				const tr = trs[i];
+				const text = tr.textContent || tr.innerText;
+				tr.style.display = text.toLowerCase().indexOf(filter) > -1 ? "" : "none";
+			}
 		}
 	</script>
 </body>

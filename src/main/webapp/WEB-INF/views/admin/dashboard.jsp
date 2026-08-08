@@ -601,12 +601,12 @@
                         <div class="admin-table-actions">
                             <div class="admin-search-box">
                                 <i class="fas fa-search"></i>
-                                <input type="text" placeholder="Search users...">
+                                <input type="text" id="recentUserSearchInput" onkeyup="filterRecentUsersTable()" placeholder="Search users by name, email...">
                             </div>
                             <a href="/admin/users" class="admin-btn admin-btn-primary">View All</a>
                         </div>
                     </div>
-                    <table class="admin-table">
+                    <table class="admin-table" id="recentUsersTable">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -621,25 +621,27 @@
                         <tbody>
                             <% List<User> users = (List<User>) request.getAttribute("users"); %>
                             <% if (users != null && !users.isEmpty()) { %>
-                                <% for (int i = 0; i < Math.min(5, users.size()); i++) { %>
-                                    <% User user = users.get(i); %>
+                                <% for (User user : users) { 
+                                    if ("ADMIN".equalsIgnoreCase(user.getRole())) continue;
+                                %>
                                     <tr>
                                         <td>#<%= user.getId() %></td>
                                         <td><strong><%= user.getName() %></strong></td>
                                         <td><%= user.getEmail() %></td>
-                                        <td><span class="admin-badge <%= "ADMIN".equals(user.getRole()) ? "admin" : "user" %>"><%= user.getRole() %></span></td>
+                                        <td><span class="admin-badge user"><%= user.getRole() %></span></td>
                                         <td><%= user.getRegistrationDate() != null ? user.getRegistrationDate().toString() : "<span style='color: var(--text-muted)'>N/A</span>" %></td>
                                         <td><span class="admin-badge active">Active</span></td>
                                         <td>
-                                            <button class="admin-action-btn view"><i class="fas fa-eye"></i></button>
-                                            <button class="admin-action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="admin-action-btn delete"><i class="fas fa-trash"></i></button>
+                                            <button class="admin-action-btn view" title="View User Details" onclick="location.href='/admin/users/<%= user.getId() %>'"><i class="fas fa-eye"></i></button>
+                                            <form action="/api/admin/users/<%= user.getId() %>/delete" method="post" onsubmit="return confirm('Are you sure you want to delete this user?');" style="display: inline;">
+                                                <button type="submit" class="admin-action-btn delete" title="Delete User"><i class="fas fa-trash"></i></button>
+                                            </form>
                                         </td>
                                     </tr>
                                 <% } %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">No users found</td>
+                                    <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">No student users found</td>
                                 </tr>
                             <% } %>
                         </tbody>
@@ -653,19 +655,18 @@
                         <div class="admin-table-actions">
                             <div class="admin-search-box">
                                 <i class="fas fa-search"></i>
-                                <input type="text" placeholder="Search assessments...">
+                                <input type="text" id="dashboardAssessmentSearchInput" onkeyup="filterDashboardAssessmentsTable()" placeholder="Search assessments by name...">
                             </div>
                             <a href="/admin/assessments" class="admin-btn admin-btn-primary">View All</a>
                         </div>
                     </div>
-                    <table class="admin-table">
+                    <table class="admin-table" id="dashboardAssessmentsTable">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Test Name</th>
                                 <th>Duration</th>
                                 <th>Total Marks</th>
-                                <th>Questions</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -680,18 +681,18 @@
                                         <td><strong><%= assessment.getTestName() %></strong></td>
                                         <td><%= assessment.getDuration() %> min</td>
                                         <td><%= assessment.getTotalMarks() %></td>
-                                        <td>0</td>
                                         <td><span class="admin-badge active">Active</span></td>
                                         <td>
-                                            <button class="admin-action-btn view"><i class="fas fa-eye"></i></button>
-                                            <button class="admin-action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="admin-action-btn delete"><i class="fas fa-trash"></i></button>
+                                            <button class="admin-action-btn edit" title="Edit Assessment" onclick="openAssessmentEditModal(<%= assessment.getId() %>, '<%= assessment.getTestName().replace("'", "\\'") %>', <%= assessment.getDuration() %>, <%= assessment.getTotalMarks() %>)"><i class="fas fa-edit"></i></button>
+                                            <form action="/api/admin/assessments/<%= assessment.getId() %>/delete" method="post" onsubmit="return confirm('Are you sure you want to delete this assessment?');" style="display: inline;">
+                                                <button type="submit" class="admin-action-btn delete" title="Delete Assessment"><i class="fas fa-trash"></i></button>
+                                            </form>
                                         </td>
                                     </tr>
                                 <% } %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">No assessments found</td>
+                                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">No assessments found</td>
                                 </tr>
                             <% } %>
                         </tbody>
@@ -701,10 +702,75 @@
         </main>
     </div>
 
+    <!-- Edit Assessment Modal -->
+    <div id="assessmentEditModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 99; align-items: center; justify-content: center;">
+        <div style="background: var(--white); border-radius: 16px; padding: 35px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--bg-dark-blue); font-size: 1.2rem;"><i class="fas fa-edit" style="color: var(--primary-cyan);"></i> Edit Assessment</h3>
+            <form id="dashboardAssessmentEditForm" method="post">
+                <div class="admin-form-group" style="margin-bottom: 15px;">
+                    <label for="dashEditTestName">Test Name</label>
+                    <input type="text" id="dashEditTestName" name="testName" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+                <div class="admin-form-group" style="margin-bottom: 15px;">
+                    <label for="dashEditDuration">Duration (minutes)</label>
+                    <input type="number" id="dashEditDuration" name="duration" min="1" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+                <div class="admin-form-group" style="margin-bottom: 20px;">
+                    <label for="dashEditTotalMarks">Total Marks</label>
+                    <input type="number" id="dashEditTotalMarks" name="totalMarks" min="1" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="admin-btn admin-btn-secondary" onclick="closeAssessmentEditModal()">Cancel</button>
+                    <button type="submit" class="admin-btn admin-btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Toggle Sidebar
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        function filterRecentUsersTable() {
+            const input = document.getElementById('recentUserSearchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('recentUsersTable');
+            if (!table) return;
+            const trs = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < trs.length; i++) {
+                const tr = trs[i];
+                const text = tr.textContent || tr.innerText;
+                tr.style.display = text.toLowerCase().indexOf(filter) > -1 ? "" : "none";
+            }
+        }
+
+        function filterDashboardAssessmentsTable() {
+            const input = document.getElementById('dashboardAssessmentSearchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('dashboardAssessmentsTable');
+            if (!table) return;
+            const trs = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < trs.length; i++) {
+                const tr = trs[i];
+                const text = tr.textContent || tr.innerText;
+                tr.style.display = text.toLowerCase().indexOf(filter) > -1 ? "" : "none";
+            }
+        }
+
+        function openAssessmentEditModal(id, name, duration, marks) {
+            document.getElementById('dashboardAssessmentEditForm').action = '/api/admin/assessments/' + id + '/update';
+            document.getElementById('dashEditTestName').value = name;
+            document.getElementById('dashEditDuration').value = duration;
+            document.getElementById('dashEditTotalMarks').value = marks;
+            document.getElementById('assessmentEditModal').style.display = 'flex';
+        }
+
+        function closeAssessmentEditModal() {
+            document.getElementById('assessmentEditModal').style.display = 'none';
         }
     </script>
 </body>
