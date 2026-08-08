@@ -86,6 +86,26 @@ public class QuestionRepository {
         return count != null ? count : 0;
     }
 
+    public List<Question> findBySkillTag(String skillTag) {
+        String sql = "SELECT * FROM questions WHERE LOWER(skill_tag) = LOWER(?)";
+        return jdbcTemplate.query(sql, questionRowMapper, skillTag);
+    }
+
+    public List<Question> findRandomBySkillTag(String skillTag, int limit) {
+        String sql = "SELECT * FROM questions WHERE LOWER(skill_tag) LIKE LOWER(?) ORDER BY RAND() LIMIT ?";
+        return jdbcTemplate.query(sql, questionRowMapper, "%" + skillTag + "%", limit);
+    }
+
+    public List<Question> findRandomBySkillId(Long skillId, int limit) {
+        String sql = "SELECT * FROM questions WHERE skill_id = ? ORDER BY RAND() LIMIT ?";
+        return jdbcTemplate.query(sql, questionRowMapper, skillId, limit);
+    }
+
+    public List<Question> findRandomCommonQuestions(int limit) {
+        String sql = "SELECT * FROM questions WHERE LOWER(skill_tag) IN ('aptitude', 'logic', 'logical reasoning', 'cs fundamentals', 'computer fundamentals') OR assessment_id IS NOT NULL ORDER BY RAND() LIMIT ?";
+        return jdbcTemplate.query(sql, questionRowMapper, limit);
+    }
+
     public void deleteById(Long id) {
         String sql = "DELETE FROM questions WHERE id = ?";
         jdbcTemplate.update(sql, id);

@@ -42,6 +42,7 @@
             <form action="/api/submit-assessment" method="post">
                 <input type="hidden" name="assessmentId" value="<%= ((Assessment) request.getAttribute("assessment")).getId() %>">
                 <input type="hidden" name="userId" value="<%= ((User) request.getAttribute("user")).getId() %>">
+                <input type="hidden" name="startTime" value="<%= java.time.LocalDateTime.now() %>">
 
                 <% List<Question> questions = (List<Question>) request.getAttribute("questions"); %>
                 <% if (questions != null && !questions.isEmpty()) { %>

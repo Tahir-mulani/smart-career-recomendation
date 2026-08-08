@@ -30,8 +30,17 @@ public class WebController {
     @Autowired
     private ResultService resultService;
 
-//    @Autowired
-//    private RecommendationService recommendationService;
+    @Autowired
+    private RecommendationService recommendationService;
+
+    @Autowired
+    private SkillService skillService;
+
+    @Autowired
+    private InterestService interestService;
+
+    @Autowired
+    private AssessmentInstanceService assessmentInstanceService;
 
     @GetMapping("/")
     public String homePage() {
@@ -61,6 +70,7 @@ public class WebController {
     @PostMapping("/api/admin/login")
     public String adminLogin(@RequestParam String email,
                             @RequestParam String password,
+                       
                             HttpSession session,
                             RedirectAttributes redirectAttributes) {
         try {
@@ -267,8 +277,8 @@ public class WebController {
         }
         model.addAttribute("admin", admin);
         
-//        List<Recommendation> recommendations = recommendationService.findAll();
-//        model.addAttribute("recommendations", recommendations);
+        List<Recommendation> recommendations = recommendationService.findAll();
+        model.addAttribute("recommendations", recommendations);
         
         return "admin/recommendations";
     }
@@ -283,9 +293,15 @@ public class WebController {
         
         List<User> users = userService.findAll();
         List<Result> results = resultService.findAll();
+        List<Assessment> assessments = assessmentService.findAll();
+        List<Question> questions = questionService.findAll();
+        List<Career> careers = careerService.findAll();
         
         model.addAttribute("users", users);
         model.addAttribute("results", results);
+        model.addAttribute("assessments", assessments);
+        model.addAttribute("questions", questions);
+        model.addAttribute("careers", careers);
         
         return "admin/analytics";
     }
@@ -457,6 +473,9 @@ public class WebController {
         
         List<Career> careers = careerService.findAll();
         model.addAttribute("careers", careers);
+
+        List<Recommendation> recommendations = recommendationService.findByUserId(user.getId());
+        model.addAttribute("recommendations", recommendations);
         
         return "dashboard";
     }
@@ -576,8 +595,12 @@ public class WebController {
                 return "redirect:/login";
             }
             
-            //recommendationService.generateForUser(user.getId());
-            redirectAttributes.addFlashAttribute("success", "Recommendations generated successfully!");
+            List<Recommendation> generated = recommendationService.generateForUser(user.getId());
+            if (generated.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "You have not completed any skill assessment test yet. Please complete your Skill Onboarding & Assessment first!");
+                return "redirect:/dashboard";
+            }
+            redirectAttributes.addFlashAttribute("success", "Recommendations generated successfully based on your assessment!");
             return "redirect:/recommendations";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -589,5 +612,92 @@ public class WebController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
+    }
+
+    @GetMapping("/onboarding")
+    public String onboardingPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("user", user);
+        model.addAttribute("skills", skillService.findAll());
+        model.addAttribute("interests", interestService.findAll());
+        return "onboarding";
+    }
+
+    @PostMapping("/api/onboarding")
+    public String handleOnboarding(@RequestParam(required = false) List<Long> primarySkills,
+                                   @RequestParam(required = false) List<Long> secondarySkills,
+                                   @RequestParam(required = false) List<Long> interests,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        skillService.saveUserSkills(user.getId(), primarySkills, secondarySkills);
+        interestService.saveUserInterests(user.getId(), interests);
+
+        redirectAttributes.addFlashAttribute("success", "Skills saved! Starting your dynamic assessment...");
+        return "redirect:/assessment/start";
+    }
+
+    @GetMapping("/assessment/start")
+    public String startAssessment(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        AssessmentInstance instance = assessmentInstanceService.generateDynamicAssessment(user.getId());
+        List<InstanceQuestion> instanceQuestions = assessmentInstanceService.getInstanceQuestions(instance.getId());
+
+        List<Question> questions = new java.util.ArrayList<>();
+        for (InstanceQuestion iq : instanceQuestions) {
+            try {
+                Question q = questionService.findById(iq.getQuestionId());
+                if (q != null) {
+                    questions.add(q);
+                }
+            } catch (Exception ignored) {}
+        }
+
+        model.addAttribute("instance", instance);
+        model.addAttribute("questions", questions);
+        return "take-assessment";
+    }
+
+    @PostMapping("/api/assessment/submit")
+    public String submitAssessment(@RequestParam Long instanceId,
+                                   @RequestParam(required = false, defaultValue = "0") Integer timeTaken,
+                                   @RequestParam Map<String, String> allParams,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Map<Long, String> answers = new java.util.HashMap<>();
+        for (Map.Entry<String, String> entry : allParams.entrySet()) {
+            if (entry.getKey().startsWith("answers[")) {
+                String qIdStr = entry.getKey().substring("answers[".length(), entry.getKey().length() - 1);
+                try {
+                    Long qId = Long.parseLong(qIdStr);
+                    answers.put(qId, entry.getValue());
+                } catch (Exception ignored) {}
+            }
+        }
+
+        AssessmentInstance completed = assessmentInstanceService.submitAssessment(instanceId, answers, timeTaken);
+        
+        try {
+            recommendationService.generateForUser(user.getId());
+        } catch (Exception ignored) {}
+
+        redirectAttributes.addFlashAttribute("success", "Assessment completed! Score: " + completed.getScore() + "/" + completed.getTotalQuestions() + " (" + String.format("%.1f", completed.getPercentage()) + "%)");
+        return "redirect:/dashboard";
     }
 }

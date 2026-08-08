@@ -1,209 +1,801 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
-<%@ page import="com.techhub.entity.*" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ page import="java.util.List"%>
+<%@ page import="com.techhub.entity.*"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Question Management - Admin</title>
-    <link rel="stylesheet" href="/resources/css/admin.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Questions - Smart Career Recommendation</title>
+<link
+	href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style type="text/css">
+/* Modern UI Color Palette */
+:root {
+	--primary-cyan: #22d3ee;
+	--primary-hover: #06b6d4;
+	--bg-dark-blue: #0a141f;
+	--bg-gradient: linear-gradient(135deg, #0f1c29 0%, #1a364b 50%, #1e455c 100%);
+	--success: #10b981;
+	--danger: #ef4444;
+	--warning: #f59e0b;
+	--bg: #f8fafc;
+	--white: #ffffff;
+	--text: #0f172a;
+	--text-light: #f8fafc;
+	--text-muted: #94a3b8;
+	--border: #e2e8f0;
+}
+
+body.admin-body {
+	font-family: 'Poppins', sans-serif;
+	background: var(--bg);
+	color: var(--text);
+	margin: 0;
+	overflow-x: hidden;
+}
+
+/* Base Layout - FIXED for side-by-side display */
+.dashboard-layout {
+	display: flex;
+	flex-direction: row !important;
+	flex-wrap: nowrap !important;
+	min-height: 100vh;
+	width: 100%;
+	align-items: stretch;
+	overflow-x: hidden;
+}
+
+/* Sidebar - FIXED to prevent shrinking */
+.admin-sidebar {
+	width: 260px;
+	min-width: 260px;
+	flex-shrink: 0;
+	background: var(--bg-dark-blue);
+	color: var(--text-light);
+	box-shadow: 5px 0 20px rgba(0, 0, 0, .05);
+	transition: margin-left 0.3s ease;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	z-index: 10;
+}
+
+.admin-sidebar.collapsed {
+	margin-left: -260px;
+}
+
+.admin-sidebar-header {
+	padding: 30px 20px;
+	text-align: center;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.admin-sidebar-header h2 {
+	color: var(--white);
+	font-size: 26px;
+	font-weight: 700;
+	margin: 0;
+}
+
+.admin-sidebar-header h2 span {
+	color: var(--primary-cyan);
+}
+
+.admin-sidebar-nav {
+	flex: 1;
+}
+
+.admin-sidebar-nav ul {
+	list-style: none;
+	padding: 0;
+	margin: 20px 0;
+}
+
+.admin-sidebar-nav ul li {
+	margin: 10px 15px;
+}
+
+.admin-sidebar-nav a {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: var(--text-muted);
+	padding: 14px 18px;
+	border-radius: 12px;
+	transition: .3s;
+	text-decoration: none;
+	font-weight: 500;
+}
+
+.admin-sidebar-nav a:hover, .admin-sidebar-nav a.active {
+	background: rgba(34, 211, 238, 0.1);
+	color: var(--primary-cyan);
+}
+
+.admin-sidebar-nav i {
+	width: 20px;
+	text-align: center;
+}
+
+.admin-sidebar-footer {
+	padding: 20px;
+	text-align: center;
+	color: var(--text-muted);
+	font-size: 12px;
+	border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Main Content Area */
+.admin-main {
+	flex: 1;
+	flex-grow: 1;
+	width: calc(100% - 260px);
+	background: var(--bg);
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+/* Header */
+.admin-header {
+	background: var(--white);
+	padding: 18px 35px;
+	box-shadow: 0 5px 20px rgba(0, 0, 0, .03);
+	border-bottom: 1px solid var(--border);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	position: sticky;
+	top: 0;
+	z-index: 5;
+}
+
+.admin-header-left {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+}
+
+.admin-header h1 {
+	color: var(--bg-dark-blue);
+	font-weight: 600;
+	font-size: 1.5rem;
+	margin: 0;
+}
+
+.admin-menu-toggle {
+	background: none;
+	border: none;
+	font-size: 1.2rem;
+	color: var(--text);
+	cursor: pointer;
+	padding: 5px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.admin-header-right {
+	display: flex;
+	align-items: center;
+	gap: 25px;
+}
+
+.admin-user-info {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.admin-user-avatar {
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	background: var(--primary-cyan);
+	color: #000;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 20px;
+	font-weight: 600;
+}
+
+.admin-user-name {
+	font-weight: 600;
+	font-size: 0.9rem;
+	line-height: 1.2;
+}
+
+.admin-user-role {
+	font-size: 0.8rem;
+	color: var(--text-muted);
+}
+
+.admin-logout-btn {
+	color: var(--danger);
+	text-decoration: none;
+	font-weight: 500;
+	transition: 0.3s;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.admin-logout-btn:hover {
+	color: #b91c1c;
+}
+
+/* Content Area */
+.admin-content {
+	padding: 35px;
+	overflow-y: auto;
+}
+
+/* Alerts */
+.admin-alert {
+	padding: 15px 20px;
+	border-radius: 10px;
+	margin-bottom: 25px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-weight: 500;
+}
+
+.admin-alert-success {
+	background: rgba(16, 185, 129, 0.1);
+	color: var(--success);
+	border-left: 5px solid var(--success);
+}
+
+.admin-alert-error {
+	background: rgba(239, 68, 68, 0.1);
+	color: var(--danger);
+	border-left: 5px solid var(--danger);
+}
+
+/* Add Question Form */
+.admin-form {
+	background: var(--bg-gradient);
+	color: var(--white);
+	border-radius: 18px;
+	padding: 35px;
+	margin-bottom: 35px;
+	box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.admin-form h3 {
+	color: var(--primary-cyan);
+	margin-top: 0;
+	margin-bottom: 25px;
+	font-size: 1.4rem;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.admin-form-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	margin-bottom: 20px;
+}
+
+.admin-form-group {
+	flex: 1;
+	min-width: 250px;
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 20px;
+}
+
+.admin-form-row .admin-form-group {
+	margin-bottom: 0;
+}
+
+.admin-form label {
+	color: var(--text-muted);
+	margin-bottom: 8px;
+	font-size: 0.9rem;
+	font-weight: 500;
+}
+
+/* Updated Form Inputs, Selects, and Textareas */
+.admin-form input, .admin-form select, .admin-form textarea {
+	background: rgba(255, 255, 255, 0.05) !important;
+	border: 1px solid rgba(255, 255, 255, 0.2) !important;
+	color: var(--white) !important;
+	padding: 12px 15px;
+	border-radius: 8px;
+	outline: none;
+	font-size: 0.95rem;
+	width: 100%;
+	box-sizing: border-box;
+	font-family: 'Poppins', sans-serif;
+	transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.admin-form textarea {
+	resize: vertical;
+	min-height: 80px;
+}
+
+.admin-form input:focus, .admin-form select:focus, .admin-form textarea:focus
+	{
+	border-color: var(--primary-cyan) !important;
+	box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+}
+
+.admin-form select option {
+	background-color: var(--bg-dark-blue);
+	color: var(--white);
+}
+
+.admin-form input::placeholder, .admin-form textarea::placeholder {
+	color: rgba(255, 255, 255, 0.4);
+}
+
+.admin-form-actions {
+	margin-top: 30px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 15px;
+}
+
+/* Buttons */
+.admin-btn {
+	border: none;
+	border-radius: 30px;
+	padding: 10px 24px;
+	font-weight: 600;
+	transition: .3s;
+	text-decoration: none;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	font-size: 0.9rem;
+}
+
+.admin-btn-primary {
+	background: var(--primary-cyan);
+	color: #000;
+	box-shadow: 0 4px 15px rgba(34, 211, 238, 0.2);
+}
+
+.admin-btn-primary:hover {
+	background: var(--white);
+	transform: translateY(-2px);
+}
+
+.admin-btn-secondary {
+	background: transparent;
+	color: var(--primary-cyan);
+	border: 2px solid var(--primary-cyan);
+}
+
+.admin-btn-secondary:hover {
+	background: var(--primary-cyan);
+	color: #000;
+}
+
+/* Tables */
+.admin-table-container {
+	background: var(--white);
+	border-radius: 18px;
+	padding: 30px;
+	margin-bottom: 30px;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, .03);
+	border: 1px solid var(--border);
+	overflow-x: auto;
+}
+
+.admin-table-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 15px;
+	margin-bottom: 25px;
+}
+
+.admin-table-header h3 {
+	color: var(--bg-dark-blue);
+	margin: 0;
+	font-size: 1.25rem;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.admin-table-header h3 i {
+	color: var(--primary-cyan);
+}
+
+.admin-table-actions {
+	display: flex;
+	gap: 15px;
+	align-items: center;
+}
+
+.admin-search-box {
+	position: relative;
+}
+
+.admin-search-box i {
+	position: absolute;
+	left: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--text-muted);
+}
+
+.admin-search-box input {
+	padding: 10px 15px 10px 35px;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	outline: none;
+	transition: 0.3s;
+	font-family: 'Poppins', sans-serif;
+	width: 220px;
+	background: var(--white) !important;
+	color: var(--text-dark) !important;
+}
+
+.admin-search-box input:focus {
+	border-color: var(--primary-cyan);
+	box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+}
+
+.admin-table {
+	width: 100%;
+	border-collapse: collapse;
+	min-width: 800px;
+}
+
+.admin-table th, .admin-table td {
+	padding: 15px;
+	text-align: left;
+	border-bottom: 1px solid var(--border);
+	vertical-align: middle;
+}
+
+.admin-table th {
+	color: var(--text-muted);
+	font-weight: 600;
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.admin-table td {
+	font-size: 0.95rem;
+	color: var(--text);
+}
+
+/* Badges */
+.admin-badge {
+	padding: 6px 12px;
+	border-radius: 20px;
+	font-size: 0.8rem;
+	font-weight: 600;
+	display: inline-block;
+	text-align: center;
+}
+
+.admin-badge.active {
+	background: rgba(16, 185, 129, 0.1);
+	color: var(--success);
+}
+
+/* Action Buttons */
+.admin-action-btn {
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 8px;
+	border-radius: 6px;
+	transition: 0.3s;
+	color: var(--text-muted);
+	font-size: 1rem;
+	margin-right: 5px;
+}
+
+.admin-action-btn.view:hover {
+	color: var(--primary-cyan);
+	background: rgba(34, 211, 238, 0.1);
+}
+
+.admin-action-btn.edit:hover {
+	color: var(--warning);
+	background: rgba(245, 158, 11, 0.1);
+}
+
+.admin-action-btn.delete:hover {
+	color: var(--danger);
+	background: rgba(239, 68, 68, 0.1);
+}
+</style>
 </head>
 <body class="admin-body">
-    <!-- Sidebar -->
-    <aside class="admin-sidebar">
-        <div class="admin-sidebar-header">
-            <h2>Smart<span>Career</span></h2>
-            <p style="color: #666; font-size: 12px; margin-top: 5px;">Admin Panel</p>
-        </div>
-        <nav class="admin-sidebar-nav">
-            <ul>
-                <li><a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
-                <li><a href="/admin/users"><i class="fas fa-users"></i> User Management</a></li>
-                <li><a href="/admin/assessments"><i class="fas fa-clipboard-list"></i> Assessments</a></li>
-                <li><a href="/admin/questions" class="active"><i class="fas fa-question-circle"></i> Questions</a></li>
-                <li><a href="/admin/careers"><i class="fas fa-briefcase"></i> Careers</a></li>
-                <li><a href="/admin/recommendations"><i class="fas fa-star"></i> Recommendations</a></li>
-                <li><a href="/admin/analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
-                <li><a href="/admin/profile"><i class="fas fa-user-cog"></i> Profile</a></li>
-            </ul>
-        </nav>
-        <div class="admin-sidebar-footer">
-            <p>&copy; 2024 Smart Career System</p>
-        </div>
-    </aside>
+	<div class="dashboard-layout">
+		<!-- Sidebar -->
+		<aside class="admin-sidebar" id="sidebar">
+			<div class="admin-sidebar-header">
+				<h2>
+					Smart<span>Career</span>
+				</h2>
+				<p
+					style="color: var(--text-muted); font-size: 12px; margin-top: 5px; margin-bottom: 0;">Admin
+					Panel</p>
+			</div>
+			<nav class="admin-sidebar-nav">
+				<ul>
+					<li><a href="/admin/dashboard"><i class="fas fa-home"></i>
+							Dashboard</a></li>
+					<li><a href="/admin/users"><i class="fas fa-users"></i>
+							User Management</a></li>
+					<li><a href="/admin/assessments"><i
+							class="fas fa-clipboard-list"></i> Assessments</a></li>
+					<li><a href="/admin/questions" class="active"><i
+							class="fas fa-question-circle"></i> Questions</a></li>
+					<li><a href="/admin/careers"><i class="fas fa-briefcase"></i>
+							Careers</a></li>
+					<li><a href="/admin/recommendations"><i
+							class="fas fa-star"></i> Recommendations</a></li>
+					<li><a href="/admin/analytics"><i class="fas fa-chart-bar"></i>
+							Analytics</a></li>
+					<li><a href="/admin/profile"><i class="fas fa-user-cog"></i>
+							Profile</a></li>
+				</ul>
+			</nav>
+			<div class="admin-sidebar-footer">
+				<p style="margin: 0;">&copy; 2026 Smart Career System</p>
+			</div>
+		</aside>
 
-    <!-- Main Content -->
-    <main class="admin-main">
-        <!-- Header -->
-        <header class="admin-header">
-            <div class="admin-header-left">
-                <button class="admin-menu-toggle" onclick="toggleSidebar()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1>Question Management</h1>
-            </div>
-            <div class="admin-header-right">
-                <div class="admin-user-info">
-                    <div class="admin-user-avatar">A</div>
-                    <div>
-                        <div class="admin-user-name"><%= ((User) request.getAttribute("admin")).getName() %></div>
-                        <div class="admin-user-role">Administrator</div>
-                    </div>
-                </div>
-                <a href="/admin/logout" class="admin-logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
-            </div>
-        </header>
+		<!-- Main Content -->
+		<main class="admin-main">
+			<!-- Header -->
+			<header class="admin-header">
+				<div class="admin-header-left">
+					<button class="admin-menu-toggle" onclick="toggleSidebar()">
+						<i class="fas fa-bars"></i>
+					</button>
+					<h1>Question Management</h1>
+				</div>
+				<div class="admin-header-right">
+					<div class="admin-user-info">
+						<div class="admin-user-avatar"><%=((User) request.getAttribute("admin")).getName().charAt(0)%></div>
+						<div>
+							<div class="admin-user-name"><%=((User) request.getAttribute("admin")).getName()%></div>
+							<div class="admin-user-role">Administrator</div>
+						</div>
+					</div>
+					<a href="/admin/logout" class="admin-logout-btn"> <i
+						class="fas fa-sign-out-alt"></i> Logout
+					</a>
+				</div>
+			</header>
 
-        <!-- Content -->
-        <div class="admin-content">
-            <% if (request.getAttribute("success") != null) { %>
-                <div class="admin-alert admin-alert-success">
-                    <i class="fas fa-check-circle"></i> <%= request.getAttribute("success") %>
-                </div>
-            <% } %>
-            <% if (request.getAttribute("error") != null) { %>
-                <div class="admin-alert admin-alert-error">
-                    <i class="fas fa-exclamation-circle"></i> <%= request.getAttribute("error") %>
-                </div>
-            <% } %>
+			<!-- Content -->
+			<div class="admin-content">
+				<%
+				if (request.getAttribute("error") != null) {
+				%>
+				<div class="admin-alert admin-alert-error">
+					<i class="fas fa-exclamation-circle"></i>
+					<%=request.getAttribute("error")%>
+				</div>
+				<%
+				}
+				%>
+				<%
+				if (request.getAttribute("success") != null) {
+				%>
+				<div class="admin-alert admin-alert-success">
+					<i class="fas fa-check-circle"></i>
+					<%=request.getAttribute("success")%>
+				</div>
+				<%
+				}
+				%>
 
-            <!-- Create Question Form -->
-            <div class="admin-card">
-                <div class="admin-card-header">
-                    <h3><i class="fas fa-plus-circle"></i> Add New Question</h3>
-                </div>
-                <div class="admin-card-body">
-                    <form action="/api/admin/create-question" method="post" class="admin-form">
-                        <div class="admin-form-group">
-                            <label>Question Text</label>
-                            <textarea name="questionText" rows="2" required placeholder="Enter the question..."></textarea>
-                        </div>
-                        <div class="admin-form-row">
-                            <div class="admin-form-group">
-                                <label>Option A</label>
-                                <input type="text" name="optionA" required placeholder="First option">
-                            </div>
-                            <div class="admin-form-group">
-                                <label>Option B</label>
-                                <input type="text" name="optionB" required placeholder="Second option">
-                            </div>
-                        </div>
-                        <div class="admin-form-row">
-                            <div class="admin-form-group">
-                                <label>Option C</label>
-                                <input type="text" name="optionC" required placeholder="Third option">
-                            </div>
-                            <div class="admin-form-group">
-                                <label>Option D</label>
-                                <input type="text" name="optionD" required placeholder="Fourth option">
-                            </div>
-                        </div>
-                        <div class="admin-form-row">
-                            <div class="admin-form-group">
-                                <label>Correct Answer</label>
-                                <select name="correctAnswer" required>
-                                    <option value="">Select correct option</option>
-                                    <option value="A">A</option>
-                                    <option value="B">B</option>
-                                    <option value="C">C</option>
-                                    <option value="D">D</option>
-                                </select>
-                            </div>
-                            <div class="admin-form-group">
-                                <label>Difficulty Level</label>
-                                <select name="difficultyLevel" required>
-                                    <option value="">Select difficulty</option>
-                                    <option value="Easy">Easy</option>
-                                    <option value="Medium">Medium</option>
-                                    <option value="Hard">Hard</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="admin-form-row">
-                            <div class="admin-form-group">
-                                <label>Skill Tag</label>
-                                <input type="text" name="skillTag" required placeholder="e.g., Java, SQL, Python">
-                            </div>
-                            <div class="admin-form-group">
-                                <label>Assessment</label>
-                                <select name="assessmentId" required>
-                                    <option value="">Select Assessment</option>
-                                    <% List<Assessment> assessments = (List<Assessment>) request.getAttribute("assessments"); %>
-                                    <% if (assessments != null) { %>
-                                        <% for (Assessment assessment : assessments) { %>
-                                            <option value="<%= assessment.getId() %>"><%= assessment.getTestName() %></option>
-                                        <% } %>
-                                    <% } %>
-                                </select>
-                            </div>
-                            <div class="admin-form-group" style="display: flex; align-items: flex-end;">
-                                <button type="submit" class="admin-btn admin-btn-primary">
-                                    <i class="fas fa-plus"></i> Add Question
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+				<!-- Add Question Form -->
+				<div class="admin-form">
+					<h3>
+						<i class="fas fa-plus-circle"></i> Add New Question
+					</h3>
+					<form action="/api/admin/create-question" method="post">
+						<div class="admin-form-group">
+							<label for="questionText">Question Text</label>
+							<textarea id="questionText" name="questionText" rows="3"
+								placeholder="Enter the question text" required></textarea>
+						</div>
+						<div class="admin-form-row">
+							<div class="admin-form-group">
+								<label for="optionA">Option A</label> <input type="text"
+									id="optionA" name="optionA" placeholder="First option" required>
+							</div>
+							<div class="admin-form-group">
+								<label for="optionB">Option B</label> <input type="text"
+									id="optionB" name="optionB" placeholder="Second option"
+									required>
+							</div>
+						</div>
+						<div class="admin-form-row">
+							<div class="admin-form-group">
+								<label for="optionC">Option C</label> <input type="text"
+									id="optionC" name="optionC" placeholder="Third option" required>
+							</div>
+							<div class="admin-form-group">
+								<label for="optionD">Option D</label> <input type="text"
+									id="optionD" name="optionD" placeholder="Fourth option"
+									required>
+							</div>
+						</div>
+						<div class="admin-form-row">
+							<div class="admin-form-group">
+								<label for="correctAnswer">Correct Answer</label> <select
+									id="correctAnswer" name="correctAnswer" required>
+									<option value="">Select correct answer</option>
+									<option value="A">A</option>
+									<option value="B">B</option>
+									<option value="C">C</option>
+									<option value="D">D</option>
+								</select>
+							</div>
+							<div class="admin-form-group">
+								<label for="difficultyLevel">Difficulty Level</label> <select
+									id="difficultyLevel" name="difficultyLevel" required>
+									<option value="">Select difficulty</option>
+									<option value="Easy">Easy</option>
+									<option value="Medium">Medium</option>
+									<option value="Hard">Hard</option>
+								</select>
+							</div>
+						</div>
+						<div class="admin-form-row">
+							<div class="admin-form-group">
+								<label for="skillTag">Skill Tag</label> <input type="text"
+									id="skillTag" name="skillTag" placeholder="e.g., Java, Python"
+									required>
+							</div>
+							<div class="admin-form-group">
+								<label for="assessmentId">Assessment</label> <select
+									id="assessmentId" name="assessmentId" required>
+									<option value="">Select assessment</option>
+									<%
+									List<Assessment> assessments = (List<Assessment>) request.getAttribute("assessments");
+									%>
+									<%
+									if (assessments != null && !assessments.isEmpty()) {
+									%>
+									<%
+									for (Assessment assessment : assessments) {
+									%>
+									<option value="<%=assessment.getId()%>"><%=assessment.getTestName()%></option>
+									<%
+									}
+									%>
+									<%
+									}
+									%>
+								</select>
+							</div>
+						</div>
+						<div class="admin-form-actions">
+							<button type="submit" class="admin-btn admin-btn-primary">
+								<i class="fas fa-plus"></i> Add Question
+							</button>
+							<button type="reset" class="admin-btn admin-btn-secondary">
+								<i class="fas fa-undo"></i> Reset
+							</button>
+						</div>
+					</form>
+				</div>
 
-            <!-- Questions Table -->
-            <div class="admin-table-container">
-                <div class="admin-table-header">
-                    <h3><i class="fas fa-list"></i> All Questions</h3>
-                    <div class="admin-table-actions">
-                        <div class="admin-search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search questions...">
-                        </div>
-                    </div>
-                </div>
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Question</th>
-                            <th>Skill Tag</th>
-                            <th>Difficulty</th>
-                            <th>Assessment</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% List<Question> questions = (List<Question>) request.getAttribute("questions"); %>
-                        <% if (questions != null && !questions.isEmpty()) { %>
-                            <% for (Question question : questions) { %>
-                                <tr>
-                                    <td><%= question.getId() %></td>
-                                    <td><%= question.getQuestionText().length() > 50 ? question.getQuestionText().substring(0, 50) + "..." : question.getQuestionText() %></td>
-                                    <td><span class="admin-badge info"><%= question.getSkillTag() %></span></td>
-                                    <td><span class="admin-badge <%= "Easy".equals(question.getDifficultyLevel()) ? "success" : "Medium".equals(question.getDifficultyLevel()) ? "warning" : "danger" %>"><%= question.getDifficultyLevel() %></span></td>
-                                    <td>Assessment #<%= question.getAssessmentId() %></td>
-                                    <td>
-                                        <button class="admin-action-btn view"><i class="fas fa-eye"></i></button>
-                                        <button class="admin-action-btn edit"><i class="fas fa-edit"></i></button>
-                                        <button class="admin-action-btn delete"><i class="fas fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                            <% } %>
-                        <% } else { %>
-                            <tr>
-                                <td colspan="6" style="text-align: center;">No questions found</td>
-                            </tr>
-                        <% } %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+				<!-- Questions Table -->
+				<div class="admin-table-container">
+					<div class="admin-table-header">
+						<h3>
+							<i class="fas fa-question-circle"></i> Existing Questions
+						</h3>
+						<div class="admin-table-actions">
+							<div class="admin-search-box">
+								<i class="fas fa-search"></i> <input type="text"
+									placeholder="Search questions...">
+							</div>
+						</div>
+					</div>
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Question</th>
+								<th>Skill Tag</th>
+								<th>Difficulty</th>
+								<th>Assessment</th>
+								<th>Status</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							List<Question> questions = (List<Question>) request.getAttribute("questions");
+							%>
+							<%
+							if (questions != null && !questions.isEmpty()) {
+							%>
+							<%
+							for (Question question : questions) {
+							%>
+							<tr>
+								<td>#<%=question.getId()%></td>
+								<td><%=question.getQuestionText().substring(0, Math.min(50, question.getQuestionText().length()))%>...</td>
+								<td><%=question.getSkillTag()%></td>
+								<td>
+									<%
+									if ("Easy".equals(question.getDifficultyLevel())) {
+									%> <span class="admin-badge"
+									style="background: rgba(16, 185, 129, 0.1); color: var(--success);">Easy</span>
+									<%
+									} else if ("Medium".equals(question.getDifficultyLevel())) {
+									%> <span class="admin-badge"
+									style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">Medium</span>
+									<%
+									} else {
+									%> <span class="admin-badge"
+									style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">Hard</span>
+									<%
+									}
+									%>
+								</td>
+								<td><%=question.getAssessmentId()%></td>
+								<td><span class="admin-badge active">Active</span></td>
+								<td>
+									<button class="admin-action-btn view" title="View">
+										<i class="fas fa-eye"></i>
+									</button>
+									<button class="admin-action-btn edit" title="Edit">
+										<i class="fas fa-edit"></i>
+									</button>
+									<button class="admin-action-btn delete" title="Delete">
+										<i class="fas fa-trash"></i>
+									</button>
+								</td>
+							</tr>
+							<%
+							}
+							%>
+							<%
+							} else {
+							%>
+							<tr>
+								<td colspan="7"
+									style="text-align: center; padding: 40px; color: var(--text-muted);">No
+									questions added yet.</td>
+							</tr>
+							<%
+							}
+							%>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</main>
+	</div>
 
-    <script>
-        function toggleSidebar() {
-            document.querySelector('.admin-sidebar').classList.toggle('open');
-        }
-    </script>
+	<script>
+		function toggleSidebar() {
+			document.getElementById('sidebar').classList.toggle('collapsed');
+		}
+	</script>
 </body>
 </html>

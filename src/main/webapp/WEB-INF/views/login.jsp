@@ -30,7 +30,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f8fafc;
+            background-color: #f8fafc; /* Light background to make the form card pop */
             color: var(--text-dark);
             display: flex;
             flex-direction: column;
@@ -94,7 +94,7 @@
 
         .form-container {
             width: 100%;
-            max-width: 480px;
+            max-width: 450px;
             background: var(--card-bg-light);
             padding: 45px 40px;
             border-radius: 16px;
@@ -162,7 +162,6 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
-            text-decoration: none;
         }
 
         .btn:hover {
@@ -218,7 +217,6 @@
             padding: 25px 20px;
             font-size: 0.9rem;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: auto;
         }
     </style>
 </head>
@@ -263,7 +261,7 @@
                 </div>
                 
                 <button type="submit" class="btn">
-                    <i class="fas fa-sign-in-alt"></i> Login
+                    <i class="fas fa-right-to-bracket"></i> Login
                 </button>
             </form>
             
