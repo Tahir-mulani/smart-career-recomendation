@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     phone_number VARCHAR(15) NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'USER',
+    gender VARCHAR(20) NULL,
     skills TEXT NULL,
     interests TEXT NULL,
     registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP

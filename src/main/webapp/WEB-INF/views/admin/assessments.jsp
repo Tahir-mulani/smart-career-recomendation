@@ -641,19 +641,18 @@ body.admin-body {
 						</h3>
 						<div class="admin-table-actions">
 							<div class="admin-search-box">
-								<i class="fas fa-search"></i> <input type="text"
-									placeholder="Search assessments...">
+								<i class="fas fa-search"></i> <input type="text" id="assessmentSearchInput" onkeyup="filterAssessmentsTable()"
+									placeholder="Search assessments by name...">
 							</div>
 						</div>
 					</div>
-					<table class="admin-table">
+					<table class="admin-table" id="assessmentsTable">
 						<thead>
 							<tr>
 								<th>ID</th>
 								<th>Test Name</th>
 								<th>Duration</th>
 								<th>Total Marks</th>
-								<th>Questions</th>
 								<th>Status</th>
 								<th>Actions</th>
 							</tr>
@@ -673,16 +672,12 @@ body.admin-body {
 								<td><strong><%=assessment.getTestName()%></strong></td>
 								<td><%=assessment.getDuration()%> min</td>
 								<td><%=assessment.getTotalMarks()%></td>
-								<td>0</td>
 								<td><span class="admin-badge active">Active</span></td>
 								<td>
-									<button class="admin-action-btn view" title="View">
-										<i class="fas fa-eye"></i>
-									</button>
-									<button class="admin-action-btn edit" title="Edit">
+									<button class="admin-action-btn edit" title="Edit" onclick="openEditModal(<%=assessment.getId()%>, '<%=assessment.getTestName().replace("'", "\\'")%>', <%=assessment.getDuration()%>, <%=assessment.getTotalMarks()%>)">
 										<i class="fas fa-edit"></i>
 									</button>
-									<button class="admin-action-btn delete" title="Delete">
+									<button class="admin-action-btn delete" title="Delete" onclick="deleteAssessment(<%=assessment.getId()%>)">
 										<i class="fas fa-trash"></i>
 									</button>
 								</td>
@@ -694,7 +689,7 @@ body.admin-body {
 							} else {
 							%>
 							<tr>
-								<td colspan="7"
+								<td colspan="6"
 									style="text-align: center; padding: 40px; color: var(--text-muted);">No
 									assessments created yet.</td>
 							</tr>
@@ -703,15 +698,149 @@ body.admin-body {
 							%>
 						</tbody>
 					</table>
+
+					<!-- Pagination Controls -->
+					<div class="pagination-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; background: #fff; border-top: 1px solid var(--border); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+						<div id="assessmentPageInfo" style="font-size: 0.85rem; color: var(--text-muted);">Showing 1 to 10 of 0 assessments</div>
+						<div id="assessmentPageButtons" style="display: flex; gap: 6px;"></div>
+					</div>
 				</div>
 			</div>
 		</main>
 	</div>
 
+	<!-- Edit Modal -->
+	<div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 99; align-items: center; justify-content: center;">
+		<div style="background: var(--white); border-radius: 16px; padding: 35px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+			<h3 style="margin-top: 0; margin-bottom: 20px; color: var(--bg-dark-blue); font-size: 1.2rem;"><i class="fas fa-edit" style="color: var(--primary-cyan);"></i> Edit Assessment</h3>
+			<form id="editForm" method="post">
+				<div class="admin-form-group" style="margin-bottom: 15px;">
+					<label for="editTestName">Test Name</label>
+					<input type="text" id="editTestName" name="testName" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+				</div>
+				<div class="admin-form-group" style="margin-bottom: 15px;">
+					<label for="editDuration">Duration (minutes)</label>
+					<input type="number" id="editDuration" name="duration" min="1" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+				</div>
+				<div class="admin-form-group" style="margin-bottom: 20px;">
+					<label for="editTotalMarks">Total Marks</label>
+					<input type="number" id="editTotalMarks" name="totalMarks" min="1" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+				</div>
+				<div style="display: flex; gap: 10px; justify-content: flex-end;">
+					<button type="button" class="admin-btn admin-btn-secondary" onclick="closeEditModal()">Cancel</button>
+					<button type="submit" class="admin-btn admin-btn-primary">Save Changes</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
 	<script>
+		let currentAssessmentPage = 1;
+		const assessmentPageSize = 10;
+
 		function toggleSidebar() {
 			document.getElementById('sidebar').classList.toggle('collapsed');
 		}
+
+		function renderAssessmentPagination() {
+			const input = document.getElementById('assessmentSearchInput');
+			const filter = input ? input.value.toLowerCase() : '';
+			const table = document.querySelector('.admin-table');
+			if (!table) return;
+			const tbody = table.querySelector('tbody');
+			if (!tbody) return;
+			const allRows = Array.from(tbody.getElementsByTagName('tr'));
+
+			const matchingRows = allRows.filter(tr => {
+				const text = tr.textContent || tr.innerText;
+				return text.toLowerCase().indexOf(filter) > -1;
+			});
+
+			const totalItems = matchingRows.length;
+			const totalPages = Math.max(1, Math.ceil(totalItems / assessmentPageSize));
+			if (currentAssessmentPage > totalPages) currentAssessmentPage = totalPages;
+
+			allRows.forEach(tr => tr.style.display = 'none');
+
+			const startIndex = (currentAssessmentPage - 1) * assessmentPageSize;
+			const endIndex = Math.min(startIndex + assessmentPageSize, totalItems);
+
+			for (let i = startIndex; i < endIndex; i++) {
+				matchingRows[i].style.display = '';
+			}
+
+			const pageInfo = document.getElementById('assessmentPageInfo');
+			if (pageInfo) {
+				if (totalItems === 0) {
+					pageInfo.innerText = "No matching assessments found";
+				} else {
+					pageInfo.innerText = `Showing ${startIndex + 1} to ${endIndex} of ${totalItems} assessments`;
+				}
+			}
+
+			const pageButtons = document.getElementById('assessmentPageButtons');
+			if (!pageButtons) return;
+			pageButtons.innerHTML = '';
+
+			const prevBtn = document.createElement('button');
+			prevBtn.className = 'admin-btn admin-btn-secondary';
+			prevBtn.style.padding = '5px 12px';
+			prevBtn.style.fontSize = '0.8rem';
+			prevBtn.disabled = currentAssessmentPage === 1;
+			prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i> Prev';
+			prevBtn.onclick = () => { if (currentAssessmentPage > 1) { currentAssessmentPage--; renderAssessmentPagination(); } };
+			pageButtons.appendChild(prevBtn);
+
+			for (let p = 1; p <= totalPages; p++) {
+				const pBtn = document.createElement('button');
+				pBtn.className = p === currentAssessmentPage ? 'admin-btn admin-btn-primary' : 'admin-btn admin-btn-secondary';
+				pBtn.style.padding = '5px 12px';
+				pBtn.style.fontSize = '0.8rem';
+				pBtn.innerText = p;
+				pBtn.onclick = () => { currentAssessmentPage = p; renderAssessmentPagination(); };
+				pageButtons.appendChild(pBtn);
+			}
+
+			const nextBtn = document.createElement('button');
+			nextBtn.className = 'admin-btn admin-btn-secondary';
+			nextBtn.style.padding = '5px 12px';
+			nextBtn.style.fontSize = '0.8rem';
+			nextBtn.disabled = currentAssessmentPage === totalPages;
+			nextBtn.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
+			nextBtn.onclick = () => { if (currentAssessmentPage < totalPages) { currentAssessmentPage++; renderAssessmentPagination(); } };
+			pageButtons.appendChild(nextBtn);
+		}
+
+		function filterAssessmentsTable() {
+			currentAssessmentPage = 1;
+			renderAssessmentPagination();
+		}
+
+		function openEditModal(id, name, duration, marks) {
+			document.getElementById('editForm').action = '/api/admin/assessments/' + id + '/update';
+			document.getElementById('editTestName').value = name;
+			document.getElementById('editDuration').value = duration;
+			document.getElementById('editTotalMarks').value = marks;
+			document.getElementById('editModal').style.display = 'flex';
+		}
+
+		function closeEditModal() {
+			document.getElementById('editModal').style.display = 'none';
+		}
+
+		function deleteAssessment(id) {
+			if (confirm('Are you sure you want to delete this assessment?')) {
+				const form = document.createElement('form');
+				form.method = 'POST';
+				form.action = '/api/admin/assessments/' + id + '/delete';
+				document.body.appendChild(form);
+				form.submit();
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			renderAssessmentPagination();
+		});
 	</script>
 </body>
 </html>

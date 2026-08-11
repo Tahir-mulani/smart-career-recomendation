@@ -1,12 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ page import="java.util.List"%>
+<%@ page import="java.util.Map"%>
 <%@ page import="com.techhub.entity.*"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recommendation Management - Smart Career Recommendation</title>
+<title>Recommendation Management - Smart Career Admin</title>
 <link
 	href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
 	rel="stylesheet">
@@ -14,19 +15,16 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style type="text/css">
-/* Modern UI Color Palette */
 :root {
 	--primary-cyan: #22d3ee;
 	--primary-hover: #06b6d4;
 	--bg-dark-blue: #0a141f;
-	--bg-gradient: linear-gradient(135deg, #0f1c29 0%, #1a364b 50%, #1e455c 100%);
 	--success: #10b981;
 	--danger: #ef4444;
 	--warning: #f59e0b;
 	--bg: #f8fafc;
 	--white: #ffffff;
 	--text: #0f172a;
-	--text-light: #f8fafc;
 	--text-muted: #94a3b8;
 	--border: #e2e8f0;
 }
@@ -39,29 +37,21 @@ body.admin-body {
 	overflow-x: hidden;
 }
 
-/* Base Layout - FIXED for side-by-side display */
 .dashboard-layout {
 	display: flex;
 	flex-direction: row !important;
-	flex-wrap: nowrap !important;
 	min-height: 100vh;
 	width: 100%;
-	align-items: stretch;
-	overflow-x: hidden;
 }
 
-/* Sidebar - FIXED to prevent shrinking */
 .admin-sidebar {
 	width: 260px;
 	min-width: 260px;
-	flex-shrink: 0;
 	background: var(--bg-dark-blue);
-	color: var(--text-light);
-	box-shadow: 5px 0 20px rgba(0, 0, 0, .05);
-	transition: margin-left 0.3s ease;
+	color: #fff;
 	display: flex;
 	flex-direction: column;
-	position: relative;
+	transition: margin-left 0.3s ease;
 	z-index: 10;
 }
 
@@ -76,7 +66,7 @@ body.admin-body {
 }
 
 .admin-sidebar-header h2 {
-	color: var(--white);
+	color: #fff;
 	font-size: 26px;
 	font-weight: 700;
 	margin: 0;
@@ -107,9 +97,9 @@ body.admin-body {
 	color: var(--text-muted);
 	padding: 14px 18px;
 	border-radius: 12px;
-	transition: .3s;
 	text-decoration: none;
 	font-weight: 500;
+	transition: .3s;
 }
 
 .admin-sidebar-nav a:hover, .admin-sidebar-nav a.active {
@@ -117,31 +107,14 @@ body.admin-body {
 	color: var(--primary-cyan);
 }
 
-.admin-sidebar-nav i {
-	width: 20px;
-	text-align: center;
-}
-
-.admin-sidebar-footer {
-	padding: 20px;
-	text-align: center;
-	color: var(--text-muted);
-	font-size: 12px;
-	border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Main Content Area */
 .admin-main {
 	flex: 1;
-	flex-grow: 1;
-	width: calc(100% - 260px);
 	background: var(--bg);
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
 }
 
-/* Header */
 .admin-header {
 	background: var(--white);
 	padding: 18px 35px;
@@ -150,9 +123,6 @@ body.admin-body {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	position: sticky;
-	top: 0;
-	z-index: 5;
 }
 
 .admin-header-left {
@@ -174,16 +144,6 @@ body.admin-body {
 	font-size: 1.2rem;
 	color: var(--text);
 	cursor: pointer;
-	padding: 5px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.admin-header-right {
-	display: flex;
-	align-items: center;
-	gap: 25px;
 }
 
 .admin-user-info {
@@ -193,487 +153,362 @@ body.admin-body {
 }
 
 .admin-user-avatar {
-	width: 45px;
-	height: 45px;
+	width: 42px;
+	height: 42px;
 	border-radius: 50%;
 	background: var(--primary-cyan);
 	color: #000;
 	display: flex;
-	justify-content: center;
 	align-items: center;
-	font-size: 20px;
-	font-weight: 600;
-}
-
-.admin-user-name {
-	font-weight: 600;
-	font-size: 0.9rem;
-	line-height: 1.2;
-}
-
-.admin-user-role {
-	font-size: 0.8rem;
-	color: var(--text-muted);
+	justify-content: center;
+	font-weight: 700;
 }
 
 .admin-logout-btn {
-	color: var(--danger);
-	text-decoration: none;
-	font-weight: 500;
-	transition: 0.3s;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-
-.admin-logout-btn:hover {
-	color: #b91c1c;
-}
-
-/* Content Area */
-.admin-content {
-	padding: 35px;
-	overflow-y: auto;
-}
-
-/* Alerts */
-.admin-alert {
-	padding: 15px 20px;
-	border-radius: 10px;
-	margin-bottom: 25px;
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	font-weight: 500;
-}
-
-.admin-alert-success {
-	background: rgba(16, 185, 129, 0.1);
-	color: var(--success);
-	border-left: 5px solid var(--success);
-}
-
-.admin-alert-error {
 	background: rgba(239, 68, 68, 0.1);
 	color: var(--danger);
-	border-left: 5px solid var(--danger);
+	padding: 8px 16px;
+	border-radius: 8px;
+	text-decoration: none;
+	font-weight: 500;
+	font-size: 0.9rem;
 }
 
-/* Stats Grid */
+.admin-content {
+	padding: 35px;
+	flex: 1;
+}
+
 .admin-stats-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-	gap: 25px;
-	margin-bottom: 35px;
+	gap: 20px;
+	margin-bottom: 30px;
 }
 
 .admin-stat-card {
-	background: var(--bg-gradient);
-	padding: 25px;
-	border-radius: 16px;
-	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-	color: var(--text-light);
-	position: relative;
-	overflow: hidden;
-	display: flex;
-	flex-direction: column;
-}
-
-.admin-stat-card-icon {
-	font-size: 2rem;
-	margin-bottom: 15px;
-	opacity: 0.8;
-	color: var(--primary-cyan);
+	background: var(--white);
+	padding: 22px;
+	border-radius: 14px;
+	border: 1px solid var(--border);
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.02);
 }
 
 .admin-stat-card h3 {
-	font-size: 2.2rem;
-	color: var(--white);
+	font-size: 1.8rem;
 	margin: 0 0 5px 0;
-	line-height: 1;
+	color: var(--bg-dark-blue);
 }
 
 .admin-stat-card p {
 	margin: 0;
-	font-size: 0.95rem;
-	color: rgba(255, 255, 255, 0.7);
-	font-weight: 500;
+	color: var(--text-muted);
+	font-size: 0.85rem;
 }
 
-.admin-stat-card::after {
-	content: '';
-	position: absolute;
-	top: -20px;
-	right: -20px;
-	width: 100px;
-	height: 100px;
-	background: rgba(34, 211, 238, 0.05);
-	border-radius: 50%;
-}
-
-/* Tables */
-.admin-table-container {
+/* Student Group Card Styles */
+.student-group-card {
 	background: var(--white);
-	border-radius: 18px;
-	padding: 30px;
-	box-shadow: 0 10px 25px rgba(0, 0, 0, .03);
-	border: 1px solid var(--border);
-	overflow-x: auto;
-}
-
-.admin-table-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 15px;
+	border-radius: 16px;
+	padding: 28px;
 	margin-bottom: 25px;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.03);
+	border: 1px solid var(--border);
 }
 
-.admin-table-header h3 {
-	color: var(--bg-dark-blue);
-	margin: 0;
-	font-size: 1.25rem;
+.student-card-header {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	justify-content: space-between;
+	padding-bottom: 20px;
+	margin-bottom: 20px;
+	border-bottom: 2px solid #f1f5f9;
 }
 
-.admin-table-header h3 i {
-	color: var(--primary-cyan);
-}
-
-.admin-table-actions {
+.student-info-meta {
 	display: flex;
+	align-items: center;
 	gap: 15px;
-	align-items: center;
 }
 
-.admin-search-box {
+.student-avatar-lg {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	background: var(--bg-dark-blue);
+	color: var(--primary-cyan);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.3rem;
+	font-weight: 700;
+}
+
+.student-name-title h3 {
+	margin: 0 0 4px 0;
+	font-size: 1.2rem;
+	font-weight: 700;
+	color: var(--bg-dark-blue);
+}
+
+.student-email-tag {
+	font-size: 0.85rem;
+	color: var(--text-muted);
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.top-careers-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 18px;
+}
+
+.career-choice-box {
+	background: #f8fafc;
+	border-radius: 12px;
+	padding: 18px;
+	border: 1px solid var(--border);
 	position: relative;
 }
 
-.admin-search-box i {
+.choice-rank-badge {
 	position: absolute;
-	left: 12px;
-	top: 50%;
-	transform: translateY(-50%);
-	color: var(--text-muted);
+	top: 14px;
+	right: 14px;
+	padding: 4px 10px;
+	border-radius: 12px;
+	font-size: 0.75rem;
+	font-weight: 700;
+}
+
+.rank-1 { background: rgba(34, 211, 238, 0.15); color: #0284c7; }
+.rank-2 { background: rgba(16, 185, 129, 0.15); color: #059669; }
+.rank-3 { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+
+.career-choice-title {
+	font-size: 1rem;
+	font-weight: 700;
+	color: var(--bg-dark-blue);
+	margin-bottom: 8px;
+	padding-right: 70px;
+}
+
+.match-score-text {
+	font-size: 0.9rem;
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.score-high { color: var(--success); }
+.score-medium { color: var(--warning); }
+.score-low { color: var(--danger); }
+
+.bar-bg {
+	height: 8px;
+	width: 100%;
+	background: #e2e8f0;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.bar-fill {
+	height: 100%;
+	border-radius: 4px;
+}
+
+.search-header-box {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 25px;
+	gap: 15px;
+}
+
+.admin-search-box {
+	display: flex;
+	align-items: center;
+	background: var(--white);
+	padding: 10px 18px;
+	border-radius: 12px;
+	border: 1px solid var(--border);
+	width: 320px;
 }
 
 .admin-search-box input {
-	padding: 10px 15px 10px 35px;
-	border: 1px solid var(--border);
-	border-radius: 8px;
-	outline: none;
-	transition: 0.3s;
-	font-family: 'Poppins', sans-serif;
-	width: 220px;
-}
-
-.admin-search-box input:focus {
-	border-color: var(--primary-cyan);
-	box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
-}
-
-.admin-filter-select {
-	padding: 10px 15px;
-	border: 1px solid var(--border);
-	border-radius: 8px;
-	outline: none;
-	background: var(--white);
-	cursor: pointer;
-	font-family: 'Poppins', sans-serif;
-	color: var(--text-dark);
-}
-
-.admin-table {
-	width: 100%;
-	border-collapse: collapse;
-	min-width: 800px;
-}
-
-.admin-table th, .admin-table td {
-	padding: 15px;
-	text-align: left;
-	border-bottom: 1px solid var(--border);
-	vertical-align: middle;
-}
-
-.admin-table th {
-	color: var(--text-muted);
-	font-weight: 600;
-	font-size: 0.85rem;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-}
-
-.admin-table td {
-	font-size: 0.95rem;
-	color: var(--text);
-}
-
-/* Badges */
-.admin-badge {
-	padding: 6px 12px;
-	border-radius: 20px;
-	font-size: 0.8rem;
-	font-weight: 600;
-	display: inline-block;
-	text-align: center;
-}
-
-.admin-badge.active {
-	background: rgba(16, 185, 129, 0.1);
-	color: var(--success);
-}
-
-/* Action Buttons */
-.admin-action-btn {
-	background: none;
 	border: none;
-	cursor: pointer;
-	padding: 8px;
-	border-radius: 6px;
-	transition: 0.3s;
-	color: var(--text-muted);
-	font-size: 1rem;
-	margin-right: 5px;
-}
-
-.admin-action-btn.view:hover {
-	color: var(--primary-cyan);
-	background: rgba(34, 211, 238, 0.1);
-}
-
-.admin-action-btn.delete:hover {
-	color: var(--danger);
-	background: rgba(239, 68, 68, 0.1);
+	outline: none;
+	margin-left: 10px;
+	width: 100%;
+	font-family: inherit;
 }
 </style>
 </head>
 <body class="admin-body">
-	<div class="dashboard-layout">
-		<!-- Sidebar -->
-		<aside class="admin-sidebar" id="sidebar">
-			<div class="admin-sidebar-header">
-				<h2>
-					Smart<span>Career</span>
-				</h2>
-				<p
-					style="color: var(--text-muted); font-size: 12px; margin-top: 5px; margin-bottom: 0;">Admin
-					Panel</p>
+<%
+User admin = (User) session.getAttribute("admin");
+Map<Long, List<Recommendation>> userRecsMap = (Map<Long, List<Recommendation>>) request.getAttribute("userRecsMap");
+Map<Long, User> userMap = (Map<Long, User>) request.getAttribute("userMap");
+Map<Long, Career> careerMap = (Map<Long, Career>) request.getAttribute("careerMap");
+List<Recommendation> allRecs = (List<Recommendation>) request.getAttribute("recommendations");
+
+int totalCount = allRecs != null ? allRecs.size() : 0;
+int studentCount = userRecsMap != null ? userRecsMap.size() : 0;
+long highMatchesCount = allRecs != null ? allRecs.stream().filter(r -> r.getMatchScore() != null && r.getMatchScore() >= 80).count() : 0;
+%>
+<div class="dashboard-layout">
+	<!-- Sidebar -->
+	<aside class="admin-sidebar" id="sidebar">
+		<div class="admin-sidebar-header">
+			<h2>Smart<span>Career</span></h2>
+			<p style="color: var(--text-muted); font-size: 12px; margin-top: 5px; margin-bottom: 0;">Admin Panel</p>
+		</div>
+		<nav class="admin-sidebar-nav">
+			<ul>
+				<li><a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+				<li><a href="/admin/users"><i class="fas fa-users"></i> User Management</a></li>
+				<li><a href="/admin/assessments"><i class="fas fa-clipboard-list"></i> Assessments</a></li>
+				<li><a href="/admin/questions"><i class="fas fa-question-circle"></i> Questions</a></li>
+				<li><a href="/admin/careers"><i class="fas fa-briefcase"></i> Careers</a></li>
+				<li><a href="/admin/recommendations" class="active"><i class="fas fa-star"></i> Recommendations</a></li>
+				<li><a href="/admin/analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+				<li><a href="/admin/profile"><i class="fas fa-user-cog"></i> Profile</a></li>
+			</ul>
+		</nav>
+	</aside>
+
+	<!-- Main Content -->
+	<main class="admin-main">
+		<header class="admin-header">
+			<div class="admin-header-left">
+				<button class="admin-menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+				<h1>Recommendation Management</h1>
 			</div>
-			<nav class="admin-sidebar-nav">
-				<ul>
-					<li><a href="/admin/dashboard"><i class="fas fa-home"></i>
-							Dashboard</a></li>
-					<li><a href="/admin/users"><i class="fas fa-users"></i>
-							User Management</a></li>
-					<li><a href="/admin/assessments"><i
-							class="fas fa-clipboard-list"></i> Assessments</a></li>
-					<li><a href="/admin/questions"><i
-							class="fas fa-question-circle"></i> Questions</a></li>
-					<li><a href="/admin/careers"><i class="fas fa-briefcase"></i>
-							Careers</a></li>
-					<li><a href="/admin/recommendations" class="active"><i
-							class="fas fa-star"></i> Recommendations</a></li>
-					<li><a href="/admin/analytics"><i class="fas fa-chart-bar"></i>
-							Analytics</a></li>
-					<li><a href="/admin/profile"><i class="fas fa-user-cog"></i>
-							Profile</a></li>
-				</ul>
-			</nav>
-			<div class="admin-sidebar-footer">
-				<p style="margin: 0;">&copy; 2026 Smart Career System</p>
+			<div class="admin-user-info">
+				<div class="admin-user-avatar"><%=admin != null && admin.getName() != null ? admin.getName().substring(0, 1).toUpperCase() : "A"%></div>
+				<div>
+					<div style="font-weight: 600; font-size: 14px;"><%=admin != null ? admin.getName() : "Admin"%></div>
+					<div style="font-size: 12px; color: var(--text-muted);">Administrator</div>
+				</div>
+				<a href="/admin/logout" class="admin-logout-btn" style="margin-left: 15px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
 			</div>
-		</aside>
+		</header>
 
-		<!-- Main Content -->
-		<main class="admin-main">
-			<!-- Header -->
-			<header class="admin-header">
-				<div class="admin-header-left">
-					<button class="admin-menu-toggle" onclick="toggleSidebar()">
-						<i class="fas fa-bars"></i>
-					</button>
-					<h1>Recommendation Management</h1>
+		<div class="admin-content">
+			<!-- Stats Cards -->
+			<div class="admin-stats-grid">
+				<div class="admin-stat-card">
+					<h3><%=studentCount%></h3>
+					<p>Students Evaluated</p>
 				</div>
-				<div class="admin-header-right">
-					<div class="admin-user-info">
-						<div class="admin-user-avatar"><%=((User) request.getAttribute("admin")).getName().charAt(0)%></div>
-						<div>
-							<div class="admin-user-name"><%=((User) request.getAttribute("admin")).getName()%></div>
-							<div class="admin-user-role">Administrator</div>
-						</div>
-					</div>
-					<a href="/admin/logout" class="admin-logout-btn"> <i
-						class="fas fa-sign-out-alt"></i> Logout
-					</a>
+				<div class="admin-stat-card">
+					<h3><%=totalCount%></h3>
+					<p>Total Recommendation Matches</p>
 				</div>
-			</header>
+				<div class="admin-stat-card">
+					<h3><%=highMatchesCount%></h3>
+					<p>High Score Matches (&ge;80%)</p>
+				</div>
+			</div>
 
-			<!-- Content -->
-			<div class="admin-content">
-				<%
-				if (request.getAttribute("error") != null) {
-				%>
-				<div class="admin-alert admin-alert-error">
-					<i class="fas fa-exclamation-circle"></i>
-					<%=request.getAttribute("error")%>
+			<!-- Search Header -->
+			<div class="search-header-box">
+				<h3 style="margin: 0; color: var(--bg-dark-blue); font-size: 1.2rem;">
+					<i class="fas fa-user-graduate" style="color: var(--primary-cyan);"></i> Student Recommendation Summary Cards
+				</h3>
+				<div class="admin-search-box">
+					<i class="fas fa-search" style="color: var(--text-muted);"></i>
+					<input type="text" id="recSearchInput" onkeyup="filterRecommendationCards()" placeholder="Search by student name or career...">
 				</div>
-				<%
-				}
-				%>
-				<%
-				if (request.getAttribute("success") != null) {
-				%>
-				<div class="admin-alert admin-alert-success">
-					<i class="fas fa-check-circle"></i>
-					<%=request.getAttribute("success")%>
-				</div>
-				<%
-				}
-				%>
+			</div>
 
-				<%
-				List<Recommendation> recList = (List<Recommendation>) request.getAttribute("recommendations");
-				int totalRecs = recList != null ? recList.size() : 0;
-				long highMatchesCount = recList != null ? recList.stream().filter(r -> r.getMatchScore() != null && r.getMatchScore() >= 80).count() : 0;
-				long uniqueUsersCount = recList != null ? recList.stream().filter(r -> r.getUserId() != null).map(r -> r.getUserId()).distinct().count() : 0;
-				long uniqueCareersCount = recList != null ? recList.stream().filter(r -> r.getCareerId() != null).map(r -> r.getCareerId()).distinct().count() : 0;
+			<!-- Student Cards List -->
+			<div id="studentCardsContainer">
+				<% if (userRecsMap != null && !userRecsMap.isEmpty()) { 
+					for (Map.Entry<Long, List<Recommendation>> entry : userRecsMap.entrySet()) {
+						Long uId = entry.getKey();
+						List<Recommendation> recList = entry.getValue();
+						User student = userMap != null ? userMap.get(uId) : null;
+						String studentName = student != null && student.getName() != null ? student.getName() : ("Student #" + uId);
+						String studentEmail = student != null && student.getEmail() != null ? student.getEmail() : "N/A";
 				%>
-
-				<!-- Stats Cards -->
-				<div class="admin-stats-grid">
-					<div class="admin-stat-card">
-						<div class="admin-stat-card-icon">
-							<i class="fas fa-star"></i>
-						</div>
-						<h3><%=totalRecs%></h3>
-						<p>Total Recommendations</p>
-					</div>
-					<div class="admin-stat-card">
-						<div class="admin-stat-card-icon">
-							<i class="fas fa-check-circle"></i>
-						</div>
-						<h3><%=highMatchesCount%></h3>
-						<p>High Matches</p>
-					</div>
-					<div class="admin-stat-card">
-						<div class="admin-stat-card-icon">
-							<i class="fas fa-users"></i>
-						</div>
-						<h3><%=uniqueUsersCount%></h3>
-						<p>Users with Recommendations</p>
-					</div>
-					<div class="admin-stat-card">
-						<div class="admin-stat-card-icon">
-							<i class="fas fa-briefcase"></i>
-						</div>
-						<h3><%=uniqueCareersCount%></h3>
-						<p>Careers Recommended</p>
-					</div>
-				</div>
-
-				<!-- Recommendations Table -->
-				<div class="admin-table-container">
-					<div class="admin-table-header">
-						<h3>
-							<i class="fas fa-star"></i> All Recommendations
-						</h3>
-						<div class="admin-table-actions">
-							<div class="admin-search-box">
-								<i class="fas fa-search"></i> <input type="text"
-									placeholder="Search recommendations...">
+				<div class="student-group-card" data-search="<%=studentName.toLowerCase()%> <%=studentEmail.toLowerCase()%>">
+					<div class="student-card-header">
+						<div class="student-info-meta">
+							<div class="student-avatar-lg"><%=studentName.substring(0, 1).toUpperCase()%></div>
+							<div class="student-name-title">
+								<h3><%=studentName%></h3>
+								<div class="student-email-tag"><i class="fas fa-envelope"></i> <%=studentEmail%></div>
 							</div>
-							<select class="admin-filter-select">
-								<option value="">All Match Levels</option>
-								<option value="high">High Match (80%+)</option>
-								<option value="medium">Medium Match (60-79%)</option>
-								<option value="low">Low Match (<60%)</option>
-							</select>
+						</div>
+						<div style="background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 6px 16px; border-radius: 20px; font-weight: 600; font-size: 0.85rem;">
+							<i class="fas fa-check-circle"></i> Assessment Verified
 						</div>
 					</div>
-					<table class="admin-table">
-						<thead>
-							<tr>
-								<th>ID</th>
-								<th>User ID</th>
-								<th>Career ID</th>
-								<th>Match Score</th>
-								<th>Match Level</th>
-								<th>Status</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							<%
-							List<Recommendation> recommendations = (List<Recommendation>) request.getAttribute("recommendations");
-							%>
-							<%
-							if (recommendations != null && !recommendations.isEmpty()) {
-							%>
-							<%
-							for (Recommendation recommendation : recommendations) {
-							%>
-							<tr>
-								<td>#<%=recommendation.getId()%></td>
-								<td><%=recommendation.getUserId()%></td>
-								<td><%=recommendation.getCareerId()%></td>
-								<td><%=String.format("%.2f", recommendation.getMatchScore())%>%</td>
-								<td>
-									<%
-									if (recommendation.getMatchScore() >= 80) {
-									%> <span
-									class="admin-badge active">High Match</span> <%
- } else if (recommendation.getMatchScore() >= 60) {
- %>
-									<span class="admin-badge"
-									style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">Medium
-										Match</span> <%
- } else {
- %> <span class="admin-badge"
-									style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">Low
-										Match</span> <%
- }
- %>
-								</td>
-								<td><span class="admin-badge active">Active</span></td>
-								<td>
-									<button class="admin-action-btn view" title="View Details">
-										<i class="fas fa-eye"></i>
-									</button>
-									<button class="admin-action-btn delete" title="Delete">
-										<i class="fas fa-trash"></i>
-									</button>
-								</td>
-							</tr>
-							<%
-							}
-							%>
-							<%
-							} else {
-							%>
-							<tr>
-								<td colspan="7"
-									style="text-align: center; padding: 40px; color: var(--text-muted);">No
-									recommendations found.</td>
-							</tr>
-							<%
-							}
-							%>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</main>
-	</div>
 
-	<script>
-		function toggleSidebar() {
-			document.getElementById('sidebar').classList.toggle('collapsed');
+					<div style="font-weight: 600; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
+						<i class="fas fa-star" style="color: #f59e0b;"></i> Top Career Matches for this Student:
+					</div>
+
+					<div class="top-careers-grid">
+						<% 
+						int rank = 1;
+						for (Recommendation rec : recList) {
+							if (rank > 3) break; // Display top 3 per student
+							Career career = careerMap != null ? careerMap.get(rec.getCareerId()) : null;
+							String careerName = career != null ? career.getCareerName() : ("Career #" + rec.getCareerId());
+							double score = rec.getMatchScore() != null ? rec.getMatchScore() : 0.0;
+							String scoreClass = score >= 80 ? "score-high" : (score >= 50 ? "score-medium" : "score-low");
+							String bgStyle = score >= 80 ? "background: #10b981;" : (score >= 50 ? "background: #f59e0b;" : "background: #ef4444;");
+						%>
+						<div class="career-choice-box">
+							<span class="choice-rank-badge rank-<%=rank%>">#<%=rank%> Choice</span>
+							<div class="career-choice-title"><%=careerName%></div>
+							<div class="match-score-text <%=scoreClass%>"><%=String.format("%.1f", score)%>% Match</div>
+							<div class="bar-bg">
+								<div class="bar-fill" style="width: <%=Math.min(100.0, score)%>%; <%=bgStyle%>"></div>
+							</div>
+						</div>
+						<% 
+							rank++;
+						} 
+						%>
+					</div>
+				</div>
+				<% 
+					} 
+				} else { 
+				%>
+				<div class="student-group-card" style="text-align: center; padding: 50px;">
+					<i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 15px;"></i>
+					<p style="color: var(--text-muted); font-size: 16px;">No student recommendations generated yet.</p>
+				</div>
+				<% } %>
+			</div>
+		</div>
+	</main>
+</div>
+
+<script>
+	function toggleSidebar() {
+		document.getElementById('sidebar').classList.toggle('collapsed');
+	}
+
+	function filterRecommendationCards() {
+		const input = document.getElementById('recSearchInput');
+		const filter = input.value.toLowerCase();
+		const cards = document.getElementsByClassName('student-group-card');
+		for (let i = 0; i < cards.length; i++) {
+			const card = cards[i];
+			const text = card.innerText || card.textContent;
+			if (text.toLowerCase().indexOf(filter) > -1) {
+				card.style.display = "";
+			} else {
+				card.style.display = "none";
+			}
 		}
-	</script>
+	}
+</script>
 </body>
 </html>

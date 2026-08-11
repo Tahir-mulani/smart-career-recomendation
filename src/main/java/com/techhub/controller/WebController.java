@@ -9,6 +9,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +45,15 @@ public class WebController {
 
     @Autowired
     private AssessmentInstanceService assessmentInstanceService;
+
+    @Autowired
+    private com.techhub.repository.AssessmentInstanceRepository assessmentInstanceRepository;
+
+    @Autowired
+    private com.techhub.repository.UserSkillRepository userSkillRepository;
+
+    @Autowired
+    private com.techhub.repository.SkillRepository skillRepository;
 
     @GetMapping("/")
     public String homePage() {
@@ -102,12 +115,14 @@ public class WebController {
         
         List<Assessment> assessments = assessmentService.findAll();
         List<Career> careers = careerService.findAll();
-        List<User> users = userService.findAll();
+        List<User> studentUsers = userService.findAll().stream()
+                .filter(u -> !"ADMIN".equalsIgnoreCase(u.getRole()))
+                .collect(java.util.stream.Collectors.toList());
         List<Question> questions = questionService.findAll();
         
         model.addAttribute("assessments", assessments);
         model.addAttribute("careers", careers);
-        model.addAttribute("users", users);
+        model.addAttribute("users", studentUsers);
         model.addAttribute("questions", questions);
         
         return "admin/dashboard";
@@ -121,8 +136,10 @@ public class WebController {
         }
         model.addAttribute("admin", admin);
         
-        List<User> users = userService.findAll();
-        model.addAttribute("users", users);
+        List<User> studentUsers = userService.findAll().stream()
+                .filter(u -> !"ADMIN".equalsIgnoreCase(u.getRole()))
+                .collect(java.util.stream.Collectors.toList());
+        model.addAttribute("users", studentUsers);
         
         return "admin/users";
     }
@@ -137,6 +154,18 @@ public class WebController {
         
         User user = userService.findById(id);
         model.addAttribute("user", user);
+
+        List<Skill> primarySkills = skillService.getUserPrimarySkills(id);
+        List<Skill> allUserSkills = skillService.getUserSkills(id);
+        List<Interest> userInterests = interestService.getUserInterests(id);
+
+        List<Skill> secondarySkills = new java.util.ArrayList<>(allUserSkills);
+        secondarySkills.removeAll(primarySkills);
+
+        model.addAttribute("primarySkills", primarySkills);
+        model.addAttribute("secondarySkills", secondarySkills);
+        model.addAttribute("userSkills", allUserSkills);
+        model.addAttribute("userInterests", userInterests);
         
         return "admin/user-view";
     }
@@ -262,9 +291,11 @@ public class WebController {
         
         List<Question> questions = questionService.findAll();
         List<Assessment> assessments = assessmentService.findAll();
+        List<Skill> skills = skillService.findAll();
         
         model.addAttribute("questions", questions);
         model.addAttribute("assessments", assessments);
+        model.addAttribute("skills", skills);
         
         return "admin/questions";
     }
@@ -277,8 +308,34 @@ public class WebController {
         }
         model.addAttribute("admin", admin);
         
-        List<Recommendation> recommendations = recommendationService.findAll();
-        model.addAttribute("recommendations", recommendations);
+        List<Recommendation> allRecs = recommendationService.findAll();
+        List<User> users = userService.findAll();
+        List<Career> careers = careerService.findAll();
+
+        java.util.Map<Long, User> userMap = new java.util.HashMap<>();
+        for (User u : users) {
+            userMap.put(u.getId(), u);
+        }
+        java.util.Map<Long, Career> careerMap = new java.util.HashMap<>();
+        for (Career c : careers) {
+            careerMap.put(c.getId(), c);
+        }
+
+        // Group recommendations by userId
+        java.util.Map<Long, List<Recommendation>> userRecsMap = new java.util.HashMap<>();
+        for (Recommendation r : allRecs) {
+            userRecsMap.computeIfAbsent(r.getUserId(), k -> new java.util.ArrayList<>()).add(r);
+        }
+
+        // Sort each user's recommendations descending by match score
+        for (List<Recommendation> list : userRecsMap.values()) {
+            list.sort((r1, r2) -> Double.compare(r2.getMatchScore(), r1.getMatchScore()));
+        }
+
+        model.addAttribute("userRecsMap", userRecsMap);
+        model.addAttribute("recommendations", allRecs);
+        model.addAttribute("userMap", userMap);
+        model.addAttribute("careerMap", careerMap);
         
         return "admin/recommendations";
     }
@@ -350,6 +407,54 @@ public class WebController {
         }
     }
 
+    @PostMapping("/api/admin/assessments/{id}/update")
+    public String updateAssessment(@PathVariable Long id,
+                                   @RequestParam String testName,
+                                   @RequestParam Integer duration,
+                                   @RequestParam Integer totalMarks,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            User admin = (User) session.getAttribute("admin");
+            if (admin == null || !"ADMIN".equals(admin.getRole())) {
+                throw new RuntimeException("Access denied");
+            }
+            
+            com.techhub.dto.AssessmentRequest request = new com.techhub.dto.AssessmentRequest();
+            request.setTestName(testName);
+            request.setDuration(duration);
+            request.setTotalMarks(totalMarks);
+            
+            assessmentService.update(id, request);
+            
+            redirectAttributes.addFlashAttribute("success", "Assessment updated successfully!");
+            return "redirect:/admin/assessments";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/assessments";
+        }
+    }
+
+    @PostMapping("/api/admin/assessments/{id}/delete")
+    public String deleteAssessment(@PathVariable Long id,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            User admin = (User) session.getAttribute("admin");
+            if (admin == null || !"ADMIN".equals(admin.getRole())) {
+                throw new RuntimeException("Access denied");
+            }
+            
+            assessmentService.deleteById(id);
+            
+            redirectAttributes.addFlashAttribute("success", "Assessment deleted successfully!");
+            return "redirect:/admin/assessments";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/assessments";
+        }
+    }
+
     @PostMapping("/api/admin/create-career")
     public String createCareer(@RequestParam String careerName,
                                @RequestParam String description,
@@ -388,7 +493,8 @@ public class WebController {
                                  @RequestParam String correctAnswer,
                                  @RequestParam String difficultyLevel,
                                  @RequestParam String skillTag,
-                                 @RequestParam Long assessmentId,
+                                 @RequestParam(required = false) Long skillId,
+                                 @RequestParam(required = false) Long assessmentId,
                                  HttpSession session,
                                  RedirectAttributes redirectAttributes) {
         try {
@@ -406,15 +512,134 @@ public class WebController {
             request.setCorrectAnswer(correctAnswer);
             request.setDifficultyLevel(difficultyLevel);
             request.setSkillTag(skillTag);
+            request.setSkillId(skillId);
             request.setAssessmentId(assessmentId);
             
             questionService.save(request);
             
-            redirectAttributes.addFlashAttribute("success", "Question created successfully!");
+            redirectAttributes.addFlashAttribute("success", "Question added to Dynamic Question Bank successfully!");
             return "redirect:/admin/questions";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/admin/questions";
+        }
+    }
+
+    @PostMapping("/api/admin/upload-questions-csv")
+    public String uploadQuestionsCsv(@RequestParam("file") MultipartFile file,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            User admin = (User) session.getAttribute("admin");
+            if (admin == null || !"ADMIN".equals(admin.getRole())) {
+                throw new RuntimeException("Access denied");
+            }
+
+            if (file == null || file.isEmpty()) {
+                throw new RuntimeException("Please select a valid CSV file to upload.");
+            }
+
+            int count = 0;
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                boolean isHeader = true;
+                while ((line = br.readLine()) != null) {
+                    line = line.trim();
+                    if (line.isEmpty()) continue;
+
+                    if (isHeader && (line.toLowerCase().startsWith("question") || line.toLowerCase().startsWith("questiontext"))) {
+                        isHeader = false;
+                        continue;
+                    }
+                    isHeader = false;
+
+                    String[] fields = parseCsvLine(line);
+                    if (fields.length < 8) continue;
+
+                    com.techhub.dto.QuestionRequest req = new com.techhub.dto.QuestionRequest();
+                    req.setQuestionText(fields[0].trim());
+                    req.setOptionA(fields[1].trim());
+                    req.setOptionB(fields[2].trim());
+                    req.setOptionC(fields[3].trim());
+                    req.setOptionD(fields[4].trim());
+                    req.setCorrectAnswer(fields[5].trim().toUpperCase());
+                    req.setDifficultyLevel(fields[6].trim());
+                    req.setSkillTag(fields[7].trim());
+
+                    if (fields.length > 8 && !fields[8].trim().isEmpty() && !"null".equalsIgnoreCase(fields[8].trim())) {
+                        try { req.setSkillId(Long.parseLong(fields[8].trim())); } catch (Exception ignored) {}
+                    }
+                    if (fields.length > 9 && !fields[9].trim().isEmpty() && !"null".equalsIgnoreCase(fields[9].trim())) {
+                        try { req.setAssessmentId(Long.parseLong(fields[9].trim())); } catch (Exception ignored) {}
+                    }
+
+                    questionService.save(req);
+                    count++;
+                }
+            }
+
+            redirectAttributes.addFlashAttribute("success", "Successfully bulk imported " + count + " questions from CSV file!");
+            return "redirect:/admin/questions";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "CSV Upload failed: " + e.getMessage());
+            return "redirect:/admin/questions";
+        }
+    }
+
+    private String[] parseCsvLine(String line) {
+        java.util.List<String> result = new java.util.ArrayList<>();
+        boolean inQuotes = false;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"') {
+                inQuotes = !inQuotes;
+            } else if (c == ',' && !inQuotes) {
+                result.add(sb.toString());
+                sb.setLength(0);
+            } else {
+                sb.append(c);
+            }
+        }
+        result.add(sb.toString());
+        return result.toArray(new String[0]);
+    }
+
+    @PostMapping("/api/admin/create-skill")
+    public String createSkill(@RequestParam String skillName, HttpSession session, RedirectAttributes redirectAttributes) {
+        try {
+            User admin = (User) session.getAttribute("admin");
+            if (admin == null || !"ADMIN".equals(admin.getRole())) {
+                throw new RuntimeException("Access denied");
+            }
+            if (skillService.findByName(skillName).isPresent()) {
+                throw new RuntimeException("Skill '" + skillName + "' already exists!");
+            }
+            skillService.save(new Skill(skillName));
+            redirectAttributes.addFlashAttribute("success", "Master Skill '" + skillName + "' added successfully!");
+            return "redirect:/admin/careers";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/careers";
+        }
+    }
+
+    @PostMapping("/api/admin/create-interest")
+    public String createInterest(@RequestParam String interestName, HttpSession session, RedirectAttributes redirectAttributes) {
+        try {
+            User admin = (User) session.getAttribute("admin");
+            if (admin == null || !"ADMIN".equals(admin.getRole())) {
+                throw new RuntimeException("Access denied");
+            }
+            if (interestService.findByName(interestName).isPresent()) {
+                throw new RuntimeException("Interest '" + interestName + "' already exists!");
+            }
+            interestService.save(new Interest(interestName));
+            redirectAttributes.addFlashAttribute("success", "Domain Interest '" + interestName + "' added successfully!");
+            return "redirect:/admin/careers";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/careers";
         }
     }
 
@@ -423,6 +648,7 @@ public class WebController {
                            @RequestParam String email,
                            @RequestParam String password,
                            @RequestParam String phoneNumber,
+                           @RequestParam(required = false) String gender,
                            RedirectAttributes redirectAttributes) {
         try {
             com.techhub.dto.UserRegistrationRequest request = new com.techhub.dto.UserRegistrationRequest();
@@ -430,6 +656,7 @@ public class WebController {
             request.setEmail(email);
             request.setPassword(password);
             request.setPhoneNumber(phoneNumber);
+            request.setGender(gender);
             User user = userService.register(request);
             redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
             return "redirect:/login";
@@ -474,7 +701,17 @@ public class WebController {
         List<Career> careers = careerService.findAll();
         model.addAttribute("careers", careers);
 
+        java.util.Map<Long, Career> careerMap = new java.util.HashMap<>();
+        for (Career c : careers) {
+            careerMap.put(c.getId(), c);
+        }
+        model.addAttribute("careerMap", careerMap);
+
         List<Recommendation> recommendations = recommendationService.findByUserId(user.getId());
+        recommendations.sort((r1, r2) -> Double.compare(r2.getMatchScore(), r1.getMatchScore()));
+        if (recommendations.size() > 3) {
+            recommendations = recommendations.subList(0, 3);
+        }
         model.addAttribute("recommendations", recommendations);
         
         return "dashboard";
@@ -490,6 +727,32 @@ public class WebController {
         
         List<Career> careers = careerService.findAll();
         model.addAttribute("careers", careers);
+
+        java.util.Map<Long, Career> careerMap = new java.util.HashMap<>();
+        for (Career c : careers) {
+            careerMap.put(c.getId(), c);
+        }
+        model.addAttribute("careerMap", careerMap);
+
+        List<Recommendation> recommendations = recommendationService.findByUserId(user.getId());
+        recommendations.sort((r1, r2) -> Double.compare(r2.getMatchScore(), r1.getMatchScore()));
+        if (recommendations.size() > 3) {
+            recommendations = recommendations.subList(0, 3);
+        }
+        model.addAttribute("recommendations", recommendations);
+
+        List<Result> userResults = resultService.findByUserId(user.getId());
+        model.addAttribute("userResults", userResults);
+
+        List<UserSkill> userSkills = userSkillRepository.findByUserId(user.getId());
+        model.addAttribute("userSkills", userSkills);
+
+        List<Skill> masterSkills = skillRepository.findAll();
+        java.util.Map<Long, Skill> masterSkillMap = new java.util.HashMap<>();
+        for (Skill s : masterSkills) {
+            masterSkillMap.put(s.getId(), s);
+        }
+        model.addAttribute("masterSkillMap", masterSkillMap);
         
         return "recommendations";
     }
@@ -640,15 +903,47 @@ public class WebController {
         skillService.saveUserSkills(user.getId(), primarySkills, secondarySkills);
         interestService.saveUserInterests(user.getId(), interests);
 
-        redirectAttributes.addFlashAttribute("success", "Skills saved! Starting your dynamic assessment...");
-        return "redirect:/assessment/start";
+        redirectAttributes.addFlashAttribute("success", "Skills and interests saved successfully!");
+        return "redirect:/onboarding-success";
     }
 
-    @GetMapping("/assessment/start")
-    public String startAssessment(HttpSession session, Model model) {
+    @GetMapping("/onboarding-success")
+    public String onboardingSuccess(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
+        }
+        model.addAttribute("user", user);
+        return "onboarding-success";
+    }
+
+    @GetMapping("/assessment/start")
+    public String startAssessment(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        // 24-Hour Assessment Cooldown Check
+        java.util.Optional<AssessmentInstance> latestCompleted = assessmentInstanceRepository.findLatestCompletedInstance(user.getId());
+        if (latestCompleted.isPresent()) {
+            java.sql.Timestamp completedAt = latestCompleted.get().getCompletedAt();
+            if (completedAt != null) {
+                long now = System.currentTimeMillis();
+                long diffMs = now - completedAt.getTime();
+                long cooldownMs = 24 * 60 * 60 * 1000L; // 24 Hours
+                if (diffMs < cooldownMs) {
+                    long remainingMs = cooldownMs - diffMs;
+                    long remainingHours = remainingMs / (1000 * 60 * 60);
+                    long remainingMinutes = (remainingMs % (1000 * 60 * 60)) / (1000 * 60);
+
+                    redirectAttributes.addFlashAttribute("error", 
+                        "⏳ Assessment Re-take Cooldown Active! You completed an assessment recently. " +
+                        "Please review your Skill Remediation Blueprint. Next assessment re-take unlocks in " +
+                        remainingHours + "h " + remainingMinutes + "m.");
+                    return "redirect:/recommendations";
+                }
+            }
         }
 
         AssessmentInstance instance = assessmentInstanceService.generateDynamicAssessment(user.getId());

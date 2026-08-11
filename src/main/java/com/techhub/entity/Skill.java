@@ -8,6 +8,10 @@ public class Skill {
     public Skill() {
     }
 
+    public Skill(String skillName) {
+        this.skillName = skillName;
+    }
+
     public Skill(Long id, String skillName) {
         this.id = id;
         this.skillName = skillName;

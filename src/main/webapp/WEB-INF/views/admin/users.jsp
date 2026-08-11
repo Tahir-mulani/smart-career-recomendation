@@ -592,8 +592,8 @@ body.admin-body {
 						</h3>
 						<div class="admin-table-actions">
 							<div class="admin-search-box">
-								<i class="fas fa-search"></i> <input type="text"
-									placeholder="Search users...">
+								<i class="fas fa-search"></i> <input type="text" id="userSearchInput" onkeyup="filterUsersTable()"
+									placeholder="Search users by name, email...">
 							</div>
 							<select class="admin-filter-select">
 								<option value="">All Roles</option>
@@ -609,6 +609,7 @@ body.admin-body {
 								<th>Name</th>
 								<th>Email</th>
 								<th>Phone</th>
+								<th>Gender</th>
 								<th>Role</th>
 								<th>Registration Date</th>
 								<th>Status</th>
@@ -630,6 +631,7 @@ body.admin-body {
 								<td><strong><%=user.getName()%></strong></td>
 								<td><%=user.getEmail()%></td>
 								<td><%=user.getPhoneNumber() != null ? user.getPhoneNumber() : "<span style='color: var(--text-muted)'>N/A</span>"%></td>
+								<td><%=user.getGender() != null ? user.getGender() : "<span style='color: var(--text-muted)'>N/A</span>"%></td>
 								<td><span
 									class="admin-badge <%="ADMIN".equals(user.getRole()) ? "admin" : "user"%>">
 										<%=user.getRole()%>
@@ -639,21 +641,14 @@ body.admin-body {
 		: "<span style='color: var(--text-muted)'>N/A</span>"%></td>
 								<td><span class="admin-badge active">Active</span></td>
 								<td>
-									<button class="admin-action-btn view" title="View"
+									<button class="admin-action-btn view" title="View Details"
 										onclick="viewUser(<%=user.getId()%>)">
 										<i class="fas fa-eye"></i>
 									</button>
-									<button class="admin-action-btn edit" title="Edit">
-										<i class="fas fa-edit"></i>
-									</button> <%
- if (!"ADMIN".equals(user.getRole())) {
- %>
-									<button class="admin-action-btn delete" title="Delete"
+									<button class="admin-action-btn delete" title="Delete User"
 										onclick="deleteUser(<%=user.getId()%>)">
 										<i class="fas fa-trash"></i>
-									</button> <%
- }
- %>
+									</button>
 								</td>
 							</tr>
 							<%
@@ -672,12 +667,21 @@ body.admin-body {
 							%>
 						</tbody>
 					</table>
+
+					<!-- Pagination Controls -->
+					<div class="pagination-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; background: #fff; border-top: 1px solid var(--border); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+						<div id="userPageInfo" style="font-size: 0.85rem; color: var(--text-muted);">Showing 1 to 10 of 0 users</div>
+						<div id="userPageButtons" style="display: flex; gap: 6px;"></div>
+					</div>
 				</div>
 			</div>
 		</main>
 	</div>
 
 	<script>
+        let currentUserPage = 1;
+        const userPageSize = 10;
+
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('collapsed');
         }
@@ -695,6 +699,84 @@ body.admin-body {
                 form.submit();
             }
         }
+
+        function renderUserPagination() {
+            const input = document.getElementById('userSearchInput');
+            const filter = input ? input.value.toLowerCase() : '';
+            const table = document.querySelector('.admin-table');
+            if (!table) return;
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+            const allRows = Array.from(tbody.getElementsByTagName('tr'));
+
+            const matchingRows = allRows.filter(tr => {
+                const text = tr.textContent || tr.innerText;
+                return text.toLowerCase().indexOf(filter) > -1;
+            });
+
+            const totalItems = matchingRows.length;
+            const totalPages = Math.max(1, Math.ceil(totalItems / userPageSize));
+            if (currentUserPage > totalPages) currentUserPage = totalPages;
+
+            allRows.forEach(tr => tr.style.display = 'none');
+
+            const startIndex = (currentUserPage - 1) * userPageSize;
+            const endIndex = Math.min(startIndex + userPageSize, totalItems);
+
+            for (let i = startIndex; i < endIndex; i++) {
+                matchingRows[i].style.display = '';
+            }
+
+            const pageInfo = document.getElementById('userPageInfo');
+            if (pageInfo) {
+                if (totalItems === 0) {
+                    pageInfo.innerText = "No matching users found";
+                } else {
+                    pageInfo.innerText = `Showing ${startIndex + 1} to ${endIndex} of ${totalItems} users`;
+                }
+            }
+
+            const pageButtons = document.getElementById('userPageButtons');
+            if (!pageButtons) return;
+            pageButtons.innerHTML = '';
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'admin-btn admin-btn-secondary';
+            prevBtn.style.padding = '5px 12px';
+            prevBtn.style.fontSize = '0.8rem';
+            prevBtn.disabled = currentUserPage === 1;
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i> Prev';
+            prevBtn.onclick = () => { if (currentUserPage > 1) { currentUserPage--; renderUserPagination(); } };
+            pageButtons.appendChild(prevBtn);
+
+            for (let p = 1; p <= totalPages; p++) {
+                const pBtn = document.createElement('button');
+                pBtn.className = p === currentUserPage ? 'admin-btn admin-btn-primary' : 'admin-btn admin-btn-secondary';
+                pBtn.style.padding = '5px 12px';
+                pBtn.style.fontSize = '0.8rem';
+                pBtn.innerText = p;
+                pBtn.onclick = () => { currentUserPage = p; renderUserPagination(); };
+                pageButtons.appendChild(pBtn);
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'admin-btn admin-btn-secondary';
+            nextBtn.style.padding = '5px 12px';
+            nextBtn.style.fontSize = '0.8rem';
+            nextBtn.disabled = currentUserPage === totalPages;
+            nextBtn.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
+            nextBtn.onclick = () => { if (currentUserPage < totalPages) { currentUserPage++; renderUserPagination(); } };
+            pageButtons.appendChild(nextBtn);
+        }
+
+        function filterUsersTable() {
+            currentUserPage = 1;
+            renderUserPagination();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderUserPagination();
+        });
     </script>
 </body>
 </html>

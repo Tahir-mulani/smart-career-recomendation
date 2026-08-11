@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ page import="com.techhub.entity.User"%>
+<%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -449,16 +450,67 @@ if (admin == null) {
 						<div class="detail-value"><%=userObj.getPhoneNumber() != null ? userObj.getPhoneNumber() : "Not provided"%></div>
 					</div>
 					<div class="detail-item">
+						<div class="detail-label"><i class="fas fa-venus-mars"></i> Gender</div>
+						<div class="detail-value"><%=userObj.getGender() != null ? userObj.getGender() : "Not provided"%></div>
+					</div>
+					<div class="detail-item">
 						<div class="detail-label"><i class="fas fa-calendar-alt"></i> Registration Date</div>
 						<div class="detail-value"><%=userObj.getRegistrationDate() != null ? userObj.getRegistrationDate().toString() : "N/A"%></div>
 					</div>
 					<div class="detail-item detail-item-full">
-						<div class="detail-label"><i class="fas fa-tools"></i> Primary & Secondary Skills</div>
-						<div class="detail-value"><%=userObj.getSkills() != null && !userObj.getSkills().isEmpty() ? userObj.getSkills() : "No skills onboarded yet"%></div>
+						<div class="detail-label"><i class="fas fa-star" style="color: var(--primary-cyan);"></i> Primary Technical Skills (Top Rated)</div>
+						<div class="detail-value" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;">
+							<%
+							List<com.techhub.entity.Skill> pSkills = (List<com.techhub.entity.Skill>) request.getAttribute("primarySkills");
+							if (pSkills != null && !pSkills.isEmpty()) {
+								for (com.techhub.entity.Skill s : pSkills) {
+							%>
+								<span style="background: rgba(34, 211, 238, 0.15); color: #0284c7; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(34, 211, 238, 0.3);"><%=s.getSkillName()%></span>
+							<%
+								}
+							} else if (userObj.getSkills() != null && !userObj.getSkills().isEmpty()) {
+							%>
+								<span style="font-weight: 500;"><%=userObj.getSkills()%></span>
+							<% } else { %>
+								<span style="color: var(--text-muted); font-size: 0.9rem;">No primary skills onboarded yet</span>
+							<% } %>
+						</div>
 					</div>
 					<div class="detail-item detail-item-full">
-						<div class="detail-label"><i class="fas fa-heart"></i> Domain Interests</div>
-						<div class="detail-value"><%=userObj.getInterests() != null && !userObj.getInterests().isEmpty() ? userObj.getInterests() : "No interests selected yet"%></div>
+						<div class="detail-label"><i class="fas fa-tools" style="color: var(--success);"></i> Secondary Technical Skills</div>
+						<div class="detail-value" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;">
+							<%
+							List<com.techhub.entity.Skill> sSkills = (List<com.techhub.entity.Skill>) request.getAttribute("secondarySkills");
+							if (sSkills != null && !sSkills.isEmpty()) {
+								for (com.techhub.entity.Skill s : sSkills) {
+							%>
+								<span style="background: rgba(16, 185, 129, 0.15); color: #059669; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3);"><%=s.getSkillName()%></span>
+							<%
+								}
+							} else {
+							%>
+								<span style="color: var(--text-muted); font-size: 0.9rem;">No secondary skills selected</span>
+							<% } %>
+						</div>
+					</div>
+					<div class="detail-item detail-item-full">
+						<div class="detail-label"><i class="fas fa-heart" style="color: var(--warning);"></i> Domain Interests</div>
+						<div class="detail-value" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;">
+							<%
+							List<com.techhub.entity.Interest> uInterests = (List<com.techhub.entity.Interest>) request.getAttribute("userInterests");
+							if (uInterests != null && !uInterests.isEmpty()) {
+								for (com.techhub.entity.Interest i : uInterests) {
+							%>
+								<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(245, 158, 11, 0.3);"><%=i.getInterestName()%></span>
+							<%
+								}
+							} else if (userObj.getInterests() != null && !userObj.getInterests().isEmpty()) {
+							%>
+								<span style="font-weight: 500;"><%=userObj.getInterests()%></span>
+							<% } else { %>
+								<span style="color: var(--text-muted); font-size: 0.9rem;">No domain interests selected yet</span>
+							<% } %>
+						</div>
 					</div>
 				</div>
 

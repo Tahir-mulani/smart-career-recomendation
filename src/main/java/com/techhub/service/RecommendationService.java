@@ -98,7 +98,8 @@ public class RecommendationService {
             List<CareerSkill> cSkills = careerSkillRepository.findByCareerId(career.getId());
             List<CareerInterest> cInterests = careerInterestRepository.findByCareerId(career.getId());
 
-            double skillMatchScore = 0.0;
+            double primarySkillScore = 0.0;
+            double secondarySkillScore = 0.0;
             if (!cSkills.isEmpty()) {
                 int primaryMatches = 0;
                 int secondaryMatches = 0;
@@ -111,9 +112,11 @@ public class RecommendationService {
                 }
                 double primaryRatio = (double) primaryMatches / cSkills.size();
                 double secondaryRatio = (double) secondaryMatches / cSkills.size();
-                skillMatchScore = (primaryRatio * 55.0) + (secondaryRatio * 25.0);
+                primarySkillScore = primaryRatio * 35.0;     // 35% Primary Skill Weight
+                secondarySkillScore = secondaryRatio * 15.0; // 15% Secondary Skill Weight
             } else {
-                skillMatchScore = 30.0; // Baseline fallback
+                primarySkillScore = 20.0;
+                secondarySkillScore = 10.0;
             }
 
             double interestMatchScore = 0.0;
@@ -124,16 +127,17 @@ public class RecommendationService {
                         interestMatches++;
                     }
                 }
-                interestMatchScore = ((double) interestMatches / cInterests.size()) * 15.0;
+                interestMatchScore = ((double) interestMatches / cInterests.size()) * 15.0; // 15% Domain Interest Weight
             } else {
                 interestMatchScore = 10.0;
             }
 
-            double assessmentBonus = (latestAssessmentPercentage / 100.0) * 10.0;
+            // 35% Weight directly driven by student's Actual Assessment Test Score!
+            double actualTestScoreComponent = (latestAssessmentPercentage / 100.0) * 35.0;
 
-            double totalMatchScore = Math.min(100.0, skillMatchScore + interestMatchScore + assessmentBonus);
+            double totalMatchScore = Math.min(100.0, primarySkillScore + secondarySkillScore + interestMatchScore + actualTestScoreComponent);
 
-            if (totalMatchScore > 20.0) {
+            if (totalMatchScore > 15.0) {
                 Recommendation rec = new Recommendation();
                 rec.setUserId(userId);
                 rec.setCareerId(career.getId());
