@@ -29,6 +29,7 @@ public class UserRepository {
             user.setPassword(rs.getString("password"));
             user.setPhoneNumber(rs.getString("phone_number"));
             user.setRole(rs.getString("role"));
+            try { user.setGender(rs.getString("gender")); } catch (Exception ignored) {}
             user.setSkills(rs.getString("skills"));
             user.setInterests(rs.getString("interests"));
             if (rs.getDate("registration_date") != null) {
@@ -40,7 +41,7 @@ public class UserRepository {
 
     public User save(User user) {
         if (user.getId() == null) {
-            String sql = "INSERT INTO users (name, email, password, phone_number, role, skills, interests, registration_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO users (name, email, password, phone_number, role, gender, skills, interests, registration_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
@@ -49,16 +50,17 @@ public class UserRepository {
                 ps.setString(3, user.getPassword());
                 ps.setString(4, user.getPhoneNumber());
                 ps.setString(5, user.getRole() != null ? user.getRole() : "USER");
-                ps.setString(6, user.getSkills());
-                ps.setString(7, user.getInterests());
-                ps.setDate(8, user.getRegistrationDate() != null ? java.sql.Date.valueOf(user.getRegistrationDate()) : java.sql.Date.valueOf(java.time.LocalDate.now()));
+                ps.setString(6, user.getGender());
+                ps.setString(7, user.getSkills());
+                ps.setString(8, user.getInterests());
+                ps.setDate(9, user.getRegistrationDate() != null ? java.sql.Date.valueOf(user.getRegistrationDate()) : java.sql.Date.valueOf(java.time.LocalDate.now()));
                 return ps;
             }, keyHolder);
             user.setId(keyHolder.getKey().longValue());
             return user;
         } else {
-            String sql = "UPDATE users SET name = ?, email = ?, password = ?, phone_number = ?, role = ?, skills = ?, interests = ? WHERE id = ?";
-            jdbcTemplate.update(sql, user.getName(), user.getEmail(), user.getPassword(), user.getPhoneNumber(), user.getRole(), user.getSkills(), user.getInterests(), user.getId());
+            String sql = "UPDATE users SET name = ?, email = ?, password = ?, phone_number = ?, role = ?, gender = ?, skills = ?, interests = ? WHERE id = ?";
+            jdbcTemplate.update(sql, user.getName(), user.getEmail(), user.getPassword(), user.getPhoneNumber(), user.getRole(), user.getGender(), user.getSkills(), user.getInterests(), user.getId());
             return findById(user.getId()).orElseThrow();
         }
     }

@@ -450,6 +450,10 @@ if (admin == null) {
 						<div class="detail-value"><%=userObj.getPhoneNumber() != null ? userObj.getPhoneNumber() : "Not provided"%></div>
 					</div>
 					<div class="detail-item">
+						<div class="detail-label"><i class="fas fa-venus-mars"></i> Gender</div>
+						<div class="detail-value"><%=userObj.getGender() != null ? userObj.getGender() : "Not provided"%></div>
+					</div>
+					<div class="detail-item">
 						<div class="detail-label"><i class="fas fa-calendar-alt"></i> Registration Date</div>
 						<div class="detail-value"><%=userObj.getRegistrationDate() != null ? userObj.getRegistrationDate().toString() : "N/A"%></div>
 					</div>

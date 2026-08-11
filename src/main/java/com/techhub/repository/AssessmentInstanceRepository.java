@@ -94,6 +94,11 @@ public class AssessmentInstanceRepository {
         return jdbcTemplate.query(sql, instanceRowMapper, userId).stream().findFirst();
     }
 
+    public Optional<AssessmentInstance> findLatestCompletedInstance(Long userId) {
+        String sql = "SELECT * FROM assessment_instances WHERE user_id = ? AND status = 'COMPLETED' ORDER BY completed_at DESC";
+        return jdbcTemplate.query(sql, instanceRowMapper, userId).stream().findFirst();
+    }
+
     public void deleteById(Long id) {
         String sql = "DELETE FROM assessment_instances WHERE id = ?";
         jdbcTemplate.update(sql, id);

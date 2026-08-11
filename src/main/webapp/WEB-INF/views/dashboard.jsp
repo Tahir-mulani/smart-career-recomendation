@@ -539,20 +539,8 @@ body.admin-body {
 						</div>
 					</div>
 					<div class="admin-form-row">
-						<div class="admin-form-group">
-							<label>Skills</label> <input type="text"
-								value="<%=((User) request.getAttribute("user")).getSkills() != null
-		? ((User) request.getAttribute("user")).getSkills()
-		: "No skills added yet"%>"
-								readonly>
-						</div>
-						<div class="admin-form-group">
-							<label>Interests</label> <input type="text"
-								value="<%=((User) request.getAttribute("user")).getInterests() != null
-		? ((User) request.getAttribute("user")).getInterests()
-		: "No interests added yet"%>"
-								readonly>
-						</div>
+						
+						
 					</div>
 					<div class="admin-form-row">
 						<div class="admin-form-group">
@@ -713,7 +701,7 @@ body.admin-body {
 					<table class="admin-table">
 						<thead>
 							<tr>
-								<th>Career ID</th>
+								<th>Recommended Career</th>
 								<th>Match Score</th>
 								<th>Status</th>
 							</tr>
@@ -721,21 +709,24 @@ body.admin-body {
 						<tbody>
 							<%
 							List<Recommendation> recommendations = (List<Recommendation>) request.getAttribute("recommendations");
+							java.util.Map<Long, Career> careerMap = (java.util.Map<Long, Career>) request.getAttribute("careerMap");
 							%>
 							<%
 							if (recommendations != null && !recommendations.isEmpty()) {
 							%>
 							<%
 							for (Recommendation recommendation : recommendations) {
+								Career careerObj = careerMap != null ? careerMap.get(recommendation.getCareerId()) : null;
+								String careerName = careerObj != null ? careerObj.getCareerName() : ("Career #" + recommendation.getCareerId());
 							%>
 							<tr>
-								<td>Career #<%=recommendation.getCareerId()%></td>
-								<td><%=String.format("%.2f", recommendation.getMatchScore())%>%</td>
+								<td><strong style="color: var(--primary-hover); font-size: 0.95rem;"><%=careerName%></strong></td>
+								<td><%=String.format("%.1f", recommendation.getMatchScore())%>%</td>
 								<td>
 									<%
 									if (recommendation.getMatchScore() >= 80) {
 									%> <span class="admin-badge active">High Match</span> <%
- } else if (recommendation.getMatchScore() >= 60) {
+ } else if (recommendation.getMatchScore() >= 50) {
  %> <span class="admin-badge"
 									style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">Medium
 										Match</span> <%

@@ -60,6 +60,8 @@ public class UserService {
 
         user.setPhoneNumber(request.getPhoneNumber());
 
+        user.setGender(request.getGender());
+
         user.setRole("USER");
 
         user.setRegistrationDate(java.time.LocalDate.now());

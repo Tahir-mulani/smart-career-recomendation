@@ -270,6 +270,16 @@
                     <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Enter your phone number" required>
                 </div>
                 
+                <div class="form-group">
+                    <label for="gender"><i class="fas fa-venus-mars"></i> Gender</label>
+                    <select id="gender" name="gender" required style="width: 100%; padding: 14px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; background: #fff; font-family: inherit;">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
                 <button type="submit" class="btn">
                     <i class="fas fa-user-plus"></i> Register
                 </button>

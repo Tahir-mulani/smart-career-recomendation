@@ -14,6 +14,7 @@ public class User {
 
     private String phoneNumber;
     private String role;
+    private String gender;
     private String skills;
     private String interests;
     private LocalDate registrationDate;
@@ -21,13 +22,14 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String name, String email, String password, String phoneNumber, String role, String skills, String interests, LocalDate registrationDate) {
+    public User(Long id, String name, String email, String password, String phoneNumber, String role, String gender, String skills, String interests, LocalDate registrationDate) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.role = role;
+        this.gender = gender;
         this.skills = skills;
         this.interests = interests;
         this.registrationDate = registrationDate;
@@ -79,6 +81,14 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getSkills() {

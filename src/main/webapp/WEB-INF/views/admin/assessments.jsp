@@ -698,6 +698,12 @@ body.admin-body {
 							%>
 						</tbody>
 					</table>
+
+					<!-- Pagination Controls -->
+					<div class="pagination-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; background: #fff; border-top: 1px solid var(--border); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+						<div id="assessmentPageInfo" style="font-size: 0.85rem; color: var(--text-muted);">Showing 1 to 10 of 0 assessments</div>
+						<div id="assessmentPageButtons" style="display: flex; gap: 6px;"></div>
+					</div>
 				</div>
 			</div>
 		</main>
@@ -729,21 +735,85 @@ body.admin-body {
 	</div>
 
 	<script>
+		let currentAssessmentPage = 1;
+		const assessmentPageSize = 10;
+
 		function toggleSidebar() {
 			document.getElementById('sidebar').classList.toggle('collapsed');
 		}
 
-		function filterAssessmentsTable() {
+		function renderAssessmentPagination() {
 			const input = document.getElementById('assessmentSearchInput');
-			const filter = input.value.toLowerCase();
-			const table = document.getElementById('assessmentsTable');
+			const filter = input ? input.value.toLowerCase() : '';
+			const table = document.querySelector('.admin-table');
 			if (!table) return;
-			const trs = table.getElementsByTagName('tr');
-			for (let i = 1; i < trs.length; i++) {
-				const tr = trs[i];
+			const tbody = table.querySelector('tbody');
+			if (!tbody) return;
+			const allRows = Array.from(tbody.getElementsByTagName('tr'));
+
+			const matchingRows = allRows.filter(tr => {
 				const text = tr.textContent || tr.innerText;
-				tr.style.display = text.toLowerCase().indexOf(filter) > -1 ? "" : "none";
+				return text.toLowerCase().indexOf(filter) > -1;
+			});
+
+			const totalItems = matchingRows.length;
+			const totalPages = Math.max(1, Math.ceil(totalItems / assessmentPageSize));
+			if (currentAssessmentPage > totalPages) currentAssessmentPage = totalPages;
+
+			allRows.forEach(tr => tr.style.display = 'none');
+
+			const startIndex = (currentAssessmentPage - 1) * assessmentPageSize;
+			const endIndex = Math.min(startIndex + assessmentPageSize, totalItems);
+
+			for (let i = startIndex; i < endIndex; i++) {
+				matchingRows[i].style.display = '';
 			}
+
+			const pageInfo = document.getElementById('assessmentPageInfo');
+			if (pageInfo) {
+				if (totalItems === 0) {
+					pageInfo.innerText = "No matching assessments found";
+				} else {
+					pageInfo.innerText = `Showing ${startIndex + 1} to ${endIndex} of ${totalItems} assessments`;
+				}
+			}
+
+			const pageButtons = document.getElementById('assessmentPageButtons');
+			if (!pageButtons) return;
+			pageButtons.innerHTML = '';
+
+			const prevBtn = document.createElement('button');
+			prevBtn.className = 'admin-btn admin-btn-secondary';
+			prevBtn.style.padding = '5px 12px';
+			prevBtn.style.fontSize = '0.8rem';
+			prevBtn.disabled = currentAssessmentPage === 1;
+			prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i> Prev';
+			prevBtn.onclick = () => { if (currentAssessmentPage > 1) { currentAssessmentPage--; renderAssessmentPagination(); } };
+			pageButtons.appendChild(prevBtn);
+
+			for (let p = 1; p <= totalPages; p++) {
+				const pBtn = document.createElement('button');
+				pBtn.className = p === currentAssessmentPage ? 'admin-btn admin-btn-primary' : 'admin-btn admin-btn-secondary';
+				pBtn.style.padding = '5px 12px';
+				pBtn.style.fontSize = '0.8rem';
+				pBtn.innerText = p;
+				pBtn.onclick = () => { currentAssessmentPage = p; renderAssessmentPagination(); };
+				pageButtons.appendChild(pBtn);
+			}
+
+			const nextBtn = document.createElement('button');
+			nextBtn.className = 'admin-btn admin-btn-secondary';
+			nextBtn.style.padding = '5px 12px';
+			nextBtn.style.fontSize = '0.8rem';
+			nextBtn.disabled = currentAssessmentPage === totalPages;
+			nextBtn.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
+			nextBtn.onclick = () => { if (currentAssessmentPage < totalPages) { currentAssessmentPage++; renderAssessmentPagination(); } };
+			pageButtons.appendChild(nextBtn);
+		}
+
+		function filterAssessmentsTable() {
+			currentAssessmentPage = 1;
+			renderAssessmentPagination();
 		}
 
 		function openEditModal(id, name, duration, marks) {
@@ -767,6 +837,10 @@ body.admin-body {
 				form.submit();
 			}
 		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			renderAssessmentPagination();
+		});
 	</script>
 </body>
 </html>

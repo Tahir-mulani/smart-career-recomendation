@@ -35,7 +35,8 @@ public class QuestionService {
         question.setCorrectAnswer(request.getCorrectAnswer().toUpperCase());
         question.setDifficultyLevel(request.getDifficultyLevel());
         question.setSkillTag(request.getSkillTag());
-        //question.setAssessmentId(assessment.getId());
+        question.setSkillId(request.getSkillId());
+        question.setAssessmentId(request.getAssessmentId());
 
         return questionRepository.save(question);
     }

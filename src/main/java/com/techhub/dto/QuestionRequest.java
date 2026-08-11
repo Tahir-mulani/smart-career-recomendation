@@ -1,7 +1,6 @@
 package com.techhub.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public class QuestionRequest {
 
@@ -21,7 +20,6 @@ public class QuestionRequest {
     private String optionD;
 
     @NotBlank(message = "Correct answer is required")
-   // @ValidCorrectAnswer
     private String correctAnswer;
 
     @NotBlank(message = "Difficulty level is required")
@@ -30,7 +28,8 @@ public class QuestionRequest {
     @NotBlank(message = "Skill tag is required")
     private String skillTag;
 
-    @NotNull(message = "Assessment ID is required")
+    private Long skillId;
+
     private Long assessmentId;
 
     public String getQuestionText() {
@@ -95,6 +94,14 @@ public class QuestionRequest {
 
     public void setSkillTag(String skillTag) {
         this.skillTag = skillTag;
+    }
+
+    public Long getSkillId() {
+        return skillId;
+    }
+
+    public void setSkillId(Long skillId) {
+        this.skillId = skillId;
     }
 
     public Long getAssessmentId() {

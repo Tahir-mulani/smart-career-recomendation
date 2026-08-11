@@ -8,6 +8,10 @@ public class Interest {
     public Interest() {
     }
 
+    public Interest(String interestName) {
+        this.interestName = interestName;
+    }
+
     public Interest(Long id, String interestName) {
         this.id = id;
         this.interestName = interestName;

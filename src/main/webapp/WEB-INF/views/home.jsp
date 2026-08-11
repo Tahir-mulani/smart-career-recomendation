@@ -342,9 +342,9 @@ footer {
 			</div>
 			<nav>
 				<ul>
-					<li><a href="/login">Login</a></li>
+					<li><a href="/login">User Login</a></li>
 					<li><a href="/register">Register</a></li>
-					<li><a href="/admin/login">Admin</a></li>
+					<li><a href="/admin/login">Admin Login</a></li>
 				</ul>
 			</nav>
 		</div>
@@ -355,8 +355,7 @@ footer {
 		<p>Take our smart assessments and get personalized career
 			recommendations based on your skills, interests, and potential.</p>
 		<div class="hero-buttons">
-			<a href="/register" class="btn btn-primary">Get Started</a> <a
-				href="/login" class="btn">Login</a>
+			<a href="/register" class="btn btn-primary">Get Started</a>  
 		</div>
 	</section>
 

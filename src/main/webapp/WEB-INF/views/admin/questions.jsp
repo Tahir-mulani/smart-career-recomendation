@@ -710,6 +710,23 @@ body.admin-body {
 							</button>
 						</div>
 					</form>
+
+					<!-- Bulk Upload CSV Card -->
+					<div style="margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border);">
+						<h4 style="margin-top: 0; color: var(--bg-dark-blue); font-size: 1.05rem;">
+							<i class="fas fa-file-csv" style="color: var(--primary-cyan);"></i> Bulk Import Questions via CSV File
+						</h4>
+						<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+							Upload a <code>.csv</code> file to import multiple questions at once instead of adding them one by one.<br>
+							<strong>CSV Header Format:</strong> <code>questionText, optionA, optionB, optionC, optionD, correctAnswer, difficultyLevel, skillTag, skillId, assessmentId</code>
+						</p>
+						<form action="/api/admin/upload-questions-csv" method="post" enctype="multipart/form-data" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+							<input type="file" name="file" accept=".csv" required style="padding: 10px; border: 1px solid var(--border); border-radius: 8px; flex: 1; min-width: 250px; background: #fff;">
+							<button type="submit" class="admin-btn admin-btn-primary">
+								<i class="fas fa-upload"></i> Upload CSV File
+							</button>
+						</form>
+					</div>
 				</div>
 
 				<!-- Questions Table -->
@@ -798,15 +815,25 @@ body.admin-body {
 							%>
 						</tbody>
 					</table>
+
+					<!-- Pagination Controls -->
+					<div class="pagination-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; background: #fff; border-top: 1px solid var(--border); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+						<div id="pageInfo" style="font-size: 0.85rem; color: var(--text-muted);">Showing 1 to 10 of 0 items</div>
+						<div id="pageButtons" style="display: flex; gap: 6px;"></div>
+					</div>
 				</div>
 			</div>
 		</main>
 	</div>
 
 	<script>
+		let currentPage = 1;
+		const pageSize = 10;
+
 		function toggleSidebar() {
 			document.getElementById('sidebar').classList.toggle('collapsed');
 		}
+
 		function updateSkillTag(selectElement) {
 			const selectedOption = selectElement.options[selectElement.selectedIndex];
 			const name = selectedOption.getAttribute('data-name');
@@ -816,19 +843,91 @@ body.admin-body {
 			}
 		}
 
-		function filterQuestionsTable() {
+		function renderPagination() {
 			const input = document.getElementById('questionSearchInput');
-			const filter = input.value.toLowerCase();
+			const filter = input ? input.value.toLowerCase() : '';
 			const table = document.querySelector('.admin-table');
 			if (!table) return;
-			const trs = table.getElementsByTagName('tr');
+			const tbody = table.querySelector('tbody');
+			if (!tbody) return;
+			const allRows = Array.from(tbody.getElementsByTagName('tr'));
 
-			for (let i = 1; i < trs.length; i++) {
-				const tr = trs[i];
+			// Filter matching rows
+			const matchingRows = allRows.filter(tr => {
 				const text = tr.textContent || tr.innerText;
-				tr.style.display = text.toLowerCase().indexOf(filter) > -1 ? "" : "none";
+				return text.toLowerCase().indexOf(filter) > -1;
+			});
+
+			const totalItems = matchingRows.length;
+			const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+			if (currentPage > totalPages) currentPage = totalPages;
+
+			// Hide all rows first
+			allRows.forEach(tr => tr.style.display = 'none');
+
+			// Show matching rows for current page
+			const startIndex = (currentPage - 1) * pageSize;
+			const endIndex = Math.min(startIndex + pageSize, totalItems);
+
+			for (let i = startIndex; i < endIndex; i++) {
+				matchingRows[i].style.display = '';
 			}
+
+			// Update Page Info
+			const pageInfo = document.getElementById('pageInfo');
+			if (pageInfo) {
+				if (totalItems === 0) {
+					pageInfo.innerText = "No matching questions found";
+				} else {
+					pageInfo.innerText = `Showing ${startIndex + 1} to ${endIndex} of ${totalItems} questions`;
+				}
+			}
+
+			// Render Pagination Buttons
+			const pageButtons = document.getElementById('pageButtons');
+			if (!pageButtons) return;
+			pageButtons.innerHTML = '';
+
+			// Prev Button
+			const prevBtn = document.createElement('button');
+			prevBtn.className = 'admin-btn admin-btn-secondary';
+			prevBtn.style.padding = '5px 12px';
+			prevBtn.style.fontSize = '0.8rem';
+			prevBtn.disabled = currentPage === 1;
+			prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i> Prev';
+			prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderPagination(); } };
+			pageButtons.appendChild(prevBtn);
+
+			// Page Number Buttons
+			for (let p = 1; p <= totalPages; p++) {
+				const pBtn = document.createElement('button');
+				pBtn.className = p === currentPage ? 'admin-btn admin-btn-primary' : 'admin-btn admin-btn-secondary';
+				pBtn.style.padding = '5px 12px';
+				pBtn.style.fontSize = '0.8rem';
+				pBtn.innerText = p;
+				pBtn.onclick = () => { currentPage = p; renderPagination(); };
+				pageButtons.appendChild(pBtn);
+			}
+
+			// Next Button
+			const nextBtn = document.createElement('button');
+			nextBtn.className = 'admin-btn admin-btn-secondary';
+			nextBtn.style.padding = '5px 12px';
+			nextBtn.style.fontSize = '0.8rem';
+			nextBtn.disabled = currentPage === totalPages;
+			nextBtn.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
+			nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderPagination(); } };
+			pageButtons.appendChild(nextBtn);
 		}
+
+		function filterQuestionsTable() {
+			currentPage = 1;
+			renderPagination();
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			renderPagination();
+		});
 	</script>
 </body>
 </html>

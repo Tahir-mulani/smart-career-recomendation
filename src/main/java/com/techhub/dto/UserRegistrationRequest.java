@@ -20,6 +20,8 @@ public class UserRegistrationRequest {
     @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must contain exactly 10 digits")
     private String phoneNumber;
 
+    private String gender;
+
     public String getName() {
         return name;
     }
@@ -50,5 +52,13 @@ public class UserRegistrationRequest {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

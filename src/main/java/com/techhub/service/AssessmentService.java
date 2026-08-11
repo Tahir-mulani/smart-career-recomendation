@@ -39,6 +39,14 @@ public class AssessmentService {
                 .orElseThrow(() -> new BusinessValidationException("testId", "Assessment does not exist"));
     }
 
+    public Assessment update(Long id, AssessmentRequest request) {
+        Assessment assessment = findById(id);
+        assessment.setTestName(request.getTestName());
+        assessment.setDuration(request.getDuration());
+        assessment.setTotalMarks(request.getTotalMarks());
+        return assessmentRepository.save(assessment);
+    }
+
     public List<Assessment> findAll() {
         return assessmentRepository.findAll();
     }
