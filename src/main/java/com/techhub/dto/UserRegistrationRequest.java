@@ -1,7 +1,17 @@
 package com.techhub.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
+@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserRegistrationRequest {
 
     @NotBlank(message = "Name cannot be empty")
@@ -13,8 +23,7 @@ public class UserRegistrationRequest {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must contain at least 8 characters")
-    //@ValidPassword
+    @Size(min = 6, message = "Password must contain at least 6 characters")
     private String password;
 
     @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must contain exactly 10 digits")

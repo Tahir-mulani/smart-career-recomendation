@@ -7,8 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class RecommendationService {
+
+    private static final Logger log = LoggerFactory.getLogger(RecommendationService.class);
 
     private final RecommendationRepository recommendationRepository;
     private final CareerRepository careerRepository;
@@ -98,27 +103,24 @@ public class RecommendationService {
             List<CareerSkill> cSkills = careerSkillRepository.findByCareerId(career.getId());
             List<CareerInterest> cInterests = careerInterestRepository.findByCareerId(career.getId());
 
-            double primarySkillScore = 0.0;
-            double secondarySkillScore = 0.0;
+            // 1. Skill Score Component (50% Max Weight) - Primary = 1.0, Secondary = 0.6
+            double skillScore = 0.0;
             if (!cSkills.isEmpty()) {
-                int primaryMatches = 0;
-                int secondaryMatches = 0;
+                double totalMatchedWeight = 0.0;
                 for (CareerSkill cs : cSkills) {
                     if (primarySkillIds.contains(cs.getSkillId())) {
-                        primaryMatches++;
+                        totalMatchedWeight += 1.0; // Full Primary Skill Mastery
                     } else if (secondarySkillIds.contains(cs.getSkillId())) {
-                        secondaryMatches++;
+                        totalMatchedWeight += 0.6; // Secondary Skill Base
                     }
                 }
-                double primaryRatio = (double) primaryMatches / cSkills.size();
-                double secondaryRatio = (double) secondaryMatches / cSkills.size();
-                primarySkillScore = primaryRatio * 35.0;     // 35% Primary Skill Weight
-                secondarySkillScore = secondaryRatio * 15.0; // 15% Secondary Skill Weight
+                double skillRatio = totalMatchedWeight / cSkills.size();
+                skillScore = Math.min(50.0, skillRatio * 50.0);
             } else {
-                primarySkillScore = 20.0;
-                secondarySkillScore = 10.0;
+                skillScore = 30.0; // Default fallback if no skills defined for role
             }
 
+            // 2. Domain Interest Component (15% Max Weight)
             double interestMatchScore = 0.0;
             if (!cInterests.isEmpty()) {
                 int interestMatches = 0;
@@ -127,15 +129,20 @@ public class RecommendationService {
                         interestMatches++;
                     }
                 }
-                interestMatchScore = ((double) interestMatches / cInterests.size()) * 15.0; // 15% Domain Interest Weight
+                interestMatchScore = ((double) interestMatches / cInterests.size()) * 15.0;
             } else {
                 interestMatchScore = 10.0;
             }
 
-            // 35% Weight directly driven by student's Actual Assessment Test Score!
+            // 3. Assessment Test Score Component (35% Max Weight)
             double actualTestScoreComponent = (latestAssessmentPercentage / 100.0) * 35.0;
 
-            double totalMatchScore = Math.min(100.0, primarySkillScore + secondarySkillScore + interestMatchScore + actualTestScoreComponent);
+            // Total 100% Match Score
+            double totalMatchScore = Math.min(100.0, skillScore + interestMatchScore + actualTestScoreComponent);
+
+            log.info("Career Recommendation Generated: User={}, Role={}, MatchScore={}% (Skill={}, Interest={}, Test={})",
+                    userId, career.getCareerName(), String.format("%.1f", totalMatchScore),
+                    String.format("%.1f", skillScore), String.format("%.1f", interestMatchScore), String.format("%.1f", actualTestScoreComponent));
 
             if (totalMatchScore > 15.0) {
                 Recommendation rec = new Recommendation();

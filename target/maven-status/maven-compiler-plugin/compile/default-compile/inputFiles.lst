@@ -1,5 +1,6 @@
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\CarrerRecommedationSystemApplication.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\config\BrowserLauncher.java
+D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\config\SecurityConfig.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\config\WebConfig.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\controller\CareerController.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\controller\UserController.java
@@ -45,10 +46,12 @@ D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\service\AssessmentInstanceService.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\service\AssessmentService.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\service\CareerService.java
+D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\service\EmailService.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\service\InterestService.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\service\QuestionService.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\service\RecommendationService.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\service\ResultService.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\service\SkillService.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\service\UserService.java
+D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\util\JwtUtil.java
 D:\CarrerRecomendationSystem\CarrerRecommedationSystem\src\main\java\com\techhub\util\RoleChecker.java

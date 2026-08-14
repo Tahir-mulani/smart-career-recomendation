@@ -567,60 +567,6 @@ body.admin-body {
 					</div>
 				</div>
 
-				<!-- Recommended Assessments -->
-				<div class="admin-table-container">
-					<div class="admin-table-header">
-						<h3>
-							<i class="fas fa-clipboard-list"></i> Recommended Assessments
-						</h3>
-					</div>
-					<table class="admin-table">
-						<thead>
-							<tr>
-								<th>Test Name</th>
-								<th>Duration</th>
-								<th>Total Marks</th>
-								<th>Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							<%
-							List<Assessment> assessments = (List<Assessment>) request.getAttribute("assessments");
-							%>
-							<%
-							if (assessments != null && !assessments.isEmpty()) {
-							%>
-							<%
-							for (Assessment assessment : assessments) {
-							%>
-							<tr>
-								<td><%=assessment.getTestName()%></td>
-								<td><%=assessment.getDuration()%> min</td>
-								<td><%=assessment.getTotalMarks()%></td>
-								<td><a href="/assessment/<%=assessment.getId()%>"
-									class="admin-btn admin-btn-primary"
-									style="padding: 6px 15px; font-size: 0.85rem;">Take
-										Assessment</a></td>
-							</tr>
-							<%
-							}
-							%>
-							<%
-							} else {
-							%>
-							<tr>
-								<td colspan="4"
-									style="text-align: center; color: var(--text-muted); padding: 30px;">No
-									assessments available. Please update your skills in your
-									profile.</td>
-							</tr>
-							<%
-							}
-							%>
-						</tbody>
-					</table>
-				</div>
-
 				<!-- Your Results -->
 				<div class="admin-table-container">
 					<div class="admin-table-header">

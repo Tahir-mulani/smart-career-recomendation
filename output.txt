@@ -1,0 +1,242 @@
+ Image carrerrecommedationsystem-server Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 601B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 617B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/eclipse-temurin:21-jdk-jammy
+#3 DONE 2.3s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 1.07kB done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 DONE 0.0s
+
+#6 [1/8] FROM docker.io/library/eclipse-temurin:21-jdk-jammy@sha256:55fb9bf738f5d9b4a6c01b39337e3070d3e27370dd3c478fd1d5d3cd2233c6d8
+#6 resolve docker.io/library/eclipse-temurin:21-jdk-jammy@sha256:55fb9bf738f5d9b4a6c01b39337e3070d3e27370dd3c478fd1d5d3cd2233c6d8 0.0s done
+#6 DONE 0.1s
+
+#5 [internal] load build context
+#5 transferring context: 7.68kB 0.0s done
+#5 DONE 0.0s
+
+#7 [2/8] WORKDIR /app
+#7 CACHED
+
+#8 [3/8] COPY mvnw mvnw
+#8 CACHED
+
+#9 [7/8] RUN chmod +x mvnw
+#9 CACHED
+
+#10 [5/8] COPY pom.xml pom.xml
+#10 CACHED
+
+#11 [4/8] COPY .mvn .mvn
+#11 CACHED
+
+#12 [6/8] COPY src src
+#12 CACHED
+
+#13 [8/8] RUN ./mvnw clean package -DskipTests
+#13 CACHED
+
+#14 exporting to image
+#14 exporting layers done
+#14 exporting manifest sha256:670432b4d06daa58e55ac68c54c09616c5a86b774655070f4c09ba9f31be8012 done
+#14 exporting config sha256:57bf8b996ba59f6a6a5141efd8bef973770d3ffc46d90e8cfee9dec0a45732cf done
+#14 exporting attestation manifest sha256:4a421948d76174a1892eacff5763da4c2482c61f99967abdedc7bccb3384dceb 0.0s done
+#14 exporting manifest list sha256:7b6b60e2ab0c0ff4a71e7652b7452fb2a776e544ec85e0dcff6955fce24acb1f 0.0s done
+#14 naming to docker.io/library/carrerrecommedationsystem-server:latest done
+#14 unpacking to docker.io/library/carrerrecommedationsystem-server:latest 0.0s done
+#14 DONE 0.2s
+
+#15 resolving provenance for metadata file
+#15 DONE 0.0s
+ Image carrerrecommedationsystem-server Built 
+ Container carrerrecommedationsystem-server-1 Recreate 
+ Container carrerrecommedationsystem-server-1 Recreated 
+Attaching to server-1
+ Container carrerrecommedationsystem-server-1 Starting 
+ Container carrerrecommedationsystem-server-1 Started 
+server-1  | 
+server-1  |   .   ____          _            __ _ _
+server-1  |  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+server-1  | ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+server-1  |  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+server-1  |   '  |____| .__|_| |_|_| |_\__, | / / / /
+server-1  |  =========|_|==============|___/=/_/_/_/
+server-1  | 
+server-1  |  :: Spring Boot ::                (v3.4.1)
+server-1  | 
+server-1  | 2026-08-13T15:44:50.817Z  INFO 1 --- [CarrerRecommedationSystem] [           main] c.t.CarrerRecommedationSystemApplication : Starting CarrerRecommedationSystemApplication v0.0.1-SNAPSHOT using Java 21.0.11 with PID 1 (/app/target/CarrerRecommedationSystem-0.0.1-SNAPSHOT.war started by root in /app)
+server-1  | 2026-08-13T15:44:50.824Z  INFO 1 --- [CarrerRecommedationSystem] [           main] c.t.CarrerRecommedationSystemApplication : No active profile set, falling back to 1 default profile: "default"
+server-1  | 2026-08-13T15:44:52.565Z  INFO 1 --- [CarrerRecommedationSystem] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+server-1  | 2026-08-13T15:44:52.610Z  INFO 1 --- [CarrerRecommedationSystem] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 32 ms. Found 0 JDBC repository interfaces.
+server-1  | 2026-08-13T15:44:53.702Z  INFO 1 --- [CarrerRecommedationSystem] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+server-1  | 2026-08-13T15:44:53.737Z  INFO 1 --- [CarrerRecommedationSystem] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+server-1  | 2026-08-13T15:44:53.738Z  INFO 1 --- [CarrerRecommedationSystem] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+server-1  | 2026-08-13T15:44:55.755Z  INFO 1 --- [CarrerRecommedationSystem] [           main] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+server-1  | 2026-08-13T15:44:56.432Z  INFO 1 --- [CarrerRecommedationSystem] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+server-1  | 2026-08-13T15:44:56.435Z  INFO 1 --- [CarrerRecommedationSystem] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 5480 ms
+server-1  | 2026-08-13T15:44:58.113Z  INFO 1 --- [CarrerRecommedationSystem] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+server-1  | 2026-08-13T15:44:59.360Z  WARN 1 --- [CarrerRecommedationSystem] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'jdbcMappingContext' defined in class path resource [org/springframework/boot/autoconfigure/data/jdbc/JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.class]: Unsatisfied dependency expressed through method 'jdbcMappingContext' parameter 1: Error creating bean with name 'jdbcCustomConversions' defined in class path resource [org/springframework/boot/autoconfigure/data/jdbc/JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.class]: Failed to instantiate [org.springframework.data.jdbc.core.convert.JdbcCustomConversions]: Factory method 'jdbcCustomConversions' threw exception with message: Error creating bean with name 'jdbcDialect' defined in class path resource [org/springframework/boot/autoconfigure/data/jdbc/JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.class]: Failed to instantiate [org.springframework.data.relational.core.dialect.Dialect]: Factory method 'jdbcDialect' threw exception with message: Failed to obtain JDBC Connection
+server-1  | 2026-08-13T15:44:59.377Z  INFO 1 --- [CarrerRecommedationSystem] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+server-1  | 2026-08-13T15:44:59.420Z  INFO 1 --- [CarrerRecommedationSystem] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+server-1  | 
+server-1  | Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+server-1  | 2026-08-13T15:44:59.465Z ERROR 1 --- [CarrerRecommedationSystem] [           main] o.s.boot.SpringApplication               : Application run failed
+server-1  | 
+server-1  | org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'jdbcMappingContext' defined in class path resource [org/springframework/boot/autoconfigure/data/jdbc/JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.class]: Unsatisfied dependency expressed through method 'jdbcMappingContext' parameter 1: Error creating bean with name 'jdbcCustomConversions' defined in class path resource [org/springframework/boot/autoconfigure/data/jdbc/JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.class]: Failed to instantiate [org.springframework.data.jdbc.core.convert.JdbcCustomConversions]: Factory method 'jdbcCustomConversions' threw exception with message: Error creating bean with name 'jdbcDialect' defined in class path resource [org/springframework/boot/autoconfigure/data/jdbc/JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.class]: Failed to instantiate [org.springframework.data.relational.core.dialect.Dialect]: Factory method 'jdbcDialect' threw exception with message: Failed to obtain JDBC Connection
+server-1  | 	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:546) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1357) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1187) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1122) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1093) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1030) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:987) ~[spring-context-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.4.1.jar!/:3.4.1]
+server-1  | 	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.4.1.jar!/:3.4.1]
+server-1  | 	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.4.1.jar!/:3.4.1]
+server-1  | 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.4.1.jar!/:3.4.1]
+server-1  | 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.4.1.jar!/:3.4.1]
+server-1  | 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.4.1.jar!/:3.4.1]
+server-1  | 	at com.techhub.CarrerRecommedationSystemApplication.main(CarrerRecommedationSystemApplication.java:15) ~[!/:0.0.1-SNAPSHOT]
+server-1  | 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+server-1  | 	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+server-1  | 	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:102) ~[CarrerRecommedationSystem-0.0.1-SNAPSHOT.war:0.0.1-SNAPSHOT]
+server-1  | 	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[CarrerRecommedationSystem-0.0.1-SNAPSHOT.war:0.0.1-SNAPSHOT]
+server-1  | 	at org.springframework.boot.loader.launch.WarLauncher.main(WarLauncher.java:53) ~[CarrerRecommedationSystem-0.0.1-SNAPSHOT.war:0.0.1-SNAPSHOT]
+server-1  | Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jdbcCustomConversions' defined in class path resource [org/springframework/boot/autoconfigure/data/jdbc/JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.class]: Failed to instantiate [org.springframework.data.jdbc.core.convert.JdbcCustomConversions]: Factory method 'jdbcCustomConversions' threw exception with message: Error creating bean with name 'jdbcDialect' defined in class path resource [org/springframework/boot/autoconfigure/data/jdbc/JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.class]: Failed to instantiate [org.springframework.data.relational.core.dialect.Dialect]: Factory method 'jdbcDialect' threw exception with message: Failed to obtain JDBC Connection
+server-1  | 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:657) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:489) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1357) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1187) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1631) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1519) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	... 26 common frames omitted
+server-1  | Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.data.jdbc.core.convert.JdbcCustomConversions]: Factory method 'jdbcCustomConversions' threw exception with message: Error creating bean with name 'jdbcDialect' defined in class path resource [org/springframework/boot/autoconfigure/data/jdbc/JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.class]: Failed to instantiate [org.springframework.data.relational.core.dialect.Dialect]: Factory method 'jdbcDialect' threw exception with message: Failed to obtain JDBC Connection
+server-1  | 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:199) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiateWithFactoryMethod(SimpleInstantiationStrategy.java:88) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:168) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:653) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	... 40 common frames omitted
+server-1  | Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jdbcDialect' defined in class path resource [org/springframework/boot/autoconfigure/data/jdbc/JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.class]: Failed to instantiate [org.springframework.data.relational.core.dialect.Dialect]: Factory method 'jdbcDialect' threw exception with message: Failed to obtain JDBC Connection
+server-1  | 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:657) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:645) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1357) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1187) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:224) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveNamedBean(DefaultListableBeanFactory.java:1489) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveNamedBean(DefaultListableBeanFactory.java:1450) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveBean(DefaultListableBeanFactory.java:516) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.getBean(DefaultListableBeanFactory.java:371) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.getBean(DefaultListableBeanFactory.java:364) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1290) ~[spring-context-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration.jdbcCustomConversions(AbstractJdbcConfiguration.java:154) ~[spring-data-jdbc-3.4.1.jar!/:3.4.1]
+server-1  | 	at org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.jdbcCustomConversions(JdbcRepositoriesAutoConfiguration.java:127) ~[spring-boot-autoconfigure-3.4.1.jar!/:3.4.1]
+server-1  | 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+server-1  | 	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+server-1  | 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:171) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	... 43 common frames omitted
+server-1  | Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.data.relational.core.dialect.Dialect]: Factory method 'jdbcDialect' threw exception with message: Failed to obtain JDBC Connection
+server-1  | 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:199) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiateWithFactoryMethod(SimpleInstantiationStrategy.java:88) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:168) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:653) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	... 63 common frames omitted
+server-1  | Caused by: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
+server-1  | 	at org.springframework.jdbc.datasource.DataSourceUtils.getConnection(DataSourceUtils.java:84) ~[spring-jdbc-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:342) ~[spring-jdbc-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.data.jdbc.repository.config.DialectResolver$DefaultDialectProvider.getDialect(DialectResolver.java:108) ~[spring-data-jdbc-3.4.1.jar!/:3.4.1]
+server-1  | 	at org.springframework.data.jdbc.repository.config.DialectResolver.lambda$getDialect$0(DialectResolver.java:78) ~[spring-data-jdbc-3.4.1.jar!/:3.4.1]
+server-1  | 	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197) ~[na:na]
+server-1  | 	at java.base/java.util.ArrayList$ArrayListSpliterator.tryAdvance(ArrayList.java:1685) ~[na:na]
+server-1  | 	at java.base/java.util.stream.ReferencePipeline.forEachWithCancel(ReferencePipeline.java:129) ~[na:na]
+server-1  | 	at java.base/java.util.stream.AbstractPipeline.copyIntoWithCancel(AbstractPipeline.java:527) ~[na:na]
+server-1  | 	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:513) ~[na:na]
+server-1  | 	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499) ~[na:na]
+server-1  | 	at java.base/java.util.stream.FindOps$FindOp.evaluateSequential(FindOps.java:150) ~[na:na]
+server-1  | 	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234) ~[na:na]
+server-1  | 	at java.base/java.util.stream.ReferencePipeline.findFirst(ReferencePipeline.java:647) ~[na:na]
+server-1  | 	at org.springframework.data.jdbc.repository.config.DialectResolver.getDialect(DialectResolver.java:80) ~[spring-data-jdbc-3.4.1.jar!/:3.4.1]
+server-1  | 	at org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration.jdbcDialect(AbstractJdbcConfiguration.java:227) ~[spring-data-jdbc-3.4.1.jar!/:3.4.1]
+server-1  | 	at org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration$SpringBootJdbcConfiguration.jdbcDialect(JdbcRepositoriesAutoConfiguration.java:151) ~[spring-boot-autoconfigure-3.4.1.jar!/:3.4.1]
+server-1  | 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+server-1  | 	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+server-1  | 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:171) ~[spring-beans-6.2.1.jar!/:6.2.1]
+server-1  | 	... 66 common frames omitted
+server-1  | Caused by: com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+server-1  | 
+server-1  | The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+server-1  | 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:165) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:55) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:837) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:420) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:238) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:137) ~[HikariCP-5.1.0.jar!/:na]
+server-1  | 	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:360) ~[HikariCP-5.1.0.jar!/:na]
+server-1  | 	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:202) ~[HikariCP-5.1.0.jar!/:na]
+server-1  | 	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:461) ~[HikariCP-5.1.0.jar!/:na]
+server-1  | 	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:550) ~[HikariCP-5.1.0.jar!/:na]
+server-1  | 	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:98) ~[HikariCP-5.1.0.jar!/:na]
+server-1  | 	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:111) ~[HikariCP-5.1.0.jar!/:na]
+server-1  | 	at org.springframework.jdbc.datasource.DataSourceUtils.fetchConnection(DataSourceUtils.java:160) ~[spring-jdbc-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.jdbc.datasource.DataSourceUtils.doGetConnection(DataSourceUtils.java:118) ~[spring-jdbc-6.2.1.jar!/:6.2.1]
+server-1  | 	at org.springframework.jdbc.datasource.DataSourceUtils.getConnection(DataSourceUtils.java:81) ~[spring-jdbc-6.2.1.jar!/:6.2.1]
+server-1  | 	... 84 common frames omitted
+server-1  | Caused by: com.mysql.cj.exceptions.CJCommunicationsException: Communications link failure
+server-1  | 
+server-1  | The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+server-1  | 	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:62) ~[na:na]
+server-1  | 	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:502) ~[na:na]
+server-1  | 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:486) ~[na:na]
+server-1  | 	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:52) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:95) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:140) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:156) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.protocol.a.NativeSocketConnection.connect(NativeSocketConnection.java:79) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.NativeSession.connect(NativeSession.java:142) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.jdbc.ConnectionImpl.connectOneTryOnly(ConnectionImpl.java:961) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:825) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	... 97 common frames omitted
+server-1  | Caused by: java.net.ConnectException: Connection refused
+server-1  | 	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+server-1  | 	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:694) ~[na:na]
+server-1  | 	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542) ~[na:na]
+server-1  | 	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+server-1  | 	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+server-1  | 	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+server-1  | 	at com.mysql.cj.protocol.StandardSocketFactory.connect(StandardSocketFactory.java:144) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	at com.mysql.cj.protocol.a.NativeSocketConnection.connect(NativeSocketConnection.java:53) ~[mysql-connector-j-9.1.0.jar!/:9.1.0]
+server-1  | 	... 100 common frames omitted
+server-1  | 
+[Kserver-1 exited with code 1
