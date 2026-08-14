@@ -755,15 +755,54 @@ if (userResults != null && !userResults.isEmpty()) {
 							</div>
 						</div>
 
-						<!-- Bottom Action Bar & Cooldown Guard -->
+						<!-- Bottom Action Bar & Targeted Assessment Section -->
 						<div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; flex-wrap: wrap; gap: 12px;">
-							<div style="font-size: 0.82rem; color: #94a3b8; display: flex; align-items: center; gap: 8px;">
-								<i class="fas fa-clock" style="color: #fbbf24;"></i>
-								<span><strong>24-Hour Assessment Cooldown:</strong> Enforces dedicated study time between test re-takes.</span>
-							</div>
-							<a href="/assessment/start" class="admin-btn admin-btn-primary" style="padding: 10px 22px; border-radius: 10px; font-weight: 700; text-decoration: none;">
-								<i class="fas fa-redo-alt"></i> Re-Take Assessment Test
-							</a>
+							<% if (score >= 80) { %>
+								<div style="font-size: 0.88rem; color: #34d399; display: flex; align-items: center; gap: 8px; font-weight: 600;">
+									<i class="fas fa-award" style="font-size: 1.1rem;"></i>
+									<span><strong>🏆 Career Ready Status!</strong> You have achieved an 80%+ match for <%=c.getCareerName()%>. No additional assessment is required.</span>
+								</div>
+							<% } else { %>
+								<%
+								List<Assessment> staticAssessments = (List<Assessment>) request.getAttribute("assessments");
+								Assessment targetAssessment = null;
+								if (staticAssessments != null) {
+									String cNameLower = c.getCareerName().toLowerCase().trim();
+									for (Assessment asm : staticAssessments) {
+										String tNameLower = asm.getTestName().toLowerCase().trim();
+										if (tNameLower.contains(cNameLower) || cNameLower.contains(tNameLower)) {
+											targetAssessment = asm;
+											break;
+										}
+										String[] cTokens = cNameLower.split("\\s+");
+										boolean matchedToken = false;
+										for (String tok : cTokens) {
+											if (tok.length() >= 3 && tNameLower.contains(tok)) {
+												matchedToken = true;
+												break;
+											}
+										}
+										if (matchedToken) {
+											targetAssessment = asm;
+											break;
+										}
+									}
+								}
+								%>
+								<div style="font-size: 0.82rem; color: #94a3b8; display: flex; align-items: center; gap: 8px;">
+									<i class="fas fa-clock" style="color: #fbbf24;"></i>
+									<span><strong>24-Hour Cooldown Enforced:</strong> Study the micro-modules above before taking the assessment.</span>
+								</div>
+								<% if (targetAssessment != null) { %>
+									<a href="/assessment/<%=targetAssessment.getId()%>" class="admin-btn admin-btn-primary" style="padding: 10px 22px; border-radius: 10px; font-weight: 700; text-decoration: none;">
+										<i class="fas fa-play-circle"></i> Start <%=targetAssessment.getTestName()%>
+									</a>
+								<% } else { %>
+									<a href="/assessment/start" class="admin-btn admin-btn-primary" style="padding: 10px 22px; border-radius: 10px; font-weight: 700; text-decoration: none;">
+										<i class="fas fa-redo-alt"></i> Take Dynamic Skill Assessment
+									</a>
+								<% } %>
+							<% } %>
 						</div>
 					</div>
 				</div>

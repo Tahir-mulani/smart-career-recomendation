@@ -55,6 +55,11 @@ public class WebController {
     @Autowired
     private com.techhub.repository.SkillRepository skillRepository;
 
+    @Autowired
+    private com.techhub.util.JwtUtil jwtUtil;
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WebController.class);
+
     @GetMapping("/")
     public String homePage() {
         return "home";
@@ -97,9 +102,13 @@ public class WebController {
                 throw new RuntimeException("Access denied. Admin only.");
             }
             
+            String jwtToken = jwtUtil.generateToken(user.getEmail(), user.getRole());
             session.setAttribute("admin", user);
+            session.setAttribute("jwtToken", jwtToken);
+            log.info("Admin login successful for email: {}, Issued JWT Token", user.getEmail());
             return "redirect:/admin/dashboard";
         } catch (Exception e) {
+            log.warn("Admin login failed for email {}: {}", email, e.getMessage());
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/admin/login";
         }
@@ -676,9 +685,13 @@ public class WebController {
             request.setEmail(email);
             request.setPassword(password);
             User user = userService.login(request);
+            String jwtToken = jwtUtil.generateToken(user.getEmail(), user.getRole());
             session.setAttribute("user", user);
+            session.setAttribute("jwtToken", jwtToken);
+            log.info("User login successful for email: {}, Issued JWT Token", user.getEmail());
             return "redirect:/dashboard";
         } catch (Exception e) {
+            log.warn("User login failed for email {}: {}", email, e.getMessage());
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/login";
         }
@@ -753,6 +766,9 @@ public class WebController {
             masterSkillMap.put(s.getId(), s);
         }
         model.addAttribute("masterSkillMap", masterSkillMap);
+
+        List<Assessment> assessments = assessmentService.findAll();
+        model.addAttribute("assessments", assessments);
         
         return "recommendations";
     }

@@ -1,8 +1,16 @@
 package com.techhub.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+
 import java.time.LocalDate;
 
+@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
     private Long id;
@@ -18,22 +26,6 @@ public class User {
     private String skills;
     private String interests;
     private LocalDate registrationDate;
-
-    public User() {
-    }
-
-    public User(Long id, String name, String email, String password, String phoneNumber, String role, String gender, String skills, String interests, LocalDate registrationDate) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.role = role;
-        this.gender = gender;
-        this.skills = skills;
-        this.interests = interests;
-        this.registrationDate = registrationDate;
-    }
 
     public Long getId() {
         return id;

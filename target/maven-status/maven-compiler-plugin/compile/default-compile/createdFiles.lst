@@ -9,9 +9,12 @@ com\techhub\entity\Interest.class
 com\techhub\entity\InstanceQuestion.class
 com\techhub\entity\CareerInterest.class
 com\techhub\repository\UserInterestRepository.class
+com\techhub\config\SecurityConfig.class
 com\techhub\service\RecommendationService.class
+com\techhub\service\EmailService.class
 com\techhub\service\AssessmentInstanceService.class
 com\techhub\entity\UserInterest.class
+com\techhub\util\JwtUtil.class
 com\techhub\entity\Skill.class
 com\techhub\repository\UserSkillRepository.class
 com\techhub\repository\SkillRepository.class

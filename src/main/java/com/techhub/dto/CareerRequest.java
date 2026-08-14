@@ -1,7 +1,14 @@
 package com.techhub.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 
+@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CareerRequest {
 
     @NotBlank(message = "Career name is required")
@@ -10,7 +17,7 @@ public class CareerRequest {
     @NotBlank(message = "Description is required")
     private String description;
 
-    @NotBlank(message = "Required skills is required")
+    @NotBlank(message = "Required skills are required")
     private String requiredSkills;
 
     @NotBlank(message = "Qualification is required")
