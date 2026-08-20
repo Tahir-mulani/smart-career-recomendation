@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Dashboard - Smart Career Recommendation</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<style>
+    body { background: #0f172a; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; }
+    .dashboard-container { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: #0a141f; padding: 30px 20px; border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; }
+    .sidebar .logo { font-size: 1.5rem; font-weight: 800; color: #22d3ee; text-decoration: none; margin-bottom: 40px; }
+    .sidebar ul { list-style: none; padding: 0; }
+    .sidebar li { margin-bottom: 12px; }
+    .sidebar a { display: flex; align-items: center; gap: 12px; color: #94a3b8; text-decoration: none; padding: 12px 16px; border-radius: 8px; font-weight: 500; transition: .3s; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(34,211,238,0.15); color: #22d3ee; }
+    .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .user-profile-badge { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 30px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px; }
+    .card { background: rgba(30,41,59,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; }
+    .card h3 { color: #22d3ee; margin-bottom: 12px; font-size: 1.2rem; }
+    .btn-action { display: inline-block; background: #22d3ee; color: #000; font-weight: 600; padding: 10px 20px; border-radius: 8px; text-decoration: none; margin-top: 15px; transition: .3s; }
+    .btn-action:hover { background: #06b6d4; }
+    .table-container { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    .table-container th, .table-container td { padding: 12px 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .table-container th { color: #94a3b8; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="sidebar">
+        <a href="index.html" class="logo">Smart<span>Career</span></a>
+        <ul>
+            <li><a href="dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="onboarding.html"><i class="fas fa-tasks"></i> Skill Onboarding</a></li>
+            <li><a href="recommendations.html"><i class="fas fa-lightbulb"></i> Recommendations</a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+            <li><a href="#" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header-bar">
+            <div>
+                <h2>Welcome Back, <span id="userName">Student</span> 👋</h2>
+                <p style="color: #94a3b8;">Track your career assessments and recommendations</p>
+            </div>
+            <div class="user-profile-badge">
+                <i class="fas fa-user-circle" style="font-size: 1.8rem; color: #22d3ee;"></i>
+                <div>
+                    <strong id="userEmail">student@email.com</strong>
+                    <div style="font-size: 0.8rem; color: #94a3b8;">Student Account</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-3">
+            <div class="card">
+                <h3><i class="fas fa-rocket"></i> Skill Onboarding</h3>
+                <p style="color: #94a3b8;">Select your technical skills and domain interests to get customized tests.</p>
+                <a href="onboarding.html" class="btn-action">Start Onboarding</a>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-brain"></i> Take Skill Test</h3>
+                <p style="color: #94a3b8;">Evaluate your knowledge through interactive multiple-choice assessments.</p>
+                <a href="take-assessment.html" class="btn-action">Take Assessment</a>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-chart-line"></i> Career Report</h3>
+                <p style="color: #94a3b8;">View your top recommended tech career paths & AI match scores.</p>
+                <a href="recommendations.html" class="btn-action">View Report</a>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 30px;">
+            <h3>Available Skill Assessments</h3>
+            <table class="table-container">
+                <thead>
+                    <tr>
+                        <th>Test Title</th>
+                        <th>Category</th>
+                        <th>Duration</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="assessmentTableBody">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #94a3b8;">Loading assessments...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+    const user = requireAuth();
+    if (user) {
+        document.getElementById('userName').innerText = user.name || 'Student';
+        document.getElementById('userEmail').innerText = user.email || '';
+
+        // Fetch Dashboard Data from Spring Boot REST API
+        apiRequest(`/v1/dashboard/${user.id}`)
+            .then(data => {
+                const tbody = document.getElementById('assessmentTableBody');
+                if (data.assessments && data.assessments.length > 0) {
+                    tbody.innerHTML = data.assessments.map(a => `
+                        <tr>
+                            <td><strong>${a.title}</strong></td>
+                            <td><span style="background: rgba(34,211,238,0.15); color: #22d3ee; padding: 4px 8px; border-radius: 4px;">${a.category || 'Technical'}</span></td>
+                            <td>${a.durationMinutes || 30} mins</td>
+                            <td><a href="take-assessment.html?id=${a.id}" class="btn-action" style="padding: 6px 14px; font-size: 0.9rem;">Start Test</a></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #94a3b8;">No assessment tests available right now.</td></tr>`;
+                }
+            })
+            .catch(err => {
+                console.log('Loading default list:', err);
+                document.getElementById('assessmentTableBody').innerHTML = `
+                    <tr>
+                        <td><strong>Java Core & Spring Boot Assessment</strong></td>
+                        <td><span style="background: rgba(34,211,238,0.15); color: #22d3ee; padding: 4px 8px; border-radius: 4px;">Backend</span></td>
+                        <td>30 mins</td>
+                        <td><a href="take-assessment.html?id=1" class="btn-action" style="padding: 6px 14px; font-size: 0.9rem;">Start Test</a></td>
+                    </tr>
+                `;
+            });
+    }
+</script>
+</body>
+</html>

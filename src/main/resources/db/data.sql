@@ -13,7 +13,7 @@ INSERT IGNORE INTO users (id, name, email, password, phone_number, role) VALUES
 (2, 'John Doe', 'john@example.com', 'user123', '9876543211', 'USER'),
 (3, 'Jane Smith', 'jane@example.com', 'user123', '9876543212', 'USER');
 
--- 2. Seed Master Technical Skills (30 Skills)
+-- 2. Seed Master Technical & Domain Skills (40 Skills)
 INSERT IGNORE INTO skills (id, skill_name) VALUES
 (1, 'Java'),
 (2, 'Spring Boot'),
@@ -44,9 +44,19 @@ INSERT IGNORE INTO skills (id, skill_name) VALUES
 (27, 'PostgreSQL'),
 (28, 'Linux System Administration'),
 (29, 'TensorFlow & Deep Learning'),
-(30, 'PowerBI & Data Visualization');
+(30, 'PowerBI & Data Visualization'),
+(31, 'Business Analysis'),
+(32, 'Excel & Data Analytics'),
+(33, 'Financial Modeling & Accounting'),
+(34, 'Digital Marketing & SEO'),
+(35, 'HR Management & Recruitment'),
+(36, 'CAD & Mechanical Design'),
+(37, 'Agile & Project Management'),
+(38, 'Quality Assurance & Testing'),
+(39, 'Communication & Negotiation'),
+(40, 'Market Research & Strategy');
 
--- 3. Seed Master Interests (12 Domain Interests)
+-- 3. Seed Master Interests (17 Domain Interests)
 INSERT IGNORE INTO interests (id, interest_name) VALUES
 (1, 'Software Engineering'),
 (2, 'Data Science & AI'),
@@ -59,9 +69,14 @@ INSERT IGNORE INTO interests (id, interest_name) VALUES
 (9, 'Database Administration'),
 (10, 'QA & Software Testing'),
 (11, 'Game Development'),
-(12, 'Big Data & Analytics');
+(12, 'Big Data & Analytics'),
+(13, 'Business & Management'),
+(14, 'Finance & Accounting'),
+(15, 'Digital Marketing & Sales'),
+(16, 'Human Resources & Recruitment'),
+(17, 'Mechanical & Product Engineering');
 
--- 4. Seed Core Careers (12 Careers)
+-- 4. Seed Core Careers (17 Careers - IT & Non-IT Multi-Domain)
 INSERT IGNORE INTO careers (id, career_name, description, required_skills, qualification) VALUES
 (1, 'Java Full Stack Developer', 'Develops web applications using Java, Spring Boot, React, and MySQL.', 'Java, Spring Boot, React, MySQL', 'B.Tech Computer Science'),
 (2, 'Data Scientist', 'Analyzes complex datasets to extract insights and build predictive machine learning models.', 'Python, Machine Learning, SQL, TensorFlow', 'M.Sc. Data Science / B.Tech CS'),
@@ -74,7 +89,12 @@ INSERT IGNORE INTO careers (id, career_name, description, required_skills, quali
 (9, 'Frontend Engineer', 'Builds interactive, modern web frontends using JavaScript, React, and Angular.', 'JavaScript, React, Angular, HTML & CSS', 'B.Tech CS / BCA'),
 (10, 'AI / Machine Learning Engineer', 'Deploys deep learning models and neural networks to production servers.', 'Python, Machine Learning, TensorFlow, C++', 'M.Tech AI / B.Tech CS'),
 (11, 'Database Administrator (DBA)', 'Manages database integrity, performance tuning, clustering, and backup recovery.', 'SQL & MySQL, PostgreSQL, MongoDB, Linux', 'B.Tech / BCA / MCA'),
-(12, 'QA Automation Engineer', 'Automates software testing suites to ensure application quality and stability.', 'Java, Python, Selenium, Git', 'B.Tech CS / BCA');
+(12, 'QA Automation Engineer', 'Automates software testing suites to ensure application quality and stability.', 'Java, Python, Selenium, Git', 'B.Tech CS / BCA'),
+(13, 'Business Analyst', 'Bridge career for IT/Business transition. Gathers business requirements and maps data workflows.', 'Excel & Data Analytics, Business Analysis, Agile & Project Management, SQL & MySQL', 'B.Tech / B.Com / BBA / MBA'),
+(14, 'Financial Analyst', 'Evaluates financial data, forecasts investment trends, and manages corporate budgeting.', 'Excel & Data Analytics, Financial Modeling & Accounting, Market Research & Strategy', 'B.Com / BBA / MBA Finance'),
+(15, 'Digital Marketing Specialist', 'Executes online campaigns, SEO optimization, and social media growth strategies.', 'Digital Marketing & SEO, Market Research & Strategy', 'Any Bachelor Degree'),
+(16, 'HR Talent Manager', 'Manages talent acquisition, employee relations, and organization development.', 'HR Management & Recruitment, Communication & Negotiation', 'BBA / MBA / Any Graduate'),
+(17, 'Mechanical Design Engineer', 'Engineers mechanical components and product designs using CAD tools.', 'CAD & Mechanical Design, Linux System Administration, C++', 'B.Tech Mechanical / Automobile');
 
 -- 5. Seed Career-Skill Junction Entries (career_skills)
 INSERT IGNORE INTO career_skills (career_id, skill_id) VALUES
@@ -89,7 +109,12 @@ INSERT IGNORE INTO career_skills (career_id, skill_id) VALUES
 (9, 22), (9, 3), (9, 25), (9, 13),
 (10, 5), (10, 6), (10, 29), (10, 23),
 (11, 4), (11, 27), (11, 26), (11, 28),
-(12, 1), (12, 5), (12, 17);
+(12, 1), (12, 5), (12, 17), (12, 38),
+(13, 31), (13, 32), (13, 37), (13, 4),
+(14, 32), (14, 33), (14, 40),
+(15, 34), (15, 40), (15, 39),
+(16, 35), (16, 39),
+(17, 36), (17, 28), (17, 23);
 
 -- 6. Seed Career-Interest Junction Entries (career_interests)
 INSERT IGNORE INTO career_interests (career_id, interest_id) VALUES
@@ -104,7 +129,12 @@ INSERT IGNORE INTO career_interests (career_id, interest_id) VALUES
 (9, 8), (9, 4),
 (10, 2),
 (11, 9),
-(12, 10);
+(12, 10),
+(13, 13), (13, 12),
+(14, 14), (14, 13),
+(15, 15), (15, 13),
+(16, 16), (16, 13),
+(17, 17);
 
 -- 7. Seed Standard Assessments (6 Assessments)
 INSERT IGNORE INTO assessments (id, test_name, duration, total_marks) VALUES
@@ -238,3 +268,14 @@ INSERT INTO questions (id, question_text, option_a, option_b, option_c, option_d
 (98, 'What is the purpose of the "pass" statement in Python?', 'Placeholder for future code', 'Exit loop', 'Skip iteration', 'Return value', 'A', 'Easy', 'Python', 5),
 (99, 'What is a decorator in Python?', 'Function that modifies another function', 'Function that creates a class', 'Function that creates a module', 'Variable type', 'A', 'Hard', 'Python', 5),
 (100, 'What is the purpose of the "__init__" method in Python?', 'Initialize object', 'Destroy object', 'Create object', 'Delete object', 'A', 'Medium', 'Python', 5);
+
+-- ====================================================================
+-- 10. SECTION 3: CAREER DISCOVERY & NON-IT TRANSITION QUESTIONS
+-- ====================================================================
+INSERT INTO questions (id, question_text, option_a, option_b, option_c, option_d, correct_answer, difficulty_level, skill_tag, skill_id) VALUES
+(101, 'What is your current educational background / domain?', 'Computer Science / IT', 'Mechanical / Civil / Electrical Eng', 'Commerce / Business / Finance', 'Arts / Design / Humanities', 'A', 'Easy', 'Discovery - Background', NULL),
+(102, 'What is your primary career target or transition goal?', 'Target IT / Software Engineering', 'Target Business & Data Analysis', 'Target UI/UX & Digital Design', 'Target Core Non-IT Domain', 'A', 'Easy', 'Discovery - Goal', NULL),
+(103, 'When analyzing a problem, which tool/method do you prefer using?', 'Code scripts & IDEs', 'Excel spreadsheets & SQL queries', 'Figma & visual wireframe diagrams', 'CAD models & physical diagrams', 'B', 'Medium', 'Discovery - Method', NULL),
+(104, 'Which activity do you find most natural and rewarding?', 'Building software features & APIs', 'Analyzing financial trends & market data', 'Creating visual UI designs & graphics', 'Managing teams & leading client projects', 'B', 'Medium', 'Discovery - Activity', NULL),
+(105, 'If transitioning from Non-IT to IT, which bridge area interests you most?', 'QA Software Testing & Automation', 'Business Analysis & Data Reporting', 'UI/UX Design & Frontend Development', 'Full-Stack Web Coding', 'A', 'Easy', 'Discovery - Bridge', NULL),
+(106, 'Which skill do you consider your strongest asset today?', 'Logical Reasoning & Coding', 'Excel & Financial Analysis', 'Communication & Team Leadership', 'Creative Design & Visual Aesthetics', 'B', 'Easy', 'Discovery - Asset', NULL);

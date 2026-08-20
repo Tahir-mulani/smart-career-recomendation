@@ -15,7 +15,7 @@ spring:
       suffix: .jsp
   web:
     resources:
-      static-locations: classpath:/static/,classpath:/resources/
+      static-locations: classpath:/META-INF/resources/,classpath:/static/,classpath:/resources/
   h2:
     console:
       enabled: true

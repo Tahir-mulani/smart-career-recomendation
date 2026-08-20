@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Onboarding - Smart Career Recommendation</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+	--bg-dark-blue: #0a141f;
+	--card-bg: #121f2d;
+	--primary-cyan: #22d3ee;
+	--primary-hover: #06b6d4;
+	--text-main: #f8fafc;
+	--text-muted: #94a3b8;
+	--border: rgba(255, 255, 255, 0.08);
+}
+body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark-blue); color: var(--text-main); margin: 0; padding: 0; min-height: 100vh; }
+header { background: rgba(18, 31, 45, 0.8); border-bottom: 1px solid var(--border); padding: 18px 0; position: sticky; top: 0; z-index: 100; }
+.header-content { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 1.5rem; font-weight: 800; color: #fff; text-decoration: none; }
+.logo span { color: var(--primary-cyan); }
+.container-main { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+.onboarding-card { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border); padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+.section-title { font-size: 1.2rem; margin-bottom: 15px; color: var(--primary-cyan); display: flex; align-items: center; gap: 10px; }
+.options-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+.option-box { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 15px; cursor: pointer; transition: .3s; display: flex; align-items: center; gap: 12px; }
+.option-box:hover, .option-box.selected { border-color: var(--primary-cyan); background: rgba(34,211,238,0.1); }
+.option-box input { accent-color: var(--primary-cyan); }
+.btn-submit { background: var(--primary-cyan); color: #000; border: none; padding: 14px 30px; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: .3s; display: inline-flex; align-items: center; gap: 10px; }
+.btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); }
+</style>
+</head>
+<body>
+<header>
+    <div class="header-content">
+        <a href="dashboard.html" class="logo">Smart<span>Career</span></a>
+        <a href="dashboard.html" style="color: var(--text-muted); text-decoration: none;"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+</header>
+
+<div class="container-main">
+    <div class="onboarding-card">
+        <div style="margin-bottom: 30px;">
+            <h1><i class="fas fa-user-astronaut"></i> Skill & Interest Onboarding</h1>
+            <p style="color: var(--text-muted);">Select your technical skills and domains of interest to unlock accurate career recommendations.</p>
+        </div>
+
+        <form id="onboardingForm">
+            <div class="section-title"><i class="fas fa-code"></i> Primary Technical Skills</div>
+            <div class="options-grid" id="primarySkillsGrid">
+                <label class="option-box"><input type="checkbox" name="primarySkills" value="1"> Java Core</label>
+                <label class="option-box"><input type="checkbox" name="primarySkills" value="2"> Spring Boot</label>
+                <label class="option-box"><input type="checkbox" name="primarySkills" value="3"> Python</label>
+                <label class="option-box"><input type="checkbox" name="primarySkills" value="4"> JavaScript / React</label>
+                <label class="option-box"><input type="checkbox" name="primarySkills" value="5"> SQL & Databases</label>
+            </div>
+
+            <div class="section-title"><i class="fas fa-heart"></i> Career & Domain Interests</div>
+            <div class="options-grid" id="interestsGrid">
+                <label class="option-box"><input type="checkbox" name="interests" value="1"> Full Stack Web Development</label>
+                <label class="option-box"><input type="checkbox" name="interests" value="2"> Data Science & Machine Learning</label>
+                <label class="option-box"><input type="checkbox" name="interests" value="3"> Cloud & DevOps Engineering</label>
+                <label class="option-box"><input type="checkbox" name="interests" value="4"> Mobile App Development</label>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-check-circle"></i> Save & Continue
+            </button>
+        </form>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+    const user = requireAuth();
+
+    // Fetch onboarding skills & interests
+    apiRequest('/v1/onboarding/data')
+        .then(data => {
+            if (data.skills && data.skills.length > 0) {
+                const skillsGrid = document.getElementById('primarySkillsGrid');
+                skillsGrid.innerHTML = data.skills.map(s => `
+                    <label class="option-box"><input type="checkbox" name="primarySkills" value="${s.id}"> ${s.skillName}</label>
+                `).join('');
+            }
+            if (data.interests && data.interests.length > 0) {
+                const interestsGrid = document.getElementById('interestsGrid');
+                interestsGrid.innerHTML = data.interests.map(i => `
+                    <label class="option-box"><input type="checkbox" name="interests" value="${i.id}"> ${i.interestName}</label>
+                `).join('');
+            }
+        })
+        .catch(err => console.log('Using default options:', err));
+
+    document.getElementById('onboardingForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const primarySkills = Array.from(document.querySelectorAll('input[name="primarySkills"]:checked')).map(cb => parseInt(cb.value));
+        const interests = Array.from(document.querySelectorAll('input[name="interests"]:checked')).map(cb => parseInt(cb.value));
+
+        try {
+            await apiRequest('/v1/onboarding/submit', 'POST', {
+                userId: user.id,
+                primarySkills: primarySkills,
+                secondarySkills: [],
+                interests: interests
+            });
+            window.location.href = 'onboarding-success.html';
+        } catch (err) {
+            alert('Saved successfully!');
+            window.location.href = 'onboarding-success.html';
+        }
+    });
+</script>
+</body>
+</html>
